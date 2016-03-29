@@ -27,7 +27,7 @@
  * @version 1.2_01
  */
 
-package jregex;
+package regexodus;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -59,25 +59,22 @@ import java.util.HashMap;
  * <li><b>REFlags.XML_SCHEMA</b> - permits XML Schema regular expressions syntax extentions.
  * <p>
  * <b>Multithreading</b><br>
- * Pattern instances are thread-safe, i.e. the same Pattern object may be used 
- * by any number of threads simultaniously. On the other hand, the Matcher objects 
- * are NOT thread safe, so, given a Pattern instance, each thread must obtain 
- * and use its own Matcher.
+ * Pattern instances are not thread-safe, and neither are Matcher objects.
  *
- * @see        REFlags
- * @see        Matcher
- * @see        Matcher#setTarget(java.lang.String)
- * @see        Matcher#setTarget(java.lang.String, int, int)
- * @see        Matcher#setTarget(char[], int, int)
- * @see        Matcher#setTarget(java.io.Reader, int)
- * @see        MatchResult
- * @see        MatchResult#group(int)
- * @see        MatchResult#start(int)
- * @see        MatchResult#end(int)
- * @see        MatchResult#length(int)
- * @see        MatchResult#charAt(int, int)
- * @see        MatchResult#prefix()
- * @see        MatchResult#suffix()
+ * @see REFlags
+ * @see Matcher
+ * @see Matcher#setTarget(java.lang.String)
+ * @see Matcher#setTarget(java.lang.String, int, int)
+ * @see Matcher#setTarget(char[], int, int)
+ * @see Matcher#setTarget(java.io.Reader, int)
+ * @see MatchResult
+ * @see MatchResult#group(int)
+ * @see MatchResult#start(int)
+ * @see MatchResult#end(int)
+ * @see MatchResult#length(int)
+ * @see MatchResult#charAt(int, int)
+ * @see MatchResult#prefix()
+ * @see MatchResult#suffix()
  */
 
 public class Pattern implements Serializable, REFlags {
@@ -102,10 +99,11 @@ public class Pattern implements Serializable, REFlags {
 
     /**
      * Compiles an expression with default flags.
-     * @param regex   the Perl5-compatible regular expression string.
-     * @exception PatternSyntaxException  if the argument doesn't correspond to perl5 regex syntax.
-     * @see        Pattern#Pattern(java.lang.String, java.lang.String)
-     * @see        Pattern#Pattern(java.lang.String, int)
+     *
+     * @param regex the Perl5-compatible regular expression string.
+     * @throws PatternSyntaxException if the argument doesn't correspond to perl5 regex syntax.
+     * @see Pattern#Pattern(java.lang.String, java.lang.String)
+     * @see Pattern#Pattern(java.lang.String, int)
      */
     public Pattern(String regex) throws PatternSyntaxException {
         this(regex, DEFAULT);
@@ -123,52 +121,56 @@ public class Pattern implements Serializable, REFlags {
      * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFLlags.UNICODE; this may yield some performance penalty.
      * <li><b>X</b> - compatibility with XML Schema, corresponds to REFLlags.XML_SCHEMA.
      * </ul>
-     * @param regex  the Perl5-compatible regular expression string.
-     * @param flags  the Perl5-compatible flags.
-     * @exception PatternSyntaxException  if the argument doesn't correspond to perl5 regex syntax.
-     * see REFlags
+     *
+     * @param regex the Perl5-compatible regular expression string.
+     * @param flags the Perl5-compatible flags.
+     * @throws PatternSyntaxException if the argument doesn't correspond to perl5 regex syntax.
+     *                                see REFlags
      */
     public Pattern(String regex, String flags) throws PatternSyntaxException {
         stringRepr = regex;
-        compile(regex, parseFlags(flags));
+        internalCompile(regex, parseFlags(flags));
     }
 
     /**
      * Compiles a regular expression using REFlags.
      * The <code>flags</code> parameter is a bitwise OR of the folloing values:
      * <ul>
-     * <li><b>REFLlags.IGNORE_CASE</b> - case insensitivity, corresponds to '<b>i</b>' letter;
-     * <li><b>REFLlags.MULTILINE</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to '<b>m</b>';
-     * <li><b>REFLlags.DOTALL</b> - single line treatment('.' matches \r's and \n's),corresponds to '<b>s</b>';
-     * <li><b>REFLlags.IGNORE_SPACES</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to '<b>x</b>'.
-     * <li><b>REFLlags.UNICODE</b> - predefined classes are regarded as belonging to Unicode, corresponds to '<b>u</b>'; this may yield some performance penalty.
-     * <li><b>REFLlags.XML_SCHEMA</b> - compatibility with XML Schema, corresponds to '<b>X</b>'.
+     * <li><b>REFlags.IGNORE_CASE</b> - case insensitivity, corresponds to '<b>i</b>' letter;
+     * <li><b>REFlags.MULTILINE</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to '<b>m</b>';
+     * <li><b>REFlags.DOTALL</b> - single line treatment('.' matches \r's and \n's),corresponds to '<b>s</b>';
+     * <li><b>REFlags.IGNORE_SPACES</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to '<b>x</b>'.
+     * <li><b>REFlags.UNICODE</b> - predefined classes are regarded as belonging to Unicode, corresponds to '<b>u</b>'; this may yield some performance penalty.
+     * <li><b>REFlags.XML_SCHEMA</b> - compatibility with XML Schema, corresponds to '<b>X</b>'.
      * </ul>
+     *
      * @param regex the Perl5-compatible regular expression string.
-     * @param flags  the Perl5-compatible flags.
-     * @exception PatternSyntaxException  if the argument doesn't correspond to perl5 regex syntax.
-     * see REFlags
+     * @param flags the Perl5-compatible flags.
+     * @throws PatternSyntaxException if the argument doesn't correspond to perl5 regex syntax.
+     *                                see REFlags
      */
     public Pattern(String regex, int flags) throws PatternSyntaxException {
-        compile(regex, flags);
+        internalCompile(regex, flags);
     }
-   
-  /*
-   //java.util.regex.* compatibility
-   public static Pattern compile(String regex,int flags) throws PatternSyntaxException{
-      Pattern p=new Pattern();
-      p.compile(regex,flags);
-      return flags;
-   }
-   */
 
-    protected void compile(String regex, int flags) throws PatternSyntaxException {
+
+    //java.util.regex.* compatibility
+    public static Pattern compile(String regex) throws PatternSyntaxException{
+        return new Pattern(regex, DEFAULT);
+    }
+    //java.util.regex.* compatibility
+    public static Pattern compile(String regex,int flags) throws PatternSyntaxException{
+        return new Pattern(regex, flags);
+    }
+
+
+    protected void internalCompile(String regex, int flags) throws PatternSyntaxException {
         stringRepr = regex;
         Term.makeTree(regex, flags, this);
     }
 
     /**
-     * How many capturing groups this expression includes?
+     * How many capturing groups does this expression include?
      */
     public int groupCount() {
         return memregs;
@@ -176,6 +178,7 @@ public class Pattern implements Serializable, REFlags {
 
     /**
      * Get numeric id for a group name.
+     *
      * @return <code>null</code> if no such name found.
      * @see MatchResult#group(java.lang.String)
      * @see MatchResult#isCaptured(java.lang.String)
@@ -186,6 +189,7 @@ public class Pattern implements Serializable, REFlags {
 
     /**
      * A shorthand for Pattern.matcher(String).matches().<br>
+     *
      * @param s the target
      * @return true if the entire target matches the pattern
      * @see Matcher#matches()
@@ -197,6 +201,7 @@ public class Pattern implements Serializable, REFlags {
 
     /**
      * A shorthand for Pattern.matcher(String).matchesPrefix().<br>
+     *
      * @param s the target
      * @return true if the entire target matches the beginning of the pattern
      * @see Matcher#matchesPrefix()
@@ -234,6 +239,7 @@ public class Pattern implements Serializable, REFlags {
     /**
      * Returns a matcher for a match result (in a performance-friendly way).
      * <code>groupId</code> parameter specifies which group is a target.
+     *
      * @param groupId which group is a target; either positive integer(group id), or one of MatchResult.MATCH,MatchResult.PREFIX,MatchResult.SUFFIX,MatchResult.TARGET.
      */
     public Matcher matcher(MatchResult res, int groupId) {
@@ -248,7 +254,8 @@ public class Pattern implements Serializable, REFlags {
 
     /**
      * Just as above, yet with symbolic group name.
-     * @exception NullPointerException if there is no group with such name
+     *
+     * @throws NullPointerException if there is no group with such name
      */
     public Matcher matcher(MatchResult res, String groupName) {
         Integer id = res.pattern().groupId(groupName);
@@ -260,10 +267,12 @@ public class Pattern implements Serializable, REFlags {
     /**
      * Returns a matcher taking a text stream as target.
      * <b>Note that this is not a true POSIX-style stream matching</b>, i.e. the whole length of the text is preliminary read and stored in a char array.
-     * @param text a text stream
+     *
+     * @param text   a text stream
      * @param length the length to read from a stream; if <code>len</code> is <code>-1</code>, the whole stream is read in.
-     * @exception IOException indicates an IO problem
+     * @throws IOException indicates an IO problem
      */
+    @GwtIncompatible
     public Matcher matcher(Reader text, int length) throws IOException {
         Matcher m = new Matcher(this);
         m.setTarget(text, length);
@@ -286,6 +295,7 @@ public class Pattern implements Serializable, REFlags {
      * System.out.println(scramble.replacer("$3$2$1").replace(text));
      * //prints "quick The fox brown over jumped lazy the dog"
      * </pre>
+     *
      * @param expr a perl-like expression, the "$&" and "${&}" standing for whole match, the "$N" and "${N}" standing for group#N, and "${Foo}" standing for named group Foo.
      * @see Replacer
      */
@@ -296,6 +306,7 @@ public class Pattern implements Serializable, REFlags {
     /**
      * Returns a replacer will substitute all occurences of a pattern
      * through applying a user-defined substitution model.
+     *
      * @param model a Substitution object which is in charge for match substitution
      * @see Replacer
      */
@@ -307,9 +318,9 @@ public class Pattern implements Serializable, REFlags {
      * Tokenizes a text by an occurences of the pattern.
      * Note that a series of adjacent matches are regarded as a single separator.
      * The same as new RETokenizer(Pattern,String);
-     * @see RETokenizer
-     * @see RETokenizer#RETokenizer(jregex.Pattern, java.lang.String)
      *
+     * @see RETokenizer
+     * @see RETokenizer#RETokenizer(regexodus.Pattern, java.lang.String)
      */
     public RETokenizer tokenizer(String text) {
         return new RETokenizer(this, text);
@@ -319,8 +330,9 @@ public class Pattern implements Serializable, REFlags {
      * Tokenizes a specified region by an occurences of the pattern.
      * Note that a series of adjacent matches are regarded as a single separator.
      * The same as new RETokenizer(Pattern,char[],int,int);
+     *
      * @see RETokenizer
-     * @see RETokenizer#RETokenizer(jregex.Pattern, char[], int, int)
+     * @see RETokenizer#RETokenizer(regexodus.Pattern, char[], int, int)
      */
     public RETokenizer tokenizer(char[] data, int off, int len) {
         return new RETokenizer(this, data, off, len);
@@ -330,9 +342,11 @@ public class Pattern implements Serializable, REFlags {
      * Tokenizes a specified region by an occurences of the pattern.
      * Note that a series of adjacent matches are regarded as a single separator.
      * The same as new RETokenizer(Pattern,Reader,int);
+     *
      * @see RETokenizer
-     * @see RETokenizer#RETokenizer(jregex.Pattern, java.io.Reader, int)
+     * @see RETokenizer#RETokenizer(regexodus.Pattern, java.io.Reader, int)
      */
+    @GwtIncompatible
     public RETokenizer tokenizer(Reader in, int length) throws IOException {
         return new RETokenizer(this, in, length);
     }
@@ -407,5 +421,34 @@ public class Pattern implements Serializable, REFlags {
                 return XML_SCHEMA;
         }
         throw new PatternSyntaxException("unknown flag: " + c);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pattern pattern = (Pattern) o;
+
+        if (memregs != pattern.memregs) return false;
+        if (counters != pattern.counters) return false;
+        if (lookaheads != pattern.lookaheads) return false;
+        if (stringRepr != null ? !stringRepr.equals(pattern.stringRepr) : pattern.stringRepr != null) return false;
+        if (root != null ? !root.equals(pattern.root) : pattern.root != null) return false;
+        if (root0 != null ? !root0.equals(pattern.root0) : pattern.root0 != null) return false;
+        return namedGroupMap != null ? namedGroupMap.equals(pattern.namedGroupMap) : pattern.namedGroupMap == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = stringRepr != null ? stringRepr.hashCode() : 0;
+        result = 31 * result + (root != null ? root.hashCode() : 0);
+        result = 31 * result + (root0 != null ? root0.hashCode() : 0);
+        result = 31 * result + memregs;
+        result = 31 * result + counters;
+        result = 31 * result + lookaheads;
+        result = 31 * result + (namedGroupMap != null ? namedGroupMap.hashCode() : 0);
+        return result;
     }
 }

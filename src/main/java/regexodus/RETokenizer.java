@@ -27,15 +27,15 @@
  * @version 1.2_01
  */
 
-package jregex;
+package regexodus;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * The Tokenizer class suggests a methods to break a text into tokens using 
+ * The Tokenizer class suggests a methods to break a text into tokens using
  * occurences of a pattern as delimiters.
  * There are two ways to obtain a text tokenizer for some pattern:<pre>
  * Pattern p=new Pattern("\\s+"); //any number of space characters
@@ -48,14 +48,15 @@ import java.util.NoSuchElementException;
  * Now the one way is to use the tokenizer as a token enumeration/iterator:<pre>
  * while(tok1.hasMore()) System.out.println(tok1.nextToken());
  * </pre>
- * and another way is to split it into a String array:<pre> 
+ * and another way is to split it into a String array:<pre>
  * String[] arr=tok2.split();
  * for(int i=0;i<tok2.length;i++) System.out.println(arr[i]);
  * </pre>
- * @see        Pattern#tokenizer(java.lang.String)
+ *
+ * @see Pattern#tokenizer(java.lang.String)
  */
 
-public class RETokenizer implements Enumeration {
+public class RETokenizer implements Iterator<String> {
     private Matcher matcher;
     private boolean checked;
     private boolean hasToken;
@@ -72,6 +73,7 @@ public class RETokenizer implements Enumeration {
         this(pattern.matcher(chars, off, len), false);
     }
 
+    @GwtIncompatible
     public RETokenizer(Pattern pattern, Reader r, int len) throws IOException {
         this(pattern.matcher(r, len), false);
     }
@@ -158,14 +160,38 @@ public class RETokenizer implements Enumeration {
         //m.setTarget(m.suffix());
     }
 
-    public boolean hasMoreElements() {
+    /**
+     * Removes from the underlying collection the last element returned
+     * by this iterator (optional operation).  This method can be called
+     * only once per call to {@link #next}.  The behavior of an iterator
+     * is unspecified if the underlying collection is modified while the
+     * iteration is in progress in any way other than by calling this
+     * method.
+     *
+     * @throws UnsupportedOperationException if the {@code remove}
+     *                                       operation is not supported by this iterator
+     * @throws IllegalStateException         if the {@code next} method has not
+     *                                       yet been called, or the {@code remove} method has already
+     *                                       been called after the last call to the {@code next}
+     *                                       method
+     * @implSpec The default implementation throws an instance of
+     * {@link UnsupportedOperationException} and performs no other action.
+     */
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove() not supported on RETokenizer");
+    }
+
+    @Override
+    public boolean hasNext() {
         return hasMore();
     }
 
     /**
      * @return a next token as a String
      */
-    public Object nextElement() {
+    @Override
+    public String next() {
         return nextToken();
     }
 }

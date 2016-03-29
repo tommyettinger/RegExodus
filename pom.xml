@@ -10,7 +10,7 @@
     <version>1.2.2</version>
     <packaging>jar</packaging>
 
-    <name>jregex</name>
+    <name>RegExodus</name>
     <description>
         A fork of jregex meant to increase compatibility with Java variants like GWT.
     </description>
@@ -24,6 +24,7 @@
 		<maven.source.version>2.4</maven.source.version>
 		<maven.gpg.version>1.6</maven.gpg.version>
 		<jdk.version>1.6</jdk.version>
+        <junit.version>4.11</junit.version>
     </properties>
     <prerequisites>
 		<maven>3.3.0</maven>
@@ -79,6 +80,14 @@
 
 
 
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

@@ -27,32 +27,33 @@
  * @version 1.2_01
  */
 
-package jregex;
+package regexodus;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
 class CharacterClass extends Term implements UnicodeConstants {
-    static final Bitset DIGIT = new Bitset();
-    static final Bitset WORDCHAR = new Bitset();
-    static final Bitset SPACE = new Bitset();
+    static final BlockSet DIGIT = new BlockSet();
+    static final BlockSet WORDCHAR = new BlockSet();
+    static final BlockSet SPACE = new BlockSet();
 
-    static final Bitset UDIGIT = new Bitset();
-    static final Bitset UWORDCHAR = new Bitset();
-    static final Bitset USPACE = new Bitset();
+    static final BlockSet UDIGIT = new BlockSet();
+    static final BlockSet UWORDCHAR = new BlockSet();
+    static final BlockSet USPACE = new BlockSet();
 
-    static final Bitset NONDIGIT = new Bitset();
-    static final Bitset NONWORDCHAR = new Bitset();
-    static final Bitset NONSPACE = new Bitset();
+    static final BlockSet NONDIGIT = new BlockSet();
+    static final BlockSet NONWORDCHAR = new BlockSet();
+    static final BlockSet NONSPACE = new BlockSet();
 
-    static final Bitset UNONDIGIT = new Bitset();
-    static final Bitset UNONWORDCHAR = new Bitset();
-    static final Bitset UNONSPACE = new Bitset();
+    static final BlockSet UNONDIGIT = new BlockSet();
+    static final BlockSet UNONWORDCHAR = new BlockSet();
+    static final BlockSet UNONSPACE = new BlockSet();
 
     private static boolean namesInitialized = false;
 
-    static final HashMap<String, Bitset> namedClasses = new HashMap<String, Bitset>();
+    static final HashMap<String, BlockSet> namedClasses = new HashMap<String, BlockSet>();
     static final ArrayList<String> unicodeBlocks = new ArrayList<String>();
     static final ArrayList<String> posixClasses = new ArrayList<String>();
     static final ArrayList<String> unicodeCategories = new ArrayList<String>();
@@ -119,53 +120,53 @@ class CharacterClass extends Term implements UnicodeConstants {
         initPosixClasses();
     }
 
-    private static void registerClass(String name, Bitset cls, ArrayList<String> realm) {
+    private static void registerClass(String name, BlockSet cls, ArrayList<String> realm) {
         namedClasses.put(name, cls);
         if (!realm.contains(name)) realm.add(name);
     }
 
     private static void initPosixClasses() {
-        Bitset lower = new Bitset();
+        BlockSet lower = new BlockSet();
         lower.setRange('a', 'z');
         registerClass("Lower", lower, posixClasses);
-        Bitset upper = new Bitset();
+        BlockSet upper = new BlockSet();
         upper.setRange('A', 'Z');
         registerClass("Upper", upper, posixClasses);
-        Bitset ascii = new Bitset();
+        BlockSet ascii = new BlockSet();
         ascii.setRange((char) 0, (char) 0x7f);
         registerClass("ASCII", ascii, posixClasses);
-        Bitset alpha = new Bitset();
+        BlockSet alpha = new BlockSet();
         alpha.add(lower);
         alpha.add(upper);
         registerClass("Alpha", alpha, posixClasses);
-        Bitset digit = new Bitset();
+        BlockSet digit = new BlockSet();
         digit.setRange('0', '9');
         registerClass("Digit", digit, posixClasses);
-        Bitset alnum = new Bitset();
+        BlockSet alnum = new BlockSet();
         alnum.add(alpha);
         alnum.add(digit);
         registerClass("Alnum", alnum, posixClasses);
-        Bitset punct = new Bitset();
+        BlockSet punct = new BlockSet();
         punct.setChars("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~");
         registerClass("Punct", punct, posixClasses);
-        Bitset graph = new Bitset();
+        BlockSet graph = new BlockSet();
         graph.add(alnum);
         graph.add(punct);
         registerClass("Graph", graph, posixClasses);
         registerClass("Print", graph, posixClasses);
-        Bitset blank = new Bitset();
+        BlockSet blank = new BlockSet();
         blank.setChars(" \t");
         registerClass("Blank", blank, posixClasses);
-        Bitset cntrl = new Bitset();
+        BlockSet cntrl = new BlockSet();
         cntrl.setRange((char) 0, (char) 0x1f);
         cntrl.setChar((char) 0x7f);
         registerClass("Cntrl", cntrl, posixClasses);
-        Bitset xdigit = new Bitset();
+        BlockSet xdigit = new BlockSet();
         xdigit.setRange('0', '9');
         xdigit.setRange('a', 'f');
         xdigit.setRange('A', 'F');
         registerClass("XDigit", xdigit, posixClasses);
-        Bitset space = new Bitset();
+        BlockSet space = new BlockSet();
         space.setChars(" \t\n\r\f\u000b");
         registerClass("Space", space, posixClasses);
     }
@@ -215,10 +216,10 @@ class CharacterClass extends Term implements UnicodeConstants {
         initNamedCategory("Sk", Sk);
         initNamedCategory("So", So);
 
-        Bitset bs = new Bitset();
+        BlockSet bs = new BlockSet();
         bs.setCategory(Cn);
         registerClass("UNASSIGNED", bs, unicodeCategories);
-        bs = new Bitset();
+        bs = new BlockSet();
         bs.setCategory(Cn);
         bs.setPositive(false);
         registerClass("ASSIGNED", bs, unicodeCategories);
@@ -247,57 +248,57 @@ class CharacterClass extends Term implements UnicodeConstants {
         if (last < Character.MIN_VALUE || last > Character.MAX_VALUE)
             throw new IllegalArgumentException("wrong end code (" + last + ") in block " + name);
         if (last < first) throw new IllegalArgumentException("end code < start code in block " + name);
-        Bitset bs = (Bitset) namedClasses.get(name);
+        BlockSet bs = (BlockSet) namedClasses.get(name);
         if (bs == null) {
-            bs = new Bitset();
+            bs = new BlockSet();
             registerClass(name, bs, unicodeBlocks);
         }
         bs.setRange((char) first, (char) last);
     }
 
     private static void initNamedCategory(String name, int cat) {
-        Bitset bs = new Bitset();
+        BlockSet bs = new BlockSet();
         bs.setCategory(cat);
         registerClass(name, bs, unicodeCategories);
     }
 
     private static void initNamedCategory(String name, int[] cats) {
-        Bitset bs = new Bitset();
+        BlockSet bs = new BlockSet();
         for (int i = 0; i < cats.length; i++) {
             bs.setCategory(cats[i]);
         }
         namedClasses.put(name, bs);
     }
 
-    private static Bitset getNamedClass(String name) {
+    private static BlockSet getNamedClass(String name) {
         if (!namesInitialized) initNames();
-        return (Bitset) namedClasses.get(name);
+        return (BlockSet) namedClasses.get(name);
     }
 
     static void makeICase(Term term, char c) {
-        Bitset bs = new Bitset();
+        BlockSet bs = new BlockSet();
         bs.setChar(Character.toLowerCase(c));
         bs.setChar(Character.toUpperCase(c));
         bs.setChar(Character.toTitleCase(c));
-        Bitset.unify(bs, term);
+        BlockSet.unify(bs, term);
     }
 
     static void makeDigit(Term term, boolean inverse, boolean unicode) {
-        Bitset digit = unicode ? inverse ? UNONDIGIT : UDIGIT :
+        BlockSet digit = unicode ? inverse ? UNONDIGIT : UDIGIT :
                 inverse ? NONDIGIT : DIGIT;
-        Bitset.unify(digit, term);
+        BlockSet.unify(digit, term);
     }
 
     static void makeSpace(Term term, boolean inverse, boolean unicode) {
-        Bitset space = unicode ? inverse ? UNONSPACE : USPACE :
+        BlockSet space = unicode ? inverse ? UNONSPACE : USPACE :
                 inverse ? NONSPACE : SPACE;
-        Bitset.unify(space, term);
+        BlockSet.unify(space, term);
     }
 
     static void makeWordChar(Term term, boolean inverse, boolean unicode) {
-        Bitset wordChar = unicode ? inverse ? UNONWORDCHAR : UWORDCHAR :
+        BlockSet wordChar = unicode ? inverse ? UNONWORDCHAR : UWORDCHAR :
                 inverse ? NONWORDCHAR : WORDCHAR;
-        Bitset.unify(wordChar, term);
+        BlockSet.unify(wordChar, term);
     }
 
     static void makeWordBoundary(Term term, boolean inverse, boolean unicode) {
@@ -315,10 +316,10 @@ class CharacterClass extends Term implements UnicodeConstants {
         term.type = unicode ? UDIRECTION : DIRECTION;
     }
 
-    final static void parseGroup(char[] data, int i, int out, Term term, boolean icase, boolean skipspaces,
+    static void parseGroup(char[] data, int i, int out, Term term, boolean icase, boolean skipspaces,
                                  boolean unicode, boolean xml) throws PatternSyntaxException {
-        Bitset sum = new Bitset();
-        Bitset bs = new Bitset();
+        BlockSet sum = new BlockSet();
+        BlockSet bs = new BlockSet();
         int mode = ADD;
         char c;
         for (; i < out; ) {
@@ -351,24 +352,24 @@ class CharacterClass extends Term implements UnicodeConstants {
                     throw new PatternSyntaxException("unbalanced class group");
             }
         }
-        Bitset.unify(sum, term);
+        BlockSet.unify(sum, term);
     }
 
-    final static int parseClass(char[] data, int i, int out, Term term, boolean icase, boolean skipspaces,
+    static int parseClass(char[] data, int i, int out, Term term, boolean icase, boolean skipspaces,
                                 boolean unicode, boolean xml) throws PatternSyntaxException {
-        Bitset bs = new Bitset();
+        BlockSet bs = new BlockSet();
         i = parseClass(data, i, out, bs, icase, skipspaces, unicode, xml);
-        Bitset.unify(bs, term);
+        BlockSet.unify(bs, term);
         return i;
     }
 
-    final static int parseName(char[] data, int i, int out, Term term, boolean inverse,
+    static int parseName(char[] data, int i, int out, Term term, boolean inverse,
                                boolean skipspaces) throws PatternSyntaxException {
         StringBuffer sb = new StringBuffer();
         i = parseName(data, i, out, sb, skipspaces);
-        Bitset bs = getNamedClass(sb.toString());
+        BlockSet bs = getNamedClass(sb.toString());
         if (bs == null) throw new PatternSyntaxException("unknow class: {" + sb + "}");
-        Bitset.unify(bs, term);
+        BlockSet.unify(bs, term);
         term.inverse = inverse;
         return i;
     }
@@ -376,17 +377,15 @@ class CharacterClass extends Term implements UnicodeConstants {
     /*
     * @param mode add/subtract
     */
-    private static int parseClass(char[] data, int i, int out, Bitset bs,
+    private static int parseClass(char[] data, int i, int out, BlockSet bs,
                                   boolean icase, boolean skipspaces,
                                   boolean unicode, boolean xml) throws PatternSyntaxException {
-//System.out.println("parseClass("+new String(data)+","+i+","+out+",....)");
         char c;
         int prev = -1;
         boolean isFirst = true, setFirst = false, inRange = false;
-        Bitset bs1 = null;
+        BlockSet bs1 = null;
         StringBuffer sb = null;
         for (; i < out; isFirst = setFirst, setFirst = false) {
-//System.out.println("   c="+data[i]);
             handle_special:
             switch (c = data[i++]) {
                 case ']':
@@ -416,15 +415,14 @@ class CharacterClass extends Term implements UnicodeConstants {
                 case '[':
                     if (inRange && xml) { //[..-[..]]
                         if (prev >= 0) bs.setChar((char) prev);
-                        if (bs1 == null) bs1 = new Bitset();
+                        if (bs1 == null) bs1 = new BlockSet();
                         else bs1.reset();
                         i = parseClass(data, i, out, bs1, icase, skipspaces, unicode, xml);
-//System.out.println("     i="+i);
                         bs.subtract(bs1);
                         inRange = false;
                         prev = -1;
                         continue;
-                    } else break handle_special;
+                    } else break;
 
                 case '^':
                     //if(!isFirst) throw new PatternSyntaxException("'^' isn't a first char in a class def");
@@ -445,11 +443,10 @@ class CharacterClass extends Term implements UnicodeConstants {
                 case '\t':
                 case '\f':
                     if (skipspaces) continue;
-                    else break handle_special;
+                    else break;
                 case '\\':
-                    Bitset negatigeClass = null;
+                    BlockSet negativeClass = null;
                     boolean inv = false;
-                    handle_escape:
                     switch (c = data[i++]) {
                         case 'r':
                             c = '\r';
@@ -535,16 +532,16 @@ class CharacterClass extends Term implements UnicodeConstants {
                         //classes;
                         //
                         case 'D':   // non-digit
-                            negatigeClass = unicode ? UNONDIGIT : NONDIGIT;
-                            break handle_escape;
+                            negativeClass = unicode ? UNONDIGIT : NONDIGIT;
+                            break;
 
                         case 'S':   // space
-                            negatigeClass = unicode ? UNONSPACE : NONSPACE;
-                            break handle_escape;
+                            negativeClass = unicode ? UNONSPACE : NONSPACE;
+                            break;
 
                         case 'W':   // space
-                            negatigeClass = unicode ? UNONWORDCHAR : NONWORDCHAR;
-                            break handle_escape;
+                            negativeClass = unicode ? UNONWORDCHAR : NONWORDCHAR;
+                            break;
 
                         case 'd':   // digit
                             if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\d...]");
@@ -568,7 +565,7 @@ class CharacterClass extends Term implements UnicodeConstants {
                             if (sb == null) sb = new StringBuffer();
                             else sb.setLength(0);
                             i = parseName(data, i, out, sb, skipspaces);
-                            Bitset nc = getNamedClass(sb.toString());
+                            BlockSet nc = getNamedClass(sb.toString());
                             if (nc == null) throw new PatternSyntaxException("unknown named class: {" + sb + "}");
                             bs.add(nc, inv);
                             continue;
@@ -577,10 +574,10 @@ class CharacterClass extends Term implements UnicodeConstants {
                             //other escaped treat as normal
                             break handle_special;
                     }
-                    //negatigeClass;
+                    //negativeClass;
                     //\S,\D,\W
                     if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\" + c + "...]");
-                    bs.add(negatigeClass);
+                    bs.add(negativeClass);
                     continue;
 
                 case '{':   //
@@ -588,7 +585,7 @@ class CharacterClass extends Term implements UnicodeConstants {
                     if (sb == null) sb = new StringBuffer();
                     else sb.setLength(0);
                     i = parseName(data, i - 1, out, sb, skipspaces);
-                    Bitset nc = getNamedClass(sb.toString());
+                    BlockSet nc = getNamedClass(sb.toString());
                     if (nc == null) throw new PatternSyntaxException("unknown named class: {" + sb + "}");
                     bs.add(nc, false);
                     continue;
@@ -596,7 +593,6 @@ class CharacterClass extends Term implements UnicodeConstants {
                 default:
             }
             //c is a normal char
-//System.out.println("      normal c="+c+", inRange="+inRange+", prev="+(char)prev);
             if (prev < 0) {
                 prev = c;
                 inRange = false;
@@ -626,7 +622,7 @@ class CharacterClass extends Term implements UnicodeConstants {
     }
 
 
-    final static int parseName(char[] data, int i, int out, StringBuffer sb,
+    static int parseName(char[] data, int i, int out, StringBuffer sb,
                                boolean skipspaces) throws PatternSyntaxException {
         char c;
         int start = -1;
@@ -652,31 +648,20 @@ class CharacterClass extends Term implements UnicodeConstants {
         throw new PatternSyntaxException("wrong class name: " + new String(data, i, out - i));
     }
 
-    static String stringValue0(boolean[] arr) {
-/*
-System.out.println("stringValue0():");
-System.out.println("arr="+arr);
-for(int i=0;i<BLOCK_SIZE;i++){
-   if(arr[i]) if(i>32 && i<127)System.out.print((char)i); else System.out.print("["+i+"]");
-}
-System.out.println();
-*/
-        StringBuffer b = new StringBuffer();
+    static String stringValue0(BitSet arr) {
+
+        StringBuilder b = new StringBuilder();
         int c = 0;
 
-        loop:
         for (; ; ) {
-            while (!arr[c]) {
-//System.out.println(c+": "+arr[c]);
-                c++;
-                if (c >= 0xff) break loop;
-            }
+            c = arr.nextSetBit(c);
+            if (c < 0 || c >= 0xff) break;
+
             int first = c;
-            while (arr[c]) {
-//System.out.println(c+": "+arr[c]);
-                c++;
-                if (c > 0xff) break;
-            }
+
+            c = arr.nextClearBit(c);
+            if (c < 0 || c > 0xff) break;
+
             int last = c - 1;
             if (last == first) b.append(stringValue(last));
             else {
@@ -703,22 +688,22 @@ System.out.println();
    }
    */
 
-    static String stringValue2(boolean[][] arr) {
-        StringBuffer b = new StringBuffer();
+    static String stringValue2(BitSet[] arr) {
+        StringBuilder b = new StringBuilder();
         int c = 0;
         loop:
         for (; ; ) {
             boolean marked = false;
             for (; ; ) {
-                boolean[] marks = arr[c >> 8];
-                if (marks != null && marks[c & 255]) break;
+                BitSet marks = arr[c >> 8];
+                if (marks != null && marks.get(c & 255)) break;
                 c++;
                 if (c > 0xffff) break loop;
             }
             int first = c;
             for (; c <= 0xffff; ) {
-                boolean[] marks = arr[c >> 8];
-                if (marks == null || !marks[c & 255]) break;
+                BitSet marks = arr[c >> 8];
+                if (marks == null || !marks.get(c & 255)) break;
                 c++;
             }
             int last = c - 1;
@@ -734,7 +719,7 @@ System.out.println();
     }
 
     static String stringValue(int c) {
-        StringBuffer b = new StringBuffer(5);
+        StringBuilder b = new StringBuilder(5);
         if (c < 32) {
             switch (c) {
                 case '\r':
@@ -751,7 +736,7 @@ System.out.println();
                     break;
                 default:
                     b.append('(');
-                    b.append((int) c);
+                    b.append(c);
                     b.append(')');
             }
         } else if (c < 256) {
