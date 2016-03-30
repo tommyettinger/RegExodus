@@ -66,58 +66,44 @@ public class Replacer {
     private Pattern pattern;
     private Substitution substitution;
 
-    /**
-     */
     public Replacer(Pattern pattern, Substitution substitution) {
         this.pattern = pattern;
         this.substitution = substitution;
     }
 
-    /**
-     */
     public Replacer(Pattern pattern, String substitution) {
         this(pattern, substitution, true);
     }
 
-    /**
-     */
     public Replacer(Pattern pattern, String substitution, boolean isPerlExpr) {
         this.pattern = pattern;
-        this.substitution = isPerlExpr ? (Substitution) new PerlSubstitution(substitution) :
+        this.substitution = isPerlExpr ? new PerlSubstitution(substitution) :
                 new DummySubstitution(substitution);
     }
 
     public void setSubstitution(String s, boolean isPerlExpr) {
-        substitution = isPerlExpr ? (Substitution) new PerlSubstitution(s) :
+        substitution = isPerlExpr ? new PerlSubstitution(s) :
                 new DummySubstitution(s);
     }
 
-    /**
-     */
     public String replace(String text) {
         TextBuffer tb = wrap(new StringBuilder(text.length()));
         replace(pattern.matcher(text), substitution, tb);
         return tb.toString();
     }
 
-    /**
-     */
     public String replace(char[] chars, int off, int len) {
         TextBuffer tb = wrap(new StringBuilder(len));
         replace(pattern.matcher(chars, off, len), substitution, tb);
         return tb.toString();
     }
 
-    /**
-     */
     public String replace(MatchResult res, int group) {
         TextBuffer tb = wrap(new StringBuilder());
         replace(pattern.matcher(res, group), substitution, tb);
         return tb.toString();
     }
 
-    /**
-     */
     @GwtIncompatible
     public String replace(Reader text, int length) throws IOException {
         TextBuffer tb = wrap(new StringBuilder(length >= 0 ? length : 0));
@@ -193,6 +179,27 @@ public class Replacer {
         boolean firstPass = true;
         int c = 0;
         while (m.find()) {
+            if (m.end() == 0 && !firstPass) continue;  //allow to replace at "^"
+            if (m.start() > 0) m.getGroup(MatchResult.PREFIX, dest);
+            substitution.appendSubstitution(m, dest);
+            c++;
+            m.setTarget(m, MatchResult.SUFFIX);
+            firstPass = false;
+        }
+        m.getGroup(MatchResult.TARGET, dest);
+        return c;
+    }
+
+    /**
+     * Replaces the first n occurences of a matcher's pattern, where n is equal to count,
+     * in a matcher's target by a given substitution, appending the result to a buffer.
+     * <br>
+     * The substitution starts from current matcher's position, current match not included.
+     */
+    public static int replace(Matcher m, Substitution substitution, TextBuffer dest, int count) {
+        boolean firstPass = true;
+        int c = 0;
+        while (c < count && m.find()) {
             if (m.end() == 0 && !firstPass) continue;  //allow to replace at "^"
             if (m.start() > 0) m.getGroup(MatchResult.PREFIX, dest);
             substitution.appendSubstitution(m, dest);

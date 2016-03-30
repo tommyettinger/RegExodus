@@ -36,6 +36,8 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.NoSuchElementException;
 
+import static regexodus.Replacer.wrap;
+
 /**
  * Matcher instance is an automaton that actually performs matching. It provides the following methods:
  * <li> searching for a matching substrings : matcher.find() or matcher.findAll();
@@ -2157,6 +2159,29 @@ new Exception().printStackTrace();
         result = 31 * result + (targetBounds != null ? targetBounds.hashCode() : 0);
         return result;
     }
+
+    public String replaceFirst(String replacement)
+    {
+        TextBuffer tb = wrap(new StringBuilder(data.length));
+        Replacer.replace(this, new PerlSubstitution(replacement), tb, 1);
+        return tb.toString();
+    }
+
+    public String replaceAmount(String replacement, int amount)
+    {
+        TextBuffer tb = wrap(new StringBuilder(data.length));
+        Replacer.replace(this, new PerlSubstitution(replacement), tb, amount);
+        return tb.toString();
+    }
+
+    public String replaceAll(String replacement)
+    {
+        TextBuffer tb = wrap(new StringBuilder(data.length));
+        Replacer.replace(this, new PerlSubstitution(replacement), tb);
+        return tb.toString();
+    }
+
+
 }
 
 class SearchEntry {

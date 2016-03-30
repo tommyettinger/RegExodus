@@ -35,72 +35,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 
 class Term implements REFlags {
-    static String termLookup(int t)
-    {
-        switch (t)
-        {
-            case CHAR: return "CHAR";
-            case BITSET: return "BITSET";
-            case BITSET2: return "BITSET2";
-            case ANY_CHAR: return "ANY_CHAR";
-            case ANY_CHAR_NE: return "ANY_CHAR_NE";
-            case REG: return "REG";
-            case REG_I: return "REG_I";
-            case FIND: return "FIND";
-            case FINDREG: return "FINDREG";
-            case SUCCESS: return "SUCCESS";
-            case BOUNDARY: return "BOUNDARY";
-            case DIRECTION: return "DIRECTION";
-            case UBOUNDARY: return "UBOUNDARY";
-            case UDIRECTION: return "UDIRECTION";
-            case GROUP_IN: return "GROUP_IN";
-            case GROUP_OUT: return "GROUP_OUT";
-            case VOID: return "VOID";
-            case START: return "START";
-            case END: return "END";
-            case END_EOL: return "END_EOL";
-            case LINE_START: return "LINE_START";
-            case LINE_END: return "LINE_END";
-            case LAST_MATCH_END: return "LAST_MATCH_END";
-            case CNT_SET_0: return "CNT_SET_0";
-            case CNT_INC: return "CNT_INC";
-            case CNT_GT_EQ: return "CNT_GT_EQ";
-            case READ_CNT_LT: return "READ_CNT_LT";
-            case CRSTORE_CRINC: return "CRSTORE_CRINC";
-            case CR_SET_0: return "CR_SET_0";
-            case CR_LT: return "CR_LT";
-            case CR_GT_EQ: return "CR_GT_EQ";
-            case BRANCH: return "BRANCH";
-            case BRANCH_STORE_CNT: return "BRANCH_STORE_CNT";
-            case BRANCH_STORE_CNT_AUX1: return "BRANCH_STORE_CNT_AUX1";
-            case PLOOKAHEAD_IN: return "PLOOKAHEAD_IN";
-            case PLOOKAHEAD_OUT: return "PLOOKAHEAD_OUT";
-            case NLOOKAHEAD_IN: return "NLOOKAHEAD_IN";
-            case NLOOKAHEAD_OUT: return "NLOOKAHEAD_OUT";
-            case PLOOKBEHIND_IN: return "PLOOKBEHIND_IN";
-            case PLOOKBEHIND_OUT: return "PLOOKBEHIND_OUT";
-            case NLOOKBEHIND_IN: return "NLOOKBEHIND_IN";
-            case NLOOKBEHIND_OUT: return "NLOOKBEHIND_OUT";
-            case INDEPENDENT_IN: return "INDEPENDENT_IN";
-            case INDEPENDENT_OUT: return "INDEPENDENT_OUT";
-            case REPEAT_0_INF: return "REPEAT_0_INF";
-            case REPEAT_MIN_INF: return "REPEAT_MIN_INF";
-            case REPEAT_MIN_MAX: return "REPEAT_MIN_MAX";
-            case REPEAT_REG_MIN_INF: return "REPEAT_REG_MIN_INF";
-            case REPEAT_REG_MIN_MAX: return "REPEAT_REG_MIN_MAX";
-            case BACKTRACK_0: return "BACKTRACK_0";
-            case BACKTRACK_MIN: return "BACKTRACK_MIN";
-            case BACKTRACK_FIND_MIN: return "BACKTRACK_FIND_MIN";
-            case BACKTRACK_FINDREG_MIN: return "BACKTRACK_FINDREG_MIN";
-            case BACKTRACK_REG_MIN: return "BACKTRACK_REG_MIN";
-            case MEMREG_CONDITION: return "MEMREG_CONDITION";
-            case LOOKAHEAD_CONDITION_IN: return "LOOKAHEAD_CONDITION_IN";
-            case LOOKAHEAD_CONDITION_OUT: return "LOOKAHEAD_CONDITION_OUT";
-            case LOOKBEHIND_CONDITION_IN: return "LOOKBEHIND_CONDITION_IN";
-            case LOOKBEHIND_CONDITION_OUT: return "LOOKBEHIND_CONDITION_OUT";
-            default: return "UNKNOWN_TERM";
-        }
-    }
+
     //runtime Term types
     static final int CHAR = 0;
     static final int BITSET = 1;
@@ -255,13 +190,13 @@ class Term implements REFlags {
     //protected  boolean newBranch=false;
 
     //for debugging
-    //static int instances;
-    //int instanceNum;
+    static int instances;
+    int instanceNum;
 
     Term() {
         //for debugging
-        //instanceNum = instances;
-        //instances++;
+        instanceNum = instances;
+        instances++;
         in = out = this;
     }
 
@@ -271,6 +206,7 @@ class Term implements REFlags {
     }
 
     static void makeTree(String s, int flags, Pattern re) throws PatternSyntaxException {
+        instances = 0;
         char[] data = s.toCharArray();
         makeTree(data, 0, data.length, flags, re);
     }
@@ -576,6 +512,12 @@ class Term implements REFlags {
             }
         }
     }
+
+    /*
+    static boolean isIdentifierPart()
+    {
+
+    }*/
 
 
     private static int parseGroupId(char[] data, int i, int end, Term term, HashMap<String, Integer> gmap) throws PatternSyntaxException {
@@ -1243,10 +1185,76 @@ class Term implements REFlags {
         }
         throw new PatternSyntaxException("malformed quantifier");
     }
-
+    static String termLookup(int t)
+    {
+        switch (t)
+        {
+            case CHAR: return "CHAR";
+            case BITSET: return "BITSET";
+            case BITSET2: return "BITSET2";
+            case ANY_CHAR: return "ANY_CHAR";
+            case ANY_CHAR_NE: return "ANY_CHAR_NE";
+            case REG: return "REG";
+            case REG_I: return "REG_I";
+            case FIND: return "FIND";
+            case FINDREG: return "FINDREG";
+            case SUCCESS: return "SUCCESS";
+            case BOUNDARY: return "BOUNDARY";
+            case DIRECTION: return "DIRECTION";
+            case UBOUNDARY: return "UBOUNDARY";
+            case UDIRECTION: return "UDIRECTION";
+            case GROUP_IN: return "GROUP_IN";
+            case GROUP_OUT: return "GROUP_OUT";
+            case VOID: return "VOID";
+            case START: return "START";
+            case END: return "END";
+            case END_EOL: return "END_EOL";
+            case LINE_START: return "LINE_START";
+            case LINE_END: return "LINE_END";
+            case LAST_MATCH_END: return "LAST_MATCH_END";
+            case CNT_SET_0: return "CNT_SET_0";
+            case CNT_INC: return "CNT_INC";
+            case CNT_GT_EQ: return "CNT_GT_EQ";
+            case READ_CNT_LT: return "READ_CNT_LT";
+            case CRSTORE_CRINC: return "CRSTORE_CRINC";
+            case CR_SET_0: return "CR_SET_0";
+            case CR_LT: return "CR_LT";
+            case CR_GT_EQ: return "CR_GT_EQ";
+            case BRANCH: return "BRANCH";
+            case BRANCH_STORE_CNT: return "BRANCH_STORE_CNT";
+            case BRANCH_STORE_CNT_AUX1: return "BRANCH_STORE_CNT_AUX1";
+            case PLOOKAHEAD_IN: return "PLOOKAHEAD_IN";
+            case PLOOKAHEAD_OUT: return "PLOOKAHEAD_OUT";
+            case NLOOKAHEAD_IN: return "NLOOKAHEAD_IN";
+            case NLOOKAHEAD_OUT: return "NLOOKAHEAD_OUT";
+            case PLOOKBEHIND_IN: return "PLOOKBEHIND_IN";
+            case PLOOKBEHIND_OUT: return "PLOOKBEHIND_OUT";
+            case NLOOKBEHIND_IN: return "NLOOKBEHIND_IN";
+            case NLOOKBEHIND_OUT: return "NLOOKBEHIND_OUT";
+            case INDEPENDENT_IN: return "INDEPENDENT_IN";
+            case INDEPENDENT_OUT: return "INDEPENDENT_OUT";
+            case REPEAT_0_INF: return "REPEAT_0_INF";
+            case REPEAT_MIN_INF: return "REPEAT_MIN_INF";
+            case REPEAT_MIN_MAX: return "REPEAT_MIN_MAX";
+            case REPEAT_REG_MIN_INF: return "REPEAT_REG_MIN_INF";
+            case REPEAT_REG_MIN_MAX: return "REPEAT_REG_MIN_MAX";
+            case BACKTRACK_0: return "BACKTRACK_0";
+            case BACKTRACK_MIN: return "BACKTRACK_MIN";
+            case BACKTRACK_FIND_MIN: return "BACKTRACK_FIND_MIN";
+            case BACKTRACK_FINDREG_MIN: return "BACKTRACK_FINDREG_MIN";
+            case BACKTRACK_REG_MIN: return "BACKTRACK_REG_MIN";
+            case MEMREG_CONDITION: return "MEMREG_CONDITION";
+            case LOOKAHEAD_CONDITION_IN: return "LOOKAHEAD_CONDITION_IN";
+            case LOOKAHEAD_CONDITION_OUT: return "LOOKAHEAD_CONDITION_OUT";
+            case LOOKBEHIND_CONDITION_IN: return "LOOKBEHIND_CONDITION_IN";
+            case LOOKBEHIND_CONDITION_OUT: return "LOOKBEHIND_CONDITION_OUT";
+            default: return "UNKNOWN_TERM";
+        }
+    }
     public String toString() {
         StringBuilder b = new StringBuilder(100);
-        b.append(hashCode());
+        //b.append(hashCode());
+        b.append(instanceNum);
         b.append(' ');
         b.append(termLookup(type));
         b.append(": ");
@@ -1333,7 +1341,7 @@ class Term implements REFlags {
                 b.append(",0,inf}");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1345,7 +1353,7 @@ class Term implements REFlags {
                 b.append(",inf}");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1359,7 +1367,7 @@ class Term implements REFlags {
                 b.append("}");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1371,7 +1379,7 @@ class Term implements REFlags {
                 b.append(",inf}");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1385,7 +1393,7 @@ class Term implements REFlags {
                 b.append("}");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1435,7 +1443,7 @@ class Term implements REFlags {
                 b.append(" , ");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1467,7 +1475,7 @@ class Term implements REFlags {
                 b.append(" , ");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1483,7 +1491,7 @@ class Term implements REFlags {
                 b.append("?)");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1494,7 +1502,7 @@ class Term implements REFlags {
                 b.append(" , ");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1504,7 +1512,7 @@ class Term implements REFlags {
                 b.append(")");
                 if (failNext != null) {
                     b.append(", =>");
-                    b.append(failNext.hashCode());
+                    b.append(failNext.instanceNum);
                     b.append(", ");
                 }
                 break;
@@ -1522,7 +1530,7 @@ class Term implements REFlags {
                 b.append("(cnt)");
             case BRANCH:
                 b.append("=>");
-                if (failNext != null) b.append(failNext.hashCode());
+                if (failNext != null) b.append(failNext.instanceNum);
                 else b.append("null");
                 b.append(" , ");
                 break;
@@ -1560,7 +1568,7 @@ class Term implements REFlags {
         }
         if (next != null) {
             b.append("->");
-            b.append(next.hashCode());
+            b.append(next.instanceNum);
             b.append(", ");
         }
         //b.append("\r\n");
@@ -1572,16 +1580,16 @@ class Term implements REFlags {
     }
 
     public String toStringAll(ArrayList<Integer> v) {
-        v.add(hashCode());
+        v.add(instanceNum);
         String s = toString();
         if (next != null) {
-            if (!v.contains(next.hashCode())) {
+            if (!v.contains(next.instanceNum)) {
                 s += "\r\n";
                 s += next.toStringAll(v);
             }
         }
         if (failNext != null) {
-            if (!v.contains(failNext.hashCode())) {
+            if (!v.contains(failNext.instanceNum)) {
                 s += "\r\n";
                 s += failNext.toStringAll(v);
             }

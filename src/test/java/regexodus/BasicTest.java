@@ -1,5 +1,6 @@
 package regexodus;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Random;
@@ -21,39 +22,44 @@ public class BasicTest {
         }
         return tmp;
     }
+    private static String exampleASCII()
+    {
+        for (int i = 0; i < STR_LEN; i++) {
+            tmp[i] = (char) (33 + r.nextInt(94));
+        }
+        return new String(tmp);
+    }
     static {
         for (int i = 0; i < 500000; i++) {
             System.arraycopy(exampleString(), 0, chars[i], 0, STR_LEN);
             strings[i] = new String(chars[i]);
         }
     }
-    //@Test
+    @Test
     public void testASCII()
     {
         String[] strings = new String[100000];
         for (int i = 0; i < 100000; i++) {
-            strings[i] = new String(exampleString());
+            strings[i] = exampleASCII();
         }
-        Matcher p = new Pattern("[0-9a-fA-F]+").matcher();
-        java.util.regex.Pattern jup = java.util.regex.Pattern.compile("[0-9a-fA-F]+");
-        long time = System.currentTimeMillis(), ctr = 0;
+        Pattern p1 = new Pattern("([0-9a-fA-F])\\1"), p2 = Pattern.compile("([0-9a-fA-F])\\1");
+        Matcher m1 = p1.matcher(), m2 = p2.matcher();
+        Assert.assertEquals(p1, p2);
+        Assert.assertEquals(m1, m2);
+        System.out.println(p1);
+        System.out.println(p2);
+        System.out.println(p1.root0);
+        System.out.println(p2.root0);
+        System.out.println(m1);
+        System.out.println(m2);
+        long ctr = 0;
         for (int i = 0; i < 100000; i++) {
-            p.setTarget(strings[i]);
-            if(p.matches())
-                ctr++;
+            m1.setTarget(strings[i]);
+            m2.setTarget(strings[i]);
+            Assert.assertEquals(m1.find(), m2.find());
         }
-        //System.out.println(p.matches("1337ca7CAFE"));
-        System.out.println(System.currentTimeMillis() - time);
-        System.out.println(ctr);
-        time = System.currentTimeMillis();
-        ctr = 0;
 
-        for (int i = 0; i < 100000; i++) {
-            if(jup.matcher(strings[i]).matches())
-                ctr++;
-        }
-        System.out.println(System.currentTimeMillis() - time);
-        System.out.println(ctr);
+
         /*
         Assert.assertEquals(p, p2);
         Assert.assertNotEquals(p2, p3);
@@ -61,11 +67,11 @@ public class BasicTest {
         Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
         */
     }
-    @Test
+    //@Test
     public void testMatcherProblems()
     {
         //Matcher p = new Pattern("[0-9a-fA-F]+").matcher();
-        Pattern p = new Pattern("\\w\\w\\w({a}\\w\\w){\\a}"), p2 = new Pattern("\\w\\w\\w({a}..){\\a}");
+        Pattern p = new Pattern("\\w\\w\\d(\\w\\d)\\1"), p2 = new Pattern("\\w\\w\\d(\\w\\d)\\1");
 
         Term t = p.root0;
         while (t != null) {
@@ -97,8 +103,8 @@ public class BasicTest {
     public void testMatcherSpeed()
     {
         //Matcher p = new Pattern("[0-9a-fA-F]+").matcher();
-        //Matcher p = new Pattern("({a}.){\\a}+").matcher();
-        Matcher p = new Pattern("000").matcher();
+        Matcher p = new Pattern("(.)\\1+").matcher();
+        //Matcher p = new Pattern("000").matcher();
         long time = System.currentTimeMillis(), ctr = 0;
         for (int i = 0; i < 500000; i++) {
             p.setTarget(chars[i], 0, STR_LEN);
@@ -113,8 +119,8 @@ public class BasicTest {
     public void testJUSpeed()
     {
         //java.util.regex.Pattern jup = java.util.regex.Pattern.compile("[0-9a-fA-F]+");
-        //java.util.regex.Pattern jup = java.util.regex.Pattern.compile("(.)\\1+");
-        java.util.regex.Pattern jup = java.util.regex.Pattern.compile("000");
+        java.util.regex.Pattern jup = java.util.regex.Pattern.compile("(.)\\1+");
+        //java.util.regex.Pattern jup = java.util.regex.Pattern.compile("000");
         long time = System.currentTimeMillis(), ctr = 0;
 
         for (int i = 0; i < 500000; i++) {
