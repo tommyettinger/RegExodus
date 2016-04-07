@@ -15,11 +15,19 @@ public class Difference extends RegEx {
 
     @Override
     public RegEx derive(char c) {
-        return new Difference(left.derive(c), right.derive(c));
+        return new Difference(
+                left.derive(c).shareParent(parent),
+                right.derive(c).shareParent(parent)
+        ).shareParent(parent);
     }
 
     @Override
-    public boolean isNullable() {
-        return left.isNullable() && !right.isNullable();
+    public boolean emptySuccess() {
+        return left.emptySuccess() && !right.emptySuccess();
+    }
+
+    @Override
+    public int kind() {
+        return DIFFERENCE;
     }
 }

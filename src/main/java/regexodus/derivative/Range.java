@@ -2,20 +2,19 @@ package regexodus.derivative;
 
 /**
  * Ported to Java from http://blog.errstr.com/2013/01/22/implementing-a-more-powerful-regex/
- * D_c{c} = eps
- * D_c{c'} = ∅ if c ≠ c
- * δ(c) = ∅
+ * Not in the original.
  */
-public class Primitive extends RegEx {
-    public char c;
+public class Range extends RegEx {
+    public char start, end;
 
-    public Primitive(char c) {
-        this.c = c;
+    public Range(char start, char end) {
+        this.start = start;
+        this.end = end;
     }
 
     @Override
     public RegEx derive(char c) {
-        return (c == this.c) ?
+        return (c >= start && c <= end) ?
                 (parent == null) ?
                         new Blank() :
                         parent.blank :
@@ -31,6 +30,6 @@ public class Primitive extends RegEx {
 
     @Override
     public int kind() {
-        return PRIMITIVE;
+        return RANGE;
     }
 }

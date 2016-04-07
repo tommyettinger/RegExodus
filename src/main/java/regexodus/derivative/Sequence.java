@@ -15,14 +15,19 @@ public class Sequence extends RegEx {
 
     @Override
     public RegEx derive(char c) {
-        if (first.isNullable())
+        if (first.emptySuccess())
             return new Choice(new Sequence(first.derive(c), second), second.derive(c));
         else
             return new Sequence(first.derive(c), second);
     }
 
     @Override
-    public boolean isNullable() {
-        return first.isNullable() && second.isNullable();
+    public boolean emptySuccess() {
+        return first.emptySuccess() && second.emptySuccess();
+    }
+
+    @Override
+    public int kind() {
+        return SEQUENCE;
     }
 }

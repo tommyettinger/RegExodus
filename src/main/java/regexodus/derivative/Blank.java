@@ -9,11 +9,16 @@ public class Blank extends RegEx {
 
     @Override
     public RegEx derive(char c) {
-        return new Empty();
+        return parent == null ? new Empty() : parent.empty;
     }
 
     @Override
-    public boolean isNullable() {
+    public boolean emptySuccess() {
         return true;
+    }
+
+    @Override
+    public int kind() {
+        return BLANK;
     }
 }

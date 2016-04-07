@@ -6,13 +6,38 @@ package regexodus.derivative;
  * δ(∅) = ∅
  */
 public class Empty extends RegEx {
+
     @Override
     public RegEx derive(char c) {
-        return new Empty();
+        return this;
+        /*
+        if(parent == null)
+            return new Empty().shareParent(parent);
+        else
+            return parent.empty;
+        */
     }
 
     @Override
-    public boolean isNullable() {
+    public boolean emptySuccess() {
         return false;
+    }
+
+    @Override
+    public int kind() {
+        return EMPTY;
+    }
+
+    @Override
+    public int matches(char[] chars, int first, int last, int len) {
+        return last;
+    }
+
+    @Override
+    public RegEx shareParent(Group newParent) {
+        if(newParent == null)
+            return new Empty();
+        else
+            return newParent.empty;
     }
 }

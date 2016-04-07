@@ -14,11 +14,16 @@ public class Complement extends RegEx {
 
     @Override
     public RegEx derive(char c) {
-        return new Complement(lang.derive(c));
+        return new Complement(lang.derive(c).shareParent(parent)).shareParent(parent);
     }
 
     @Override
-    public boolean isNullable() {
-        return !lang.isNullable();
+    public boolean emptySuccess() {
+        return !lang.emptySuccess();
+    }
+
+    @Override
+    public int kind() {
+        return COMPLEMENT;
     }
 }

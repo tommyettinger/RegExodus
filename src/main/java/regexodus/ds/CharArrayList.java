@@ -213,6 +213,12 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         return a[index];
     }
 
+    public int getCodePoint(final int index) {
+        if (index >= size)
+            throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + size + ")");
+        return a[index];
+    }
+
     public int indexOf(final char k) {
         for (int i = 0; i < size; i++)
             if (((k) == (a[i]))) return i;

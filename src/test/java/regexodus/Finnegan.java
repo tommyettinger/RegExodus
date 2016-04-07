@@ -219,7 +219,7 @@ public class Finnegan implements Serializable {
                     Pattern.compile(".[uμυν][HhнН]?[nийИЙΝ]+[tTтτТΤ]"),
                     Pattern.compile("[NnFf]..?[Gg]"), // might as well remove two possible slurs with one check
                     Pattern.compile("[PpрρРΡ][eеёзξεЕЁЗΞΕΣioоюσοОЮΟuμυν][eеёзξεЕЁЗΞΕΣoоюσοОЮΟs]"), // the grab bag of juvenile words
-                    Pattern.compile("[MmмМΜ]..?[RrяЯ].?d"), // should pick up the #1 obscenity from Spanish and French
+                    Pattern.compile("[MmмМΜ]..?[RrяЯ].?[Dd]"), // should pick up the #1 obscenity from Spanish and French
                     Pattern.compile("[Gg][HhнН]?[aAаαАΑΛeEеёзξεЕЁЗΞΕΣ][yYуλγУΥeEеёзξεЕЁЗΞΕΣ]") // could be inappropriate for random text
             },
             englishSanityChecks = new Pattern[]

@@ -14,11 +14,16 @@ public class Repetition extends RegEx {
 
     @Override
     public RegEx derive(char c) {
-        return new Sequence(inside.derive(c), this);
+        return new Sequence(inside.derive(c).shareParent(parent), this).shareParent(parent);
     }
 
     @Override
-    public boolean isNullable() {
+    public boolean emptySuccess() {
         return true;
+    }
+
+    @Override
+    public int kind() {
+        return REPETITION;
     }
 }

@@ -9,11 +9,17 @@ import java.util.LinkedHashMap;
  * Credit for the technique and much of the code goes to gagern, https://gist.github.com/gagern/89db1179766a702c564d
  */
 public class Category {
-    int[] d;
-    String s;
+    final int[] d;
+    final String s;
     public final int length;
     private int n;
-    CharArrayList cal;
+    private CharArrayList cal;
+    private Category()
+    {
+        d = new int[0];
+        s = "";
+        length = 0;
+    }
     public Category(int[] directory, String data)
     {
         d = directory;
@@ -41,6 +47,13 @@ public class Category {
     public boolean contains(char checking) {
         for (int i = 0; i < n - 1; i += 2) {
             if (checking >= cal.getChar(i) && checking <= cal.getChar(i + 1))
+                return true;
+        }
+        return false;
+    }
+    public boolean contains(int checking) {
+        for (int i = 0; i < n - 1; i += 2) {
+            if (checking >= cal.getCodePoint(i) && checking <= cal.getCodePoint(i + 1))
                 return true;
         }
         return false;

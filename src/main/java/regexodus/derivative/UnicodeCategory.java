@@ -1,21 +1,21 @@
 package regexodus.derivative;
 
+import regexodus.Category;
+
 /**
  * Ported to Java from http://blog.errstr.com/2013/01/22/implementing-a-more-powerful-regex/
- * D_c{c} = eps
- * D_c{c'} = ∅ if c ≠ c
- * δ(c) = ∅
+ * Not in the original.
  */
-public class Primitive extends RegEx {
-    public char c;
+public class UnicodeCategory extends RegEx {
+    public Category cat;
 
-    public Primitive(char c) {
-        this.c = c;
+    public UnicodeCategory(Category c) {
+        this.cat = c;
     }
 
     @Override
     public RegEx derive(char c) {
-        return (c == this.c) ?
+        return this.cat.contains(c) ?
                 (parent == null) ?
                         new Blank() :
                         parent.blank :
@@ -31,6 +31,6 @@ public class Primitive extends RegEx {
 
     @Override
     public int kind() {
-        return PRIMITIVE;
+        return CATEGORY;
     }
 }

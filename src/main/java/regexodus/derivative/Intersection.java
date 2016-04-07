@@ -15,11 +15,19 @@ public class Intersection extends RegEx {
 
     @Override
     public RegEx derive(char c) {
-        return new Intersection(first.derive(c), second.derive(c));
+        return new Intersection(
+                first.derive(c).shareParent(parent),
+                second.derive(c).shareParent(parent)
+        ).shareParent(parent);
     }
 
     @Override
-    public boolean isNullable() {
-        return first.isNullable() && second.isNullable();
+    public boolean emptySuccess() {
+        return first.emptySuccess() && second.emptySuccess();
+    }
+
+    @Override
+    public int kind() {
+        return INTERSECTION;
     }
 }
