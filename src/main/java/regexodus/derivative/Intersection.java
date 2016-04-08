@@ -14,10 +14,10 @@ public class Intersection extends RegEx {
     }
 
     @Override
-    public RegEx derive(char c) {
+    public RegEx derive(char[] c, int idx) {
         return new Intersection(
-                first.derive(c).shareParent(parent),
-                second.derive(c).shareParent(parent)
+                first.derive(c, idx).shareParent(parent),
+                second.derive(c, idx).shareParent(parent)
         ).shareParent(parent);
     }
 
@@ -30,4 +30,15 @@ public class Intersection extends RegEx {
     public int kind() {
         return INTERSECTION;
     }
+
+    @Override
+    public void reset() {
+        if(midway)
+            return;
+        midway = true;
+        first.reset();
+        second.reset();
+        midway = false;
+    }
+
 }

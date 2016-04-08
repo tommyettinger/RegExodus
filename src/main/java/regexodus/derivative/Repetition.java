@@ -13,8 +13,8 @@ public class Repetition extends RegEx {
     }
 
     @Override
-    public RegEx derive(char c) {
-        return new Sequence(inside.derive(c).shareParent(parent), this).shareParent(parent);
+    public RegEx derive(char[] c, int idx) {
+        return new Sequence(inside.derive(c, idx).shareParent(parent), this).shareParent(parent);
     }
 
     @Override
@@ -26,4 +26,14 @@ public class Repetition extends RegEx {
     public int kind() {
         return REPETITION;
     }
+
+    @Override
+    public void reset() {
+        if(midway)
+            return;
+        midway = true;
+        inside.reset();
+        midway = false;
+    }
+
 }

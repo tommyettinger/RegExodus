@@ -14,11 +14,16 @@ public class Sequence extends RegEx {
     }
 
     @Override
-    public RegEx derive(char c) {
+    public RegEx derive(char[] c, int idx) {
+        if(first.kind() == EMPTY)
+            return parent == null ? new Empty() : parent.empty;
         if (first.emptySuccess())
-            return new Choice(new Sequence(first.derive(c), second), second.derive(c));
+            return new Choice(
+                    new Sequence(
+                            first.derive(c, idx).shareParent(parent), second.shareParent(parent)).shareParent(parent),
+                    second.derive(c, idx).shareParent(parent)).shareParent(parent);
         else
-            return new Sequence(first.derive(c), second);
+            return new Sequence(first.derive(c, idx).shareParent(parent), second.shareParent(parent)).shareParent(parent);
     }
 
     @Override
@@ -30,4 +35,15 @@ public class Sequence extends RegEx {
     public int kind() {
         return SEQUENCE;
     }
+
+    @Override
+    public void reset() {
+        if(midway)
+            return;
+        midway = true;
+        first.reset();
+        second.reset();
+        midway = false;
+    }
+
 }

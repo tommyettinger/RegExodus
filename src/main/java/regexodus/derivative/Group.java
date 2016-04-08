@@ -12,12 +12,20 @@ public class Group extends RegEx {
         this.lang = lang.shareParent(this);
         empty = new Empty().shareParent(this);
         blank = new Blank().shareParent(this);
-        matchStart = matchEnd = -1;
+        matchStart = -1;
+        matchEnd = -1;
     }
 
     @Override
-    public RegEx derive(char c) {
-        return lang.derive(c);
+    public RegEx derive(char[] c, int idx) {
+        RegEx re = lang.derive(c, idx);
+
+        if (re.emptySuccess()) {
+            if (matchStart < 0)
+                matchStart = idx;
+            matchEnd = idx + 1;
+        }
+        return new Container(re, this);
     }
 
     @Override
@@ -25,26 +33,48 @@ public class Group extends RegEx {
         return lang.emptySuccess();
     }
 
+    /*
     @Override
-    public int matches(char[] chars, int first, int last, int len)
+    public boolean matches(char[] chars, int first, int len)
     {
-        int l;
+        boolean got;
         if(first >= len)
-            l = emptySuccess() ? last : -1;
+            got = emptySuccess();
         else
-            l = derive(chars[first]).matches(chars, 1 + first, last + 1, len);
+            got = derive(chars, first).matches(chars, 1 + first, len);
 
-        if(l >= 0)
+        if(got)
         {
             matchStart = first;
-            matchEnd = first + l;
-            return l;
+            return true;
         }
         matchStart = matchEnd = -1;
-        return -1;
+        return false;
     }
+     */
     @Override
     public int kind() {
         return GROUP;
     }
+
+    public String contents(String original)
+    {
+        if(matchStart >= 0 && matchEnd >= matchStart)
+        {
+            return original.substring(matchStart, matchEnd);
+        }
+        return "";
+    }
+
+    @Override
+    public void reset() {
+        if(midway)
+            return;
+        midway = true;
+        lang.reset();
+        matchEnd = -1;
+        matchStart = -1;
+        midway = false;
+    }
+
 }

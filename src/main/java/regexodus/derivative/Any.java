@@ -2,24 +2,26 @@ package regexodus.derivative;
 
 /**
  * Ported to Java from http://blog.errstr.com/2013/01/22/implementing-a-more-powerful-regex/
- * D_c{eps} = ∅
- * δ(eps) = eps
+ * D_c{c} = eps
+ * δ(c) = ∅
+ * Not in the original.
  */
-public class Blank extends RegEx {
-
+public class Any extends RegEx {
     @Override
     public RegEx derive(char[] c, int idx) {
-        return parent == null ? new Empty() : parent.empty;
+        return (parent == null) ?
+                        new Blank() :
+                        parent.blank;
     }
 
     @Override
     public boolean emptySuccess() {
-        return true;
+        return false;
     }
 
     @Override
     public int kind() {
-        return BLANK;
+        return ANY;
     }
 
     @Override

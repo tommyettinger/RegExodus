@@ -13,8 +13,8 @@ public class Range extends RegEx {
     }
 
     @Override
-    public RegEx derive(char c) {
-        return (c >= start && c <= end) ?
+    public RegEx derive(char[] c, int idx) {
+        return (c[idx] >= start && c[idx] <= end) ?
                 (parent == null) ?
                         new Blank() :
                         parent.blank :
@@ -32,4 +32,9 @@ public class Range extends RegEx {
     public int kind() {
         return RANGE;
     }
+
+    @Override
+    public void reset() {
+    }
+
 }

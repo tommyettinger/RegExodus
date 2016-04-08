@@ -14,8 +14,8 @@ public class Primitive extends RegEx {
     }
 
     @Override
-    public RegEx derive(char c) {
-        return (c == this.c) ?
+    public RegEx derive(char[] c, int idx) {
+        return (c[idx] == this.c) ?
                 (parent == null) ?
                         new Blank() :
                         parent.blank :
@@ -33,4 +33,9 @@ public class Primitive extends RegEx {
     public int kind() {
         return PRIMITIVE;
     }
+
+    @Override
+    public void reset() {
+    }
+
 }

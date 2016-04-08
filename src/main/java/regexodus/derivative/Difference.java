@@ -14,10 +14,10 @@ public class Difference extends RegEx {
     }
 
     @Override
-    public RegEx derive(char c) {
+    public RegEx derive(char[] c, int idx) {
         return new Difference(
-                left.derive(c).shareParent(parent),
-                right.derive(c).shareParent(parent)
+                left.derive(c, idx).shareParent(parent),
+                right.derive(c, idx).shareParent(parent)
         ).shareParent(parent);
     }
 
@@ -29,5 +29,15 @@ public class Difference extends RegEx {
     @Override
     public int kind() {
         return DIFFERENCE;
+    }
+
+    @Override
+    public void reset() {
+        if(midway)
+            return;
+        midway = true;
+        left.reset();
+        right.reset();
+        midway = false;
     }
 }

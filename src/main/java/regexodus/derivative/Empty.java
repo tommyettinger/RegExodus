@@ -8,7 +8,7 @@ package regexodus.derivative;
 public class Empty extends RegEx {
 
     @Override
-    public RegEx derive(char c) {
+    public RegEx derive(char[] c, int idx) {
         return this;
         /*
         if(parent == null)
@@ -29,8 +29,8 @@ public class Empty extends RegEx {
     }
 
     @Override
-    public int matches(char[] chars, int first, int last, int len) {
-        return last;
+    public boolean matches(char[] chars, int first, int len) {
+        return false;
     }
 
     @Override
@@ -38,6 +38,12 @@ public class Empty extends RegEx {
         if(newParent == null)
             return new Empty();
         else
-            return newParent.empty;
+            return newParent.empty == null ? new Empty() : newParent.empty;
+    }
+    @Override
+    public void reset() {
+        if(midway)
+            return;
+        midway = true;
     }
 }

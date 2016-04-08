@@ -13,8 +13,8 @@ public class Complement extends RegEx {
     }
 
     @Override
-    public RegEx derive(char c) {
-        return new Complement(lang.derive(c).shareParent(parent)).shareParent(parent);
+    public RegEx derive(char[] c, int idx) {
+        return new Complement(lang.derive(c, idx).shareParent(parent)).shareParent(parent);
     }
 
     @Override
@@ -25,5 +25,14 @@ public class Complement extends RegEx {
     @Override
     public int kind() {
         return COMPLEMENT;
+    }
+
+    @Override
+    public void reset() {
+        if(midway)
+            return;
+        midway = true;
+        lang.reset();
+        midway = false;
     }
 }

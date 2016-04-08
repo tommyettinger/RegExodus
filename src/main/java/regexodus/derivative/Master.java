@@ -8,4 +8,9 @@ package regexodus.derivative;
 public class Master {
     public Group outer;
 
+    public Master(RegEx re)
+    {
+
+    }
+
 }

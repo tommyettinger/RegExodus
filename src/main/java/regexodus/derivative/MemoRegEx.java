@@ -10,16 +10,15 @@ import java.util.HashMap;
 public abstract class MemoRegEx extends RegEx {
 
     protected HashMap<Character, RegEx> derivations = new HashMap<Character, RegEx>(32);
-    public RegEx derive(char c)
+    public RegEx derive(char[] c, int idx)
     {
-        RegEx got = derivations.get(c);
+        RegEx got = derivations.get(c[idx]);
         if(got != null)
             return got;
-        got = innerDerive(c);
-        derivations.put(c, got);
+        got = innerDerive(c, idx);
+        derivations.put(c[idx], got);
         return got;
     }
 
-    protected abstract RegEx innerDerive(char c);
-
+    protected abstract RegEx innerDerive(char[] c, int idx);
 }

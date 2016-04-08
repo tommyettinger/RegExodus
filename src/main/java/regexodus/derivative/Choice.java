@@ -16,18 +16,18 @@ public class Choice extends MemoRegEx {
     }
 
     @Override
-    public RegEx innerDerive(char c) {
+    public RegEx innerDerive(char[] c, int idx) {
         int l = left.kind(), r = right.kind();
         if(l == EMPTY && r == EMPTY)
             return parent == null ? new Empty() : parent.empty;
         else if(l == EMPTY)
-            return right.derive(c).shareParent(parent);
+            return right.derive(c, idx).shareParent(parent);
         else if(r == EMPTY)
-            return left.derive(c).shareParent(parent);
+            return left.derive(c, idx).shareParent(parent);
         else
             return new Choice(
-                left.derive(c).shareParent(parent),
-                right.derive(c).shareParent(parent)
+                left.derive(c, idx).shareParent(parent),
+                right.derive(c, idx).shareParent(parent)
             ).shareParent(parent);
     }
 
@@ -41,6 +41,18 @@ public class Choice extends MemoRegEx {
     public int kind() {
         return CHOICE;
     }
+
+
+    @Override
+    public void reset() {
+        if(midway)
+            return;
+        midway = true;
+        left.reset();
+        right.reset();
+        midway = false;
+    }
+
     /*
     @Override
     public boolean emptySuccess() {

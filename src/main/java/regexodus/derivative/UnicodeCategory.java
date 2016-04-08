@@ -14,8 +14,8 @@ public class UnicodeCategory extends RegEx {
     }
 
     @Override
-    public RegEx derive(char c) {
-        return this.cat.contains(c) ?
+    public RegEx derive(char[] c, int idx) {
+        return this.cat.contains(c[idx]) ?
                 (parent == null) ?
                         new Blank() :
                         parent.blank :
@@ -33,4 +33,9 @@ public class UnicodeCategory extends RegEx {
     public int kind() {
         return CATEGORY;
     }
+
+    @Override
+    public void reset() {
+    }
+
 }
