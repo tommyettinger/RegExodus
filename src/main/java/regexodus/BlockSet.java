@@ -29,9 +29,10 @@
 
 package regexodus;
 
-import java.util.BitSet;
+import regexodus.ds.IntBitSet;
 
 class BlockSet implements UnicodeConstants {
+    /*
     private static final Block[][] categoryBits = new Block[CATEGORY_COUNT][BLOCK_COUNT];
 
     static {
@@ -40,18 +41,19 @@ class BlockSet implements UnicodeConstants {
             int blockNo = (i >> 8) & 0xff;
             Block b = categoryBits[cat][blockNo];
             if (b == null) categoryBits[cat][blockNo] = b = new Block();
-//if(i>32 && i<127)System.out.println((char)i+" -> ["+cat+"]["+blockNo+"].("+i+")");
             b.set(i & 0xff);
         }
-    }
+    }*/
 
     private boolean positive = true;
     private boolean isLarge = false;
 
-    BitSet block0;  //1-byte bit set
-    private static final BitSet emptyBlock0 = new BitSet(BLOCK_SIZE);
+    IntBitSet block0 = new IntBitSet();  //1-byte bit set
+    private static final IntBitSet emptyBlock0 = new IntBitSet();
 
     Block[] blocks;  //2-byte bit set
+
+
 
     private int weight;
 
@@ -103,11 +105,11 @@ class BlockSet implements UnicodeConstants {
 
     final void setWordChar(boolean unicode) {
         if (unicode) {
-            setCategory(Lu);
-            setCategory(Ll);
-            setCategory(Lt);
-            setCategory(Lo);
-            setCategory(Nd);
+            setCategory("Lu");
+            setCategory("Ll");
+            setCategory("Lt");
+            setCategory("Lo");
+            setCategory("Nd");
             setChar('_');
         } else {
             setRange('a', 'z');
@@ -119,7 +121,7 @@ class BlockSet implements UnicodeConstants {
 
     final void setDigit(boolean unicode) {
         if (unicode) {
-            setCategory(Nd);
+            setCategory("Nd");
         } else {
             setRange('0', '9');
         }
@@ -127,9 +129,9 @@ class BlockSet implements UnicodeConstants {
 
     final void setSpace(boolean unicode) {
         if (unicode) {
-            setCategory(Zs);
-            setCategory(Zp);
-            setCategory(Zl);
+            setCategory("Zs");
+            setCategory("Zp");
+            setCategory("Zl");
         } else {
             setChar(' ');
             setChar('\r');
@@ -139,9 +141,9 @@ class BlockSet implements UnicodeConstants {
         }
     }
 
-    final void setCategory(int c) {
+    final void setCategory(String c) {
         if (!isLarge) enableLargeMode();
-        Block[] catBits = categoryBits[c];
+        Block[] catBits = Category.categories.get(c).blocks();
         weight += Block.add(this.blocks, catBits, 0, BLOCK_COUNT - 1, false);
 //System.out.println("["+this+"].setCategory("+c+"): weight="+weight);
     }
@@ -175,11 +177,11 @@ class BlockSet implements UnicodeConstants {
             }
             weight += s;
         } else {
-            BitSet block0 = this.block0;
+            IntBitSet block0 = this.block0;
             if (block0 == null) {
-                this.block0 = block0 = new BitSet(BLOCK_SIZE);
+                this.block0 = block0 = new IntBitSet(BLOCK_SIZE);
             }
-            weight += set(block0, true, c1, c2);
+            weight += set(block0, c1, c2);
         }
     }
 
@@ -195,8 +197,8 @@ class BlockSet implements UnicodeConstants {
         int s = 0;
         if (!bs1.isLarge && !bs2.isLarge && !inv) {
             if (bs2.block0 != null) {
-                BitSet bits = bs1.block0;
-                if (bits == null) bs1.block0 = bits = new BitSet(BLOCK_SIZE);
+                IntBitSet bits = bs1.block0;
+                if (bits == null) bs1.block0 = bits = new IntBitSet(BLOCK_SIZE);
                 s += add(bits, bs2.block0, 0, BLOCK_SIZE - 1, false);
             }
         } else {
@@ -219,11 +221,11 @@ class BlockSet implements UnicodeConstants {
     private static int subtractImpl(BlockSet bs1, BlockSet bs2, boolean inv) {
         int s = 0;
         if (!bs1.isLarge && !bs2.isLarge && !inv) {
-            BitSet bits1, bits2;
+            IntBitSet bits1, bits2;
             if ((bits2 = bs2.block0) != null) {
                 bits1 = bs1.block0;
                 if (bits1 == null) return 0;
-                s += subtract(bits1, bits2, 0, BLOCK_SIZE - 1, false);
+                s += subtract(bits1, bits2, false);
             }
         } else {
             if (!bs1.isLarge) bs1.enableLargeMode();
@@ -242,43 +244,28 @@ class BlockSet implements UnicodeConstants {
         subtract(bs, !inverse);
     }
 
-    static int add(BitSet bs1, BitSet bs2, int from, int to, boolean inv) {
-//System.out.println("BlockSet.add(boolean[],boolean[],"+inv+"):");
-        int s = 0;
-        for (int i = from; i <= to; i++) {
-            if (bs1.get(i)) continue;
-            if (bs2.get(i) == inv) continue;
-//System.out.println("        "+i+": value0="+value0+", value="+value);
-            s++;
-            bs1.set(i);
-//System.out.println("             s="+s+", bs1[i]->"+bs1[i]);
-        }
-        return s;
+    static int add(IntBitSet bs1, IntBitSet bs2, int from, int to, boolean inv) {
+        int s = bs1.cardinality();
+        if (inv)
+            bs1.or(bs2.clone().negate());
+        else
+            bs1.or(bs2);
+        return bs1.cardinality() - s;
     }
 
-    static int subtract(BitSet bs1, BitSet bs2, int from, int to, boolean inv) {
-//System.out.println("BlockSet.subtract(boolean[],boolean[],"+inv+"):");
-        int s = 0;
-        for (int i = from; i <= to; i++) {
-            if (!bs1.get(i)) continue;
-            if (bs2.get(i) == inv) continue;
-            s--;
-            bs1.set(i, false);
-//if(i>32 && i<127) System.out.println("             s="+s+", bs1['"+(char)i+"']->"+bs1[i]);
-//else System.out.println("             s="+s+", bs1["+i+"]->"+bs1[i]);
-        }
-        return s;
+    static int subtract(IntBitSet bs1, IntBitSet bs2, boolean inv) {
+        int s = -bs1.cardinality();
+        if(inv)
+            bs1.andNot(bs2.clone().negate());
+        else
+            bs1.andNot(bs2);
+        return s + bs1.cardinality();
     }
 
-    static int set(BitSet arr, boolean value, int from, int to) {
-        int s = 0;
-        for (int i = from; i <= to; i++) {
-            if (arr.get(i) == value) continue;
-            if (value) s++;
-            else s--;
-            arr.set(i, value);
-        }
-        return s;
+    static int set(IntBitSet arr, int from, int to) {
+        int s = arr.cardinality();
+        arr.set(from, to);
+        return arr.cardinality() - s;
     }
 
     public String toString() {
@@ -335,13 +322,13 @@ class BlockSet implements UnicodeConstants {
 class Block implements UnicodeConstants {
     private boolean isFull;
     //private boolean[] bits;
-    BitSet bits;
+    public IntBitSet bits;
     private boolean shared = false;
 
     Block() {
     }
 
-    Block(BitSet bits) {
+    Block(IntBitSet bits) {
         this.bits = bits;
         shared = true;
     }
@@ -349,9 +336,9 @@ class Block implements UnicodeConstants {
     final boolean set(int c) {
 //System.out.println("Block.add("+CharacterClass.stringValue2(toBitset2(targets))+","+CharacterClass.stringValue2(toBitset2(addends))+","+from*BLOCK_SIZE+","+to*BLOCK_SIZE+","+inv+"):");
         if (isFull) return false;
-        BitSet bits = this.bits;
+        IntBitSet bits = this.bits;
         if (bits == null) {
-            this.bits = bits = new BitSet(BLOCK_SIZE);
+            this.bits = bits = new IntBitSet(BLOCK_SIZE);
             shared = false;
             bits.set(c);
             return true;
@@ -370,14 +357,9 @@ class Block implements UnicodeConstants {
     }
 
     static int add(Block[] targets, Block[] addends, int from, int to, boolean inv) {
-//System.out.println("Block.add("+CharacterClass.stringValue2(toBitset2(targets))+","+CharacterClass.stringValue2(toBitset2(addends))+","+from*BLOCK_SIZE+","+to*BLOCK_SIZE+","+inv+"):");
-//System.out.println("Block.add():");
         int s = 0;
         for (int i = from; i <= to; i++) {
             Block addend = addends[i];
-//System.out.println("   "+i+": ");
-//System.out.println("     target="+(target==null? "null": i==0? CharacterClass.stringValue0(target.bits): "{"+count(target.bits,0,BLOCK_SIZE-1)+"}"));
-//System.out.println("     addend="+(addend==null? "null": i==0? CharacterClass.stringValue0(addend.bits): "{"+count(addend.bits,0,BLOCK_SIZE-1)+"}"));
             if (addend == null) {
                 if (!inv) continue;
             } else if (addend.isFull && inv) continue;
@@ -387,17 +369,13 @@ class Block implements UnicodeConstants {
             else if (target.isFull) continue;
 
             s += add(target, addend, inv);
-//System.out.println("     result="+(target==null? "null": i==0? CharacterClass.stringValue0(target.bits): "{"+count(target.bits,0,BLOCK_SIZE-1)+"}"));
-//System.out.println("     s="+s);
         }
-//System.out.println("   s="+s);
         return s;
     }
 
     private static int add(Block target, Block addend, boolean inv) {
-//System.out.println("Block.add(Block,Block):");
         //there is provided that !target.isFull
-        BitSet targetbits, addbits;
+        IntBitSet targetbits, addbits;
         if (addend == null) {
             if (!inv) return 0;
             int s = BLOCK_SIZE;
@@ -447,17 +425,12 @@ class Block implements UnicodeConstants {
     }
 
     static int subtract(Block[] targets, Block[] subtrahends, int from, int to, boolean inv) {
-//System.out.println("Block.subtract(Block[],Block[],"+inv+"):");
         int s = 0;
         for (int i = from; i <= to; i++) {
-//System.out.println("   "+i+": ");
-
             Block target = targets[i];
             if (target == null || (!target.isFull && target.bits == null)) continue;
-//System.out.println("     target="+(target==null? "null": i==0? CharacterClass.stringValue0(target.bits): "{"+ (target.isFull? BLOCK_SIZE: count(target.bits,0,BLOCK_SIZE-1))+"}"));
 
             Block subtrahend = subtrahends[i];
-//System.out.println("     subtrahend="+(subtrahend==null? "null": i==0? CharacterClass.stringValue0(subtrahend.bits): "{"+(subtrahend.isFull? BLOCK_SIZE: count(subtrahend.bits,0,BLOCK_SIZE-1))+"}"));
 
             if (subtrahend == null) {
                 if (!inv) continue;
@@ -474,16 +447,12 @@ class Block implements UnicodeConstants {
             } else {
                 s += subtract(target, subtrahend, inv);
             }
-//System.out.println("     result="+(target==null? "null": i==0? CharacterClass.stringValue0(target.bits): "{"+ (target.isFull? BLOCK_SIZE: target.bits==null? 0: count(target.bits,0,BLOCK_SIZE-1))+"}"));
-//System.out.println("     s="+s);
         }
-//System.out.println("   s="+s);
         return s;
     }
 
     private static int subtract(Block target, Block subtrahend, boolean inv) {
-        BitSet targetbits, subbits;
-//System.out.println("subtract(Block,Block,"+inv+")");
+        IntBitSet targetbits, subbits;
         //there is provided that target.isFull or target.bits!=null
         if (subtrahend.isFull) {
             if (inv) return 0;
@@ -491,7 +460,7 @@ class Block implements UnicodeConstants {
             if (target.isFull) {
                 s = BLOCK_SIZE;
             } else {
-                s = count(target.bits, 0, BLOCK_SIZE - 1);
+                s = target.bits.cardinality();
             }
             target.isFull = false;
             target.bits = null;
@@ -503,7 +472,7 @@ class Block implements UnicodeConstants {
             if (target.isFull) {
                 s = BLOCK_SIZE;
             } else {
-                s = count(target.bits, 0, BLOCK_SIZE - 1);
+                s = target.bits.cardinality();
             }
             target.isFull = false;
             target.bits = null;
@@ -511,8 +480,8 @@ class Block implements UnicodeConstants {
             return s;
         } else {
             if (target.isFull) {
-                BitSet bits = fullBits(target.bits);
-                int s = BlockSet.subtract(bits, subbits, 0, BLOCK_SIZE - 1, inv);
+                IntBitSet bits = fullBits(target.bits);
+                int s = BlockSet.subtract(bits, subbits, inv);
                 target.isFull = false;
                 target.shared = false;
                 target.bits = bits;
@@ -520,31 +489,31 @@ class Block implements UnicodeConstants {
             } else {
                 if (target.shared) targetbits = copyBits(target);
                 else targetbits = target.bits;
-                return BlockSet.subtract(targetbits, subbits, 0, BLOCK_SIZE - 1, inv);
+                return BlockSet.subtract(targetbits, subbits, inv);
             }
         }
     }
 
-    private static BitSet copyBits(Block block) {
-        BitSet bits = (BitSet) block.bits.clone();
+    private static IntBitSet copyBits(Block block) {
+        IntBitSet bits = (IntBitSet) block.bits.clone();
         block.bits = bits;
         block.shared = false;
         return bits;
     }
 
-    private static BitSet fullBits(BitSet bits) {
-        if (bits == null) bits = new BitSet(BLOCK_SIZE);
+    private static IntBitSet fullBits(IntBitSet bits) {
+        if (bits == null) bits = new IntBitSet(BLOCK_SIZE);
         bits.set(0, BLOCK_SIZE);
         return bits;
     }
 
-    private static BitSet emptyBits(BitSet bits) {
-        if (bits == null) bits = new BitSet(BLOCK_SIZE);
+    private static IntBitSet emptyBits(IntBitSet bits) {
+        if (bits == null) bits = new IntBitSet(BLOCK_SIZE);
         else bits.clear();
         return bits;
     }
 
-    static int count(BitSet arr, int from, int to) {
+    static int count(IntBitSet arr, int from, int to) {
         int s = 0;
         for (int i = from; i <= to; i++) {
             if (arr.get(i)) s++;
@@ -552,9 +521,9 @@ class Block implements UnicodeConstants {
         return s;
     }
 
-    static BitSet[] toBitset2(Block[] blocks) {
+    static IntBitSet[] toBitset2(Block[] blocks) {
         int len = blocks.length;
-        BitSet[] result = new BitSet[len];
+        IntBitSet[] result = new IntBitSet[len];
         for (int i = 0; i < len; i++) {
             Block block = blocks[i];
             if (block == null) continue;
@@ -565,10 +534,10 @@ class Block implements UnicodeConstants {
         return result;
     }
 
-    private final static BitSet EMPTY_BITS = new BitSet(BLOCK_SIZE);
-    private final static BitSet FULL_BITS = new BitSet(BLOCK_SIZE);
+    private final static IntBitSet EMPTY_BITS = new IntBitSet(BLOCK_SIZE);
+    private final static IntBitSet FULL_BITS = new IntBitSet(BLOCK_SIZE);
 
     static {
-        FULL_BITS.set(0, BLOCK_SIZE);
+        FULL_BITS.set(0, BLOCK_SIZE-1);
     }
 }

@@ -29,8 +29,9 @@
 
 package regexodus;
 
+import regexodus.ds.IntBitSet;
+
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -172,55 +173,55 @@ class CharacterClass extends Term implements UnicodeConstants {
     }
 
     private static void initNames() {
-        initNamedCategory("C", new int[]{Cn, Cc, Cf, Co, Cs});
-        initNamedCategory("Cn", Cn);
-        initNamedCategory("Cc", Cc);
-        initNamedCategory("Cf", Cf);
-        initNamedCategory("Co", Co);
-        initNamedCategory("Cs", Cs);
+        initNamedCategory("C");
+        initNamedCategory("Cn");
+        initNamedCategory("Cc");
+        initNamedCategory("Cf");
+        initNamedCategory("Co");
+        initNamedCategory("Cs");
 
-        initNamedCategory("L", new int[]{Lu, Ll, Lt, Lm, Lo});
-        initNamedCategory("Lu", Lu);
-        initNamedCategory("Ll", Ll);
-        initNamedCategory("Lt", Lt);
-        initNamedCategory("Lm", Lm);
-        initNamedCategory("Lo", Lo);
+        initNamedCategory("L");
+        initNamedCategory("Lu");
+        initNamedCategory("Ll");
+        initNamedCategory("Lt");
+        initNamedCategory("Lm");
+        initNamedCategory("Lo");
 
-        initNamedCategory("M", new int[]{Mn, Me, Mc});
-        initNamedCategory("Mn", Mn);
-        initNamedCategory("Me", Me);
-        initNamedCategory("Mc", Mc);
+        initNamedCategory("M");
+        initNamedCategory("Mn");
+        initNamedCategory("Me");
+        initNamedCategory("Mc");
 
-        initNamedCategory("N", new int[]{Nd, Nl, No});
-        initNamedCategory("Nd", Nd);
-        initNamedCategory("Nl", Nl);
-        initNamedCategory("No", No);
+        initNamedCategory("N");
+        initNamedCategory("Nd");
+        initNamedCategory("Nl");
+        initNamedCategory("No");
 
-        initNamedCategory("Z", new int[]{Zs, Zl, Zp});
-        initNamedCategory("Zs", Zs);
-        initNamedCategory("Zl", Zl);
-        initNamedCategory("Zp", Zp);
+        initNamedCategory("Z");
+        initNamedCategory("Zs");
+        initNamedCategory("Zl");
+        initNamedCategory("Zp");
 
-        initNamedCategory("P", new int[]{Pd, Ps, Pi, Pe, Pf, Pc, Po});
-        initNamedCategory("Pd", Pd);
-        initNamedCategory("Ps", Ps);
-        initNamedCategory("Pi", Pi);
-        initNamedCategory("Pe", Pe);
-        initNamedCategory("Pf", Pf);
-        initNamedCategory("Pc", Pc);
-        initNamedCategory("Po", Po);
+        initNamedCategory("P");
+        initNamedCategory("Pd");
+        initNamedCategory("Ps");
+        initNamedCategory("Pi");
+        initNamedCategory("Pe");
+        initNamedCategory("Pf");
+        initNamedCategory("Pc");
+        initNamedCategory("Po");
 
-        initNamedCategory("S", new int[]{Sm, Sc, Sk, So});
-        initNamedCategory("Sm", Sm);
-        initNamedCategory("Sc", Sc);
-        initNamedCategory("Sk", Sk);
-        initNamedCategory("So", So);
+        initNamedCategory("S");
+        initNamedCategory("Sm");
+        initNamedCategory("Sc");
+        initNamedCategory("Sk");
+        initNamedCategory("So");
 
         BlockSet bs = new BlockSet();
-        bs.setCategory(Cn);
+        bs.setCategory("Cn");
         registerClass("UNASSIGNED", bs, unicodeCategories);
         bs = new BlockSet();
-        bs.setCategory(Cn);
+        bs.setCategory("Cn");
         bs.setPositive(false);
         registerClass("ASSIGNED", bs, unicodeCategories);
 
@@ -248,7 +249,7 @@ class CharacterClass extends Term implements UnicodeConstants {
         if (last < Character.MIN_VALUE || last > Character.MAX_VALUE)
             throw new IllegalArgumentException("wrong end code (" + last + ") in block " + name);
         if (last < first) throw new IllegalArgumentException("end code < start code in block " + name);
-        BlockSet bs = (BlockSet) namedClasses.get(name);
+        BlockSet bs = namedClasses.get(name);
         if (bs == null) {
             bs = new BlockSet();
             registerClass(name, bs, unicodeBlocks);
@@ -256,18 +257,10 @@ class CharacterClass extends Term implements UnicodeConstants {
         bs.setRange((char) first, (char) last);
     }
 
-    private static void initNamedCategory(String name, int cat) {
+    private static void initNamedCategory(String name) {
         BlockSet bs = new BlockSet();
-        bs.setCategory(cat);
+        bs.setCategory(name);
         registerClass(name, bs, unicodeCategories);
-    }
-
-    private static void initNamedCategory(String name, int[] cats) {
-        BlockSet bs = new BlockSet();
-        for (int i = 0; i < cats.length; i++) {
-            bs.setCategory(cats[i]);
-        }
-        namedClasses.put(name, bs);
     }
 
     private static BlockSet getNamedClass(String name) {
@@ -389,7 +382,6 @@ class CharacterClass extends Term implements UnicodeConstants {
             handle_special:
             switch (c = data[i++]) {
                 case ']':
-                    //if(inRange) throw new PatternSyntaxException("[...-] is illegal");
                     if (isFirst) break; //treat as normal char
                     if (inRange) {
                         bs.setChar('-');
@@ -648,7 +640,7 @@ class CharacterClass extends Term implements UnicodeConstants {
         throw new PatternSyntaxException("wrong class name: " + new String(data, i, out - i));
     }
 
-    static String stringValue0(BitSet arr) {
+    static String stringValue0(IntBitSet arr) {
 
         StringBuilder b = new StringBuilder();
         int c = 0;
@@ -688,21 +680,21 @@ class CharacterClass extends Term implements UnicodeConstants {
    }
    */
 
-    static String stringValue2(BitSet[] arr) {
+    static String stringValue2(IntBitSet[] arr) {
         StringBuilder b = new StringBuilder();
         int c = 0;
         loop:
         for (; ; ) {
             boolean marked = false;
             for (; ; ) {
-                BitSet marks = arr[c >> 8];
+                IntBitSet marks = arr[c >> 8];
                 if (marks != null && marks.get(c & 255)) break;
                 c++;
                 if (c > 0xffff) break loop;
             }
             int first = c;
             for (; c <= 0xffff; ) {
-                BitSet marks = arr[c >> 8];
+                IntBitSet marks = arr[c >> 8];
                 if (marks == null || !marks.get(c & 255)) break;
                 c++;
             }

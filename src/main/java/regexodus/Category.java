@@ -1,12 +1,15 @@
 package regexodus;
 
 import regexodus.ds.CharArrayList;
+import regexodus.ds.IntBitSet;
 
 import java.util.LinkedHashMap;
 
 /**
  * Unicode categories constructed from tightly compressed string and array literals instead of large resources.
  * Credit for the technique and much of the code goes to gagern, https://gist.github.com/gagern/89db1179766a702c564d
+ * Also, the heavy amount of work that went into the Unicode DB for Node.JS (which the pre-processing stage for this
+ * depends on) must be commended; that project is https://github.com/mathiasbynens/node-unicode-data
  */
 public class Category {
     final int[] d;
@@ -42,6 +45,25 @@ public class Category {
             for (char e = cal.getChar(i); e <= cal.getChar(i+1); ++e)
                 con[k++] = e;
         return con;
+    }
+
+    public Block[] blocks() {
+        int k = 0;
+        Block[] bls = new Block[256];
+        IntBitSet[] bss = new IntBitSet[256];
+        int e;
+        for (int i = 0; i < n - 1; i += 2) {
+            e = cal.getCodePoint(i);
+            if(bss[e>>>8] == null) bss[e>>>8] = new IntBitSet();
+            bss[e>>>8].set(e, cal.getCodePoint(i+1) & 0xff );
+        }
+        for (int i = 0; i < 256; i++) {
+            if(bss[i] == null)
+                bls[i] = new Block();
+            else
+                bls[i] = new Block(bss[i]);
+        }
+        return bls;
     }
 
     public boolean contains(char checking) {

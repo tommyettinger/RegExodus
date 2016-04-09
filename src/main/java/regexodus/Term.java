@@ -29,9 +29,10 @@
 
 package regexodus;
 
+import regexodus.ds.IntBitSet;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.HashMap;
 
 class Term implements REFlags {
@@ -148,8 +149,8 @@ class Term implements REFlags {
     boolean eat;
 
     // used with type=BITSET(2);
-    BitSet bitset;
-    BitSet[] bitset2;
+    IntBitSet bitset;
+    IntBitSet[] bitset2;
     boolean[] categoryBitset;  //types(unicode categories)
 
     // used with type=BALANCE;

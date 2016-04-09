@@ -29,11 +29,12 @@
 
 package regexodus;
 
+import regexodus.ds.IntBitSet;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.NoSuchElementException;
 
 import static regexodus.Replacer.wrap;
@@ -1124,7 +1125,7 @@ new Exception().printStackTrace();
                         //  \/
                         if (i >= end) break;
                         c = data[i];
-                        BitSet arr = term.bitset2[c >> 8];
+                        IntBitSet arr = term.bitset2[c >> 8];
                         if (arr == null || !arr.get(c & 255) ^ term.inverse) break;
                         i++;
                         term = term.next;
@@ -1132,7 +1133,7 @@ new Exception().printStackTrace();
                     }
                     case Term.BOUNDARY: {
                         boolean ch1Meets = false, ch2Meets = false;
-                        BitSet bitset = term.bitset;
+                        IntBitSet bitset = term.bitset;
                         test1:
                         {
                             int j = i - 1;
@@ -1155,14 +1156,14 @@ new Exception().printStackTrace();
                     }
                     case Term.UBOUNDARY: {
                         boolean ch1Meets = false, ch2Meets = false;
-                        BitSet[] bitset2 = term.bitset2;
+                        IntBitSet[] bitset2 = term.bitset2;
                         test1:
                         {
                             int j = i - 1;
                             //if(j<offset || j>=end) break test1;
                             if (j < offset) break test1;
                             c = data[j];
-                            BitSet bits = bitset2[c >> 8];
+                            IntBitSet bits = bitset2[c >> 8];
                             ch1Meets = bits != null && bits.get(c & 0xff);
                         }
                         test2:
@@ -1170,7 +1171,7 @@ new Exception().printStackTrace();
                             //if(i<offset || i>=end) break test2;
                             if (i >= end) break test2;
                             c = data[i];
-                            BitSet bits = bitset2[c >> 8];
+                            IntBitSet bits = bitset2[c >> 8];
                             ch2Meets = bits != null && bits.get(c & 0xff);
                         }
                         if (ch1Meets ^ ch2Meets ^ term.inverse) {  //is boundary ^ inv
@@ -1180,7 +1181,7 @@ new Exception().printStackTrace();
                     }
                     case Term.DIRECTION: {
                         boolean ch1Meets = false, ch2Meets = false;
-                        BitSet bitset = term.bitset;
+                        IntBitSet bitset = term.bitset;
                         boolean inv = term.inverse;
                         int j = i - 1;
                         //if(j>=offset && j<end){
@@ -1203,14 +1204,14 @@ new Exception().printStackTrace();
                     }
                     case Term.UDIRECTION: {
                         boolean ch1Meets = false, ch2Meets = false;
-                        BitSet[] bitset2 = term.bitset2;
+                        IntBitSet[] bitset2 = term.bitset2;
                         boolean inv = term.inverse;
                         int j = i - 1;
 
                         //if(j>=offset && j<end){
                         if (j >= offset) {
                             c = data[j];
-                            BitSet bits = bitset2[c >> 8];
+                            IntBitSet bits = bitset2[c >> 8];
                             ch1Meets = bits != null && bits.get(c & 0xff);
                         }
                         if (ch1Meets ^ inv) break;
@@ -1218,7 +1219,7 @@ new Exception().printStackTrace();
                         //if(i>=offset && i<end){
                         if (i < end) {
                             c = data[i];
-                            BitSet bits = bitset2[c >> 8];
+                            IntBitSet bits = bitset2[c >> 8];
                             ch2Meets = bits != null && bits.get(c & 0xff);
                         }
                         if (!ch2Meets ^ inv) break;
@@ -1879,7 +1880,7 @@ new Exception().printStackTrace();
                 return i - off;
             }
             case Term.BITSET: {
-                BitSet arr = term.bitset;
+                IntBitSet arr = term.bitset;
                 int i = off;
                 char c;
                 if (term.inverse) while (i < out) {
@@ -1894,15 +1895,15 @@ new Exception().printStackTrace();
             }
             case Term.BITSET2: {
                 int i = off;
-                BitSet[] bitset2 = term.bitset2;
+                IntBitSet[] bitset2 = term.bitset2;
                 char c;
                 if (term.inverse) while (i < out) {
-                    BitSet arr = bitset2[(c = data[i]) >> 8];
+                    IntBitSet arr = bitset2[(c = data[i]) >> 8];
                     if (arr != null && arr.get(c & 0xff)) break;
                     else i++;
                 }
                 else while (i < out) {
-                    BitSet arr = bitset2[(c = data[i]) >> 8];
+                    IntBitSet arr = bitset2[(c = data[i]) >> 8];
                     if (arr != null && arr.get(c & 0xff)) i++;
                     else break;
                 }
@@ -1926,7 +1927,7 @@ new Exception().printStackTrace();
                 return i - off;
             }
             case Term.BITSET: {
-                BitSet arr = term.bitset;
+                IntBitSet arr = term.bitset;
                 int i = off;
                 char c;
                 if (!term.inverse) while (i < out) {
@@ -1941,15 +1942,15 @@ new Exception().printStackTrace();
             }
             case Term.BITSET2: {
                 int i = off;
-                BitSet[] bitset2 = term.bitset2;
+                IntBitSet[] bitset2 = term.bitset2;
                 char c;
                 if (!term.inverse) while (i < out) {
-                    BitSet arr = bitset2[(c = data[i]) >> 8];
+                    IntBitSet arr = bitset2[(c = data[i]) >> 8];
                     if (arr != null && arr.get(c & 0xff)) break;
                     else i++;
                 }
                 else while (i < out) {
-                    BitSet arr = bitset2[(c = data[i]) >> 8];
+                    IntBitSet arr = bitset2[(c = data[i]) >> 8];
                     if (arr != null && arr.get(c & 0xff)) i++;
                     else break;
                 }
@@ -1990,7 +1991,7 @@ new Exception().printStackTrace();
                 return off - i;
             }
             case Term.BITSET: {
-                BitSet arr = term.bitset;
+                IntBitSet arr = term.bitset;
                 int i = off;
                 char c;
                 int iMin = off - maxCount;
@@ -2005,17 +2006,17 @@ new Exception().printStackTrace();
                 return off - i;
             }
             case Term.BITSET2: {
-                BitSet[] bitset2 = term.bitset2;
+                IntBitSet[] bitset2 = term.bitset2;
                 int i = off;
                 char c;
                 int iMin = off - maxCount;
                 if (!term.inverse) for (; ; ) {
-                    BitSet arr = bitset2[(c = data[--i]) >> 8];
+                    IntBitSet arr = bitset2[(c = data[--i]) >> 8];
                     if (arr != null && arr.get(c & 0xff)) break;
                     if (i <= iMin) return -1;
                 }
                 else for (; ; ) {
-                    BitSet arr = bitset2[(c = data[--i]) >> 8];
+                    IntBitSet arr = bitset2[(c = data[--i]) >> 8];
                     if (arr == null || arr.get(c & 0xff)) break;
                     if (i <= iMin) return -1;
                 }
