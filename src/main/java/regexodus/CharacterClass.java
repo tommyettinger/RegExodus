@@ -763,6 +763,7 @@ class CharacterClass extends Term implements UnicodeConstants {
         return val;
     }
 
+    /*
     public static void main(String[] args) {
         if (!namesInitialized) initNames();
         if (args.length == 0) {
@@ -777,6 +778,8 @@ class CharacterClass extends Term implements UnicodeConstants {
                 System.out.println(namedClasses.containsKey(args[i]) ? "supported" : "not supported");
             }
         }
+    }
+    */
       /*
       int[][] data=new int[CATEGORY_COUNT][BLOCK_SIZE+2];
       for(int i=Character.MIN_VALUE;i<=Character.MAX_VALUE;i++){
@@ -793,7 +796,7 @@ class CharacterClass extends Term implements UnicodeConstants {
          System.out.println(data[i][BLOCK_SIZE]+" chars, "+data[i][BLOCK_SIZE+1]+" blocks, "+(data[i][BLOCK_SIZE]/data[i][BLOCK_SIZE+1])+" chars/block");
       }
       */
-    }
+
 
     private static void printRealm(ArrayList<String> realm, String name) {
         System.out.println(name + ":");
