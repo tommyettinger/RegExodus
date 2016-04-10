@@ -30,9 +30,9 @@
 package regexodus;
 
 public interface TextBuffer {
-    public void append(char c);
+    void append(char c);
 
-    public void append(char[] chars, int start, int len);
+    void append(char[] chars, int start, int len);
 
-    public void append(String s);
+    void append(String s);
 }

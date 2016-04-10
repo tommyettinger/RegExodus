@@ -5,7 +5,7 @@ package regexodus.derivative;
  * Not in the original.
  */
 public class Container extends RegEx{
-    RegEx lang;
+    private RegEx lang;
     public Container(RegEx lang, Group parent)
     {
         this.lang = lang;

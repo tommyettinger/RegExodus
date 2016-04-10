@@ -7,7 +7,8 @@ package regexodus.derivative;
  * Incorporates techniques used by Daniel Spiewak in his Scala code, https://github.com/djspiewak/derivative-combinators
  */
 public class Choice extends MemoRegEx {
-    public RegEx left, right;
+    private RegEx left;
+    private RegEx right;
     private int es = 0;
 
     public Choice(RegEx left, RegEx right) {

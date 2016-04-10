@@ -115,10 +115,10 @@ class Term implements REFlags {
     static final int FIRST_TRANSPARENT = BOUNDARY;
     static final int LAST_TRANSPARENT = CR_GT_EQ;
 
-    // compiletime: length of vars[] (see makeTree())
-    static final int VARS_LENGTH = 4;
+    // compile-time: length of vars[] (see makeTree())
+    private static final int VARS_LENGTH = 4;
 
-    // compiletime variable indicies:
+    // compile-time variable indices:
     private static final int MEMREG_COUNT = 0;    //refers current memreg index
     private static final int CNTREG_COUNT = 1;   //refers current counters number
     private static final int DEPTH = 2;      //refers current depth: (((depth=3)))
@@ -151,10 +151,10 @@ class Term implements REFlags {
     // used with type=BITSET(2);
     IntBitSet bitset;
     IntBitSet[] bitset2;
-    boolean[] categoryBitset;  //types(unicode categories)
+    private boolean[] categoryBitset;  //types(unicode categories)
 
     // used with type=BALANCE;
-    char[] brackets;
+    private char[] brackets;
 
     // used for optimization with type=BITSET,BITSET2
     int weight;
@@ -182,17 +182,22 @@ class Term implements REFlags {
 
     // **** COMPILE HELPERS ****
 
-    protected Term prev, in, out, out1, first, current;
+    Term prev;
+    Term in;
+    Term out;
+    Term out1;
+    protected Term first;
+    Term current;
 
     //new!!
-    protected Term branchOut;
+    Term branchOut;
 
     //protected  boolean newBranch=false,closed=false;
     //protected  boolean newBranch=false;
 
     //for debugging
-    static int instances;
-    int instanceNum;
+    private static int instances;
+    private int instanceNum;
 
     Term() {
         //for debugging
@@ -212,8 +217,8 @@ class Term implements REFlags {
         makeTree(data, 0, data.length, flags, re);
     }
 
-    static void makeTree(char[] data, int offset, int end,
-                         int flags, Pattern re) throws PatternSyntaxException {
+    private static void makeTree(char[] data, int offset, int end,
+                                 int flags, Pattern re) throws PatternSyntaxException {
         // memreg,counter,depth,lookahead
         int[] vars = {1, 0, 0, 0}; //don't use counters[0]
 
@@ -257,7 +262,7 @@ class Term implements REFlags {
         if (vars.length != VARS_LENGTH)
             throw new IllegalArgumentException("vars.length should be " + VARS_LENGTH + ", not " + vars.length);
         //Term term=new Term(isMemReg? vars[MEMREG_COUNT]: -1);
-        // use memreg 0 as unsignificant
+        // use memreg 0 as insignificant
         //Term term=new Group(isMemReg? vars[MEMREG_COUNT]: 0);
         while (true) {
             t.next();
@@ -392,7 +397,7 @@ class Term implements REFlags {
         }
     }
 
-    static int makeNumber(int off, int out, char[] data) {
+    private static int makeNumber(int off, int out, char[] data) {
         int n = 0;
         for (int i = off; i < out; i++) {
             int d = data[i] - '0';
@@ -403,8 +408,8 @@ class Term implements REFlags {
         return n;
     }
 
-    protected void append(int offset, int end, char[] data,
-                          int[] vars, int flags, ArrayList<TermIterator> iterators, HashMap<String, Integer> gmap) throws PatternSyntaxException {
+    private void append(int offset, int end, char[] data,
+                        int[] vars, int flags, ArrayList<TermIterator> iterators, HashMap<String, Integer> gmap) throws PatternSyntaxException {
         int[] limits = new int[3];
         int i = offset;
         Term tmp, current = this.current;
@@ -469,7 +474,7 @@ class Term implements REFlags {
                         if (data[i + 1] == '\\') { //'{\name}' - backreference
                             int p = i + 2;
                             if (p == end) throw new PatternSyntaxException("'group_id' expected");
-                            while (Character.isWhitespace(data[p])) {
+                            while (Category.Z.contains(data[p])) {
                                 p++;
                                 if (p == end) throw new PatternSyntaxException("'group_id' expected");
                             }
@@ -531,7 +536,7 @@ class Term implements REFlags {
             }
             id = makeNumber(nstart, i, data);
         } else {
-            while (Character.isJavaIdentifierPart(data[i])) {
+            while (Category.IdentifierPart.contains(data[i])) {
                 i++;
                 if (i == end) throw new PatternSyntaxException("group_id expected");
             }
@@ -540,7 +545,7 @@ class Term implements REFlags {
             if (no == null) throw new PatternSyntaxException("backreference to unknown group: " + s);
             id = no;
         }
-        while (Character.isWhitespace(data[i])) {
+        while (Category.Z.contains(data[i])) {
             i++;
             if (i == end) throw new PatternSyntaxException("'}' expected");
         }
@@ -553,7 +558,7 @@ class Term implements REFlags {
         return i;
     }
 
-    protected Term append(Term term) throws PatternSyntaxException {
+    Term append(Term term) throws PatternSyntaxException {
         //Term prev=this.prev;
         Term current = this.current;
         if (current == null) {
@@ -568,7 +573,7 @@ class Term implements REFlags {
         return term;
     }
 
-    protected Term replaceCurrent(Term term) throws PatternSyntaxException {
+    Term replaceCurrent(Term term) throws PatternSyntaxException {
         //Term prev=this.prev;
         Term prev = current.prev;
         if (prev != null) {
@@ -585,13 +590,13 @@ class Term implements REFlags {
     }
 
 
-    protected void newBranch() throws PatternSyntaxException {
+    private void newBranch() throws PatternSyntaxException {
         close();
         startNewBranch();
     }
 
 
-    protected void close() throws PatternSyntaxException {
+    void close() throws PatternSyntaxException {
       /*
       Term prev=this.prev;
       if(prev!=null){
@@ -630,7 +635,7 @@ class Term implements REFlags {
         }
     }
 
-    protected void startNewBranch() throws PatternSyntaxException {
+    void startNewBranch() throws PatternSyntaxException {
         Term tmp = in.next;
         Term b = new Branch();
         in.next = b;
@@ -1150,9 +1155,9 @@ class Term implements REFlags {
 
 
     // one of {n},{n,},{,n},{n1,n2}
-    protected static int parseLimits(int i, int end, char[] data, int[] limits) throws PatternSyntaxException {
+    private static int parseLimits(int i, int end, char[] data, int[] limits) throws PatternSyntaxException {
         if (limits.length != LIMITS_LENGTH)
-            throw new IllegalArgumentException("maxTimess.length=" + limits.length + ", should be 2");
+            throw new IllegalArgumentException("limits.length=" + limits.length + ", should be " + LIMITS_LENGTH);
         limits[LIMITS_PARSE_RESULT_INDEX] = LIMITS_OK;
         int ind = 0;
         int v = 0;
@@ -1580,7 +1585,7 @@ class Term implements REFlags {
         return toStringAll(new ArrayList<Integer>());
     }
 
-    public String toStringAll(ArrayList<Integer> v) {
+    private String toStringAll(ArrayList<Integer> v) {
         v.add(instanceNum);
         String s = toString();
         if (next != null) {
@@ -1619,10 +1624,8 @@ class Term implements REFlags {
         if (next != null ? !next.equals(term.next) : term.next != null) return false;
         if (bitset != null ? !bitset.equals(term.bitset) : term.bitset != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        if (!Arrays.equals(bitset2, term.bitset2)) return false;
-        if (!Arrays.equals(categoryBitset, term.categoryBitset)) return false;
-        return Arrays.equals(brackets, term.brackets);
-        //if (!Arrays.equals(brackets, term.brackets)) return false;
+        return Arrays.equals(bitset2, term.bitset2) && Arrays.equals(categoryBitset, term.categoryBitset) && Arrays.equals(brackets, term.brackets);
+//if (!Arrays.equals(brackets, term.brackets)) return false;
         /*
         if (failNext != null ? !failNext.equals(term.failNext) : term.failNext != null) return false;
         if (target != null ? !target.equals(term.target) : term.target != null) return false;
@@ -1684,13 +1687,16 @@ class Pretokenizer {
     static final int CLASS_GROUP = 12;
     static final int NAMED_GROUP = 13;
 
-    int tOffset, tOutside, skip;
-    int offset, end;
+    int tOffset;
+    int tOutside;
+    private int skip;
+    private int offset;
+    private int end;
     int c;
 
     int ttype = START;
 
-    char[] data;
+    private char[] data;
 
     //results
     private int flags;
@@ -1832,7 +1838,7 @@ class Pretokenizer {
                         int nstart, nend;
                         boolean isDecl;
                         c = data[p];
-                        while (Character.isWhitespace(c)) {
+                        while (Category.Z.contains(c)) {
                             c = data[++p];
                             skip++;
                             if (p == end) throw new PatternSyntaxException("malformed named group");
@@ -1846,13 +1852,13 @@ class Pretokenizer {
                         } else isDecl = true;
 
                         nstart = p;
-                        while (Character.isJavaIdentifierPart(c)) {
+                        while (Category.IdentifierPart.contains(c)) {
                             c = data[++p];
                             skip++;
                             if (p == end) throw new PatternSyntaxException("malformed named group");
                         }
                         nend = p;
-                        while (Character.isWhitespace(c)) {
+                        while (Category.Z.contains(c)) {
                             c = data[++p];
                             skip++;
                             if (p == end) throw new PatternSyntaxException("malformed named group");
@@ -1939,9 +1945,9 @@ class Group extends Term {
 }
 
 class ConditionalExpr extends Group {
-    protected Term node;
-    protected boolean newBranchStarted = false;
-    protected boolean linkAsBranch = true;
+    private Term node;
+    private boolean newBranchStarted = false;
+    private boolean linkAsBranch = true;
 
     ConditionalExpr(Lookahead la) {
         super(0);
@@ -2051,9 +2057,7 @@ class ConditionalExpr extends Group {
 
         ConditionalExpr that = (ConditionalExpr) o;
 
-        if (newBranchStarted != that.newBranchStarted) return false;
-        if (linkAsBranch != that.linkAsBranch) return false;
-        return node != null ? node.equals(that.node) : that.node == null;
+        return newBranchStarted == that.newBranchStarted && linkAsBranch == that.linkAsBranch && (node != null ? node.equals(that.node) : that.node == null);
 
     }
 
@@ -2191,8 +2195,7 @@ class Lookbehind extends Term {
 
         Lookbehind that = (Lookbehind) o;
 
-        if (isPositive != that.isPositive) return false;
-        return prevDistance == that.prevDistance;
+        return isPositive == that.isPositive && prevDistance == that.prevDistance;
 
     }
 

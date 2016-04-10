@@ -5,7 +5,7 @@ package regexodus.derivative;
  * May become the implementation of Pattern in the future; this is currently uncertain.
  * Created by Tommy Ettinger on 4/7/2016.
  */
-public class Master {
+class Master {
     public Group outer;
 
     public Master(RegEx re)

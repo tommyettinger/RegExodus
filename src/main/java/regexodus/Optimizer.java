@@ -29,8 +29,8 @@
 
 package regexodus;
 
-public class Optimizer {
-    public static final int THRESHOLD = 20;
+class Optimizer {
+    private static final int THRESHOLD = 20;
 
     static Optimizer find(Term entry) {
         return find(entry, 0);
@@ -102,8 +102,7 @@ public class Optimizer {
 
         Optimizer optimizer = (Optimizer) o;
 
-        if (distance != optimizer.distance) return false;
-        return atom != null ? atom.equals(optimizer.atom) : optimizer.atom == null;
+        return distance == optimizer.distance && (atom != null ? atom.equals(optimizer.atom) : optimizer.atom == null);
 
     }
 

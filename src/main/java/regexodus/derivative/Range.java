@@ -5,7 +5,8 @@ package regexodus.derivative;
  * Not in the original.
  */
 public class Range extends RegEx {
-    public char start, end;
+    private char start;
+    private char end;
 
     public Range(char start, char end) {
         this.start = start;

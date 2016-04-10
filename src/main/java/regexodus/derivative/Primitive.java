@@ -7,7 +7,7 @@ package regexodus.derivative;
  * δ(c) = ∅
  */
 public class Primitive extends RegEx {
-    public char c;
+    private char c;
 
     public Primitive(char c) {
         this.c = c;

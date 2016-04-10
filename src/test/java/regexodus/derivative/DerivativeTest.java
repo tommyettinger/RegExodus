@@ -4,6 +4,7 @@ import org.junit.Test;
 import regexodus.Category;
 
 /**
+ * Testing the derivative-based engine, which it looks like may be unsuited.
  * Created by Tommy Ettinger on 4/7/2016.
  */
 public class DerivativeTest {
@@ -44,7 +45,7 @@ public class DerivativeTest {
         System.out.println(r.matches("ba"));
     }
 
-    public void printGroupMatch(RegEx r, Group g, String text)
+    private void printGroupMatch(RegEx r, Group g, String text)
     {
         System.out.println(r.matches(text) + ": " + g.contents(text));
     }

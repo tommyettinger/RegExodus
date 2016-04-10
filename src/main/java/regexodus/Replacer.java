@@ -148,29 +148,29 @@ public class Replacer {
 
     /**
      */
-    public int replace(char[] chars, int off, int len, TextBuffer dest) {
+    private int replace(char[] chars, int off, int len, TextBuffer dest) {
         return replace(pattern.matcher(chars, off, len), substitution, dest);
     }
 
     /**
      */
-    public int replace(MatchResult res, int group, TextBuffer dest) {
+    private int replace(MatchResult res, int group, TextBuffer dest) {
         return replace(pattern.matcher(res, group), substitution, dest);
     }
 
     /**
      */
-    public int replace(MatchResult res, String groupName, TextBuffer dest) {
+    private int replace(MatchResult res, String groupName, TextBuffer dest) {
         return replace(pattern.matcher(res, groupName), substitution, dest);
     }
 
     @GwtIncompatible
-    public int replace(Reader text, int length, TextBuffer dest) throws IOException {
+    private int replace(Reader text, int length, TextBuffer dest) throws IOException {
         return replace(pattern.matcher(text, length), substitution, dest);
     }
 
     /**
-     * Replaces all occurences of a matcher's pattern in a matcher's target
+     * Replaces all occurrences of a matcher's pattern in a matcher's target
      * by a given substitution appending the result to a buffer.<br>
      * The substitution starts from current matcher's position, current match
      * not included.
@@ -191,7 +191,7 @@ public class Replacer {
     }
 
     /**
-     * Replaces the first n occurences of a matcher's pattern, where n is equal to count,
+     * Replaces the first n occurrences of a matcher's pattern, where n is equal to count,
      * in a matcher's target by a given substitution, appending the result to a buffer.
      * <br>
      * The substitution starts from current matcher's position, current match not included.
@@ -212,7 +212,7 @@ public class Replacer {
     }
 
     @GwtIncompatible
-    public static int replace(Matcher m, Substitution substitution, Writer out) throws IOException {
+    private static int replace(Matcher m, Substitution substitution, Writer out) throws IOException {
         try {
             return replace(m, substitution, wrap(out));
         } catch (WriteException e) {
@@ -278,7 +278,7 @@ public class Replacer {
     }
 
     @GwtIncompatible
-    public static TextBuffer wrap(final Writer writer) {
+    private static TextBuffer wrap(final Writer writer) {
         return new TextBuffer() {
             public void append(char c) {
                 try {
@@ -321,8 +321,7 @@ public class Replacer {
 
         Replacer replacer = (Replacer) o;
 
-        if (pattern != null ? !pattern.equals(replacer.pattern) : replacer.pattern != null) return false;
-        return substitution != null ? substitution.equals(replacer.substitution) : replacer.substitution == null;
+        return pattern != null ? pattern.equals(replacer.pattern) : replacer.pattern == null && (substitution != null ? substitution.equals(replacer.substitution) : replacer.substitution == null);
 
     }
 

@@ -33,7 +33,7 @@ package regexodus;
  * An implementation of the Substitution interface. Performs substitutions in accordance with Perl-like substitution scripts.<br>
  * The latter is a string, containing a mix of memory register references and plain text blocks.<br>
  * It may look like "some_chars $1 some_chars$2some_chars" or "123${1}45${2}67".<br>
- * A tag consisting of '$',not preceeded by the escape character'\' and  followed by some digits (possibly enclosed in the curled brackets) is interpreted as a memory register reference, the digits forming a register ID.
+ * A tag consisting of '$',not preceded by the escape character'\' and  followed by some digits (possibly enclosed in the curled brackets) is interpreted as a memory register reference, the digits forming a register ID.
  * All the rest is considered as a plain text.<br>
  * Upon the Replacer has found a text block that matches the pattern, a references in a replacement string are replaced by the contents of 
  * corresponding memory registers, and the resulting text replaces the matched block.<br>
@@ -68,8 +68,8 @@ public class PerlSubstitution implements Substitution {
             //argsPtn=new Pattern(groupRef);
             //refPtn=new Pattern("(?<!\\\\)"+groupRef);
             refPtn = new Pattern(groupRef);
-            NAME_ID = refPtn.groupId("name").intValue();
-            ESC_ID = refPtn.groupId("esc").intValue();
+            NAME_ID = refPtn.groupId("name");
+            ESC_ID = refPtn.groupId("esc");
             //ARG_NAME_ID=argsPtn.groupId("name").intValue();
             //FN_NAME_ID=refPtn.groupId("fn_name").intValue();
             //FN_ARGS_ID=refPtn.groupId("fn_args").intValue();
@@ -100,7 +100,7 @@ public class PerlSubstitution implements Substitution {
             if (refMatcher.isCaptured(NAME_ID)) {
                 char c = refMatcher.charAt(0, NAME_ID);
                 if (c == '&') {
-                    element = new IntRefHandler(refMatcher.prefix(), new Integer(0));
+                    element = new IntRefHandler(refMatcher.prefix(), 0);
                 } else if (Character.isDigit(c)) {
                     element = new IntRefHandler(refMatcher.prefix(), new Integer(refMatcher.group(NAME_ID)));
                 } else
@@ -122,7 +122,7 @@ public class PerlSubstitution implements Substitution {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Element element = this.queueEntry; element != null; element = element.next) {
             sb.append(element.toString());
         }
@@ -130,7 +130,7 @@ public class PerlSubstitution implements Substitution {
     }
 
     private static abstract class Element {
-        protected String prefix;
+        String prefix;
         Element next;
 
         abstract void append(MatchResult match, TextBuffer dest);
@@ -165,7 +165,7 @@ public class PerlSubstitution implements Substitution {
         void append(MatchResult match, TextBuffer dest) {
             if (prefix != null) dest.append(prefix);
             if (index == null) return;
-            int i = index.intValue();
+            int i = index;
             if (i >= match.pattern().groupCount()) return;
             if (match.isCaptured(i)) match.getGroup(i, dest);
         }
@@ -182,9 +182,8 @@ public class PerlSubstitution implements Substitution {
         void append(MatchResult match, TextBuffer dest) {
             if (prefix != null) dest.append(prefix);
             if (index == null) return;
-            Integer id = match.pattern().groupId(index);
             //if(id==null) return; //???
-            int i = id.intValue();
+            int i = match.pattern().groupId(index);
             if (match.isCaptured(i)) match.getGroup(i, dest);
         }
     }
@@ -223,7 +222,7 @@ abstract class GReference {
 }
 
 class IntReference extends GReference {
-    protected int id;
+    private int id;
 
     IntReference(int id) {
         this.id = id;
@@ -251,7 +250,7 @@ class IntReference extends GReference {
 }
 
 class StringReference extends GReference {
-    protected String name;
+    private String name;
 
     StringReference(String name) {
         this.name = name;

@@ -29,8 +29,8 @@
 
 package regexodus;
 
-public interface Substitution {
+interface Substitution {
     /**
      */
-    public void appendSubstitution(MatchResult match, TextBuffer dest);
+    void appendSubstitution(MatchResult match, TextBuffer dest);
 }

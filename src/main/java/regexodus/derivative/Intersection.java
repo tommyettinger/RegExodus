@@ -6,9 +6,10 @@ package regexodus.derivative;
  * δ(L1 ∩ L2) = δ(L1) ∩ δ(L2)
  */
 public class Intersection extends RegEx {
-    public RegEx first, second;
+    private RegEx first;
+    private RegEx second;
 
-    public Intersection(RegEx first, RegEx second) {
+    private Intersection(RegEx first, RegEx second) {
         this.first = first;
         this.second = second;
     }

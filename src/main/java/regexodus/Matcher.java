@@ -41,23 +41,20 @@ import static regexodus.Replacer.wrap;
 
 /**
  * Matcher instance is an automaton that actually performs matching. It provides the following methods:
- * <li> searching for a matching substrings : matcher.find() or matcher.findAll();
+ * <li> searching for a matching sub-strings : matcher.find() or matcher.findAll();
  * <li> testing whether a text matches a whole pattern : matcher.matches();
  * <li> testing whether the text matches the beginning of a pattern : matcher.matchesPrefix();
  * <li> searching with custom options : matcher.find(int options)
  * <p>
  * <b>Obtaining results</b><br>
- * After the search succeded, i.e. if one of above methods returned <code>true</code>
+ * After the search succeeded, i.e. if one of above methods returned <code>true</code>
  * one may obtain an information on the match:
  * <li> may check whether some group is captured : matcher.isCaptured(int);
  * <li> may obtain start and end positions of the match and its length : matcher.start(int),matcher.end(int),matcher.length(int);
  * <li> may obtain match contents as String : matcher.group(int).<br>
  * The same way can be obtained the match prefix and suffix information.
  * The appropriate methods are grouped in MatchResult interface, which the Matcher class implements.<br>
- * Matcher objects are not thread-safe, so only one thread may use a matcher instance at a time.
- * Note, that Pattern objects are thread-safe(the same instanse may be shared between
- * multiple threads), and the typical tactics in multithreaded applications is to have one Pattern instance per expression(a singleton),
- * and one Matcher object per thread.
+ * Matcher (and Pattern) objects are not thread-safe, so only one thread may use a matcher instance at a time.
  */
 
 public class Matcher implements MatchResult {
@@ -67,28 +64,28 @@ public class Matcher implements MatchResult {
      *
      * @see Matcher#find(int)
      */
-    public static final int ANCHOR_START = 1;
+    private static final int ANCHOR_START = 1;
 
     /**
      * The same effect as "\\G".
      *
      * @see Matcher#find(int)
      */
-    public static final int ANCHOR_LASTMATCH = 2;
+    private static final int ANCHOR_LASTMATCH = 2;
 
     /**
      * The same effect as "$" without REFlags.MULTILINE.
      *
      * @see Matcher#find(int)
      */
-    public static final int ANCHOR_END = 4;
+    private static final int ANCHOR_END = 4;
 
     /**
      * Experimental option; if a text ends up before the end of a pattern,report a match.
      *
      * @see Matcher#find(int)
      */
-    public static final int ACCEPT_INCOMPLETE = 8;
+    private static final int ACCEPT_INCOMPLETE = 8;
 
     //see search(ANCHOR_START|...)
     private static Term startAnchor = new Term(Term.START);
@@ -125,7 +122,7 @@ public class Matcher implements MatchResult {
 
     private MemReg prefixBounds, suffixBounds, targetBounds;
 
-    Matcher(Pattern regex) {
+    public Matcher(Pattern regex) {
         this.re = regex;
         //int memregCount=(memregs=new MemReg[regex.memregs]).length;
         //for(int i=0;i<memregCount;i++){
@@ -263,7 +260,7 @@ public class Matcher implements MatchResult {
      *   myMatcher.setTarget(myCharArray,x,y,<b>false</b>); //we declare that array contents is NEITHER shared NOR will be used later, so may modifications on it are permitted
      * </pre>
      * then we should expect the array contents to be changed on subsequent setTarget(..) operations.
-     * Such method may yield some increase in perfomanse in the case of multiple setTarget() calls.
+     * Such method may yield some increase in perfomance in the case of multiple setTarget() calls.
      * Resets current search position to zero.
      *
      * @param text   - a data source
@@ -276,7 +273,7 @@ public class Matcher implements MatchResult {
      * @see Matcher#setTarget(char[], int, int)
      * @see Matcher#setTarget(java.io.Reader, int)
      */
-    public final void setTarget(char[] text, int start, int len, boolean shared) {
+    public void setTarget(char[] text, int start, int len, boolean shared) {
         cache = null;
         data = text;
         offset = start;
@@ -342,7 +339,7 @@ public class Matcher implements MatchResult {
         setTarget(mychars, 0, count, false);
     }
 
-    private String getString(int start, int end) {
+    public String getString(int start, int end) {
         /*if(end < 0)
         {
             return "<<<Incomplete Match>>> " + cache;
@@ -468,7 +465,7 @@ public class Matcher implements MatchResult {
      * @param anchors a zero or a combination(bitwise OR) of ANCHOR_START,ANCHOR_END,ANCHOR_LASTMATCH,ACCEPT_INCOMPLETE
      * @return <code>true</code> if a match found.
      */
-    public final boolean find(int anchors) {
+    public boolean find(int anchors) {
         if (called) skip();
         return search(anchors);
     }
@@ -484,7 +481,7 @@ public class Matcher implements MatchResult {
     /**
      * Returns an iterator over the matches found by subsequently calling find(options), the search starts from the zero position.
      */
-    public MatchIterator findAll(final int options) {
+    private MatchIterator findAll(final int options) {
         //setPosition(0);
         return new MatchIterator() {
             private boolean checked = false;
@@ -543,7 +540,7 @@ public class Matcher implements MatchResult {
      * b
      * c
      * </pre>
-     * For example, let's find all odd nubmers occuring in a text:<pre>
+     * For example, let's find all odd numbers occurring in a text:<pre>
      *    Matcher m=new Pattern("\\d+").matcher("123");
      *    while(m.proceed(0)){
      *       String match=m.group(0);
@@ -564,7 +561,7 @@ public class Matcher implements MatchResult {
      *
      * @param options search options, some of ANCHOR_START|ANCHOR_END|ANCHOR_LASTMATCH|ACCEPT_INCOMPLETE; zero value(default) stands for usual search for substring.
      */
-    public final boolean proceed(int options) {
+    public boolean proceed(int options) {
         if (called) {
             if (top == null) {
                 wOffset++;
@@ -576,7 +573,7 @@ public class Matcher implements MatchResult {
     /**
      * Sets the current search position just after the end of last match.
      */
-    public final void skip() {
+    public void skip() {
         int we = wEnd;
         if (wOffset == we) { //requires special handling
             //if no variants at 'wOutside',advance pointer and clear
@@ -606,23 +603,11 @@ public class Matcher implements MatchResult {
     /**
      * Resets the internal state.
      */
-    private void flush() {
+    public void flush() {
         top = null;
         defaultEntry.reset(0);
-
-/*
-int c=0;
-SearchEntry se=first;
-while(se!=null){
-   c++;
-   se=se.on;
-}
-System.out.println("queue: allocated="+c+", truncating to "+minQueueLength);
-new Exception().printStackTrace();
-*/
-
         first.reset(minQueueLength);
-        //first.reset(0);
+
         for (int i = memregs.length - 1; i > 0; i--) {
             MemReg mr = memregs[i];
             mr.in = mr.out = -1;
@@ -746,7 +731,7 @@ new Exception().printStackTrace();
     public String group(String name) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("<" + name + "> isn't defined");
-        return group(id.intValue());
+        return group(id);
     }
 
     /**
@@ -764,7 +749,7 @@ new Exception().printStackTrace();
     public boolean getGroup(String name, TextBuffer tb) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("unknown group: \"" + name + "\"");
-        return getGroup(id.intValue(), tb);
+        return getGroup(id, tb);
     }
 
     /**
@@ -782,7 +767,7 @@ new Exception().printStackTrace();
     public boolean getGroup(String name, StringBuffer sb) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("unknown group: \"" + name + "\"");
-        return getGroup(id.intValue(), sb);
+        return getGroup(id, sb);
     }
 
     /**
@@ -793,7 +778,7 @@ new Exception().printStackTrace();
         int in, out;
         MemReg mr;
         for (int i = 0; i < memregs.length; i++) {
-            in = (mr = memregs[i]).in;
+            mr = memregs[i];
             out = mr.out;
             if ((in = mr.in) < 0 || mr.out < in) continue;
             groups[i] = getString(in, out);
@@ -806,7 +791,6 @@ new Exception().printStackTrace();
     public ArrayList<String> groupv() {
         MemReg[] memregs = this.memregs;
         ArrayList<String> v = new ArrayList<String>();
-        int in, out;
         MemReg mr;
         for (int i = 0; i < memregs.length; i++) {
             mr = bounds(i);
@@ -868,14 +852,16 @@ new Exception().printStackTrace();
     public final boolean isCaptured(String groupName) {
         Integer id = re.groupId(groupName);
         if (id == null) throw new IllegalArgumentException("unknown group: \"" + groupName + "\"");
-        return isCaptured(id.intValue());
+        return isCaptured(id);
     }
 
     /**
      */
     public final int length(int id) {
         MemReg mr = bounds(id);
-        return mr.out - mr.in;
+        if(mr != null)
+            return mr.out - mr.in;
+        return 0;
     }
 
     /**
@@ -890,7 +876,7 @@ new Exception().printStackTrace();
         return bounds(id).out - offset;
     }
 
-    private boolean search(int anchors) {
+    public boolean search(int anchors) {
         called = true;
         final int end = this.end;
         int offset = this.offset;
@@ -904,13 +890,11 @@ new Exception().printStackTrace();
 
         //int memregCount=memregs.length;
         //int cntCount=counters.length;
-        int memregCount = this.memregCount;
-        int cntCount = this.counterCount;
 
         SearchEntry defaultEntry = this.defaultEntry;
         SearchEntry first = this.first;
         SearchEntry top = this.top;
-        SearchEntry actual = null;
+        SearchEntry actual;
         int cnt, regLen;
         int i;
 
@@ -1446,7 +1430,6 @@ new Exception().printStackTrace();
                                 cnt -= exceed;
                                 if (cnt <= minCnt) break;
                                 i -= exceed;
-                                start = end;
                             }
                             int back = findBack(data, i + term.distance, cnt - minCnt, term.target);
                             if (back < 0) break;
@@ -1488,7 +1471,6 @@ new Exception().printStackTrace();
                                 cnt -= exceed;
                                 if (cnt <= minCnt) break;
                                 i -= exceed;
-                                start = end;
                             }
                             MemReg mr = memregs[term.target.memreg];
                             int sampleOff = mr.in;
@@ -2059,8 +2041,8 @@ new Exception().printStackTrace();
         return off - i;
     }
 
-    public String toString_d() {
-        StringBuffer s = new StringBuffer();
+    private String toString_d() {
+        StringBuilder s = new StringBuilder();
         s.append("counters: ");
         s.append(counters == null ? 0 : counters.length);
 
@@ -2124,11 +2106,7 @@ new Exception().printStackTrace();
         if (defaultEntry != null ? !defaultEntry.equals(matcher.defaultEntry) : matcher.defaultEntry != null)
             return false;
         if (cache != null ? !cache.equals(matcher.cache) : matcher.cache != null) return false;
-        if (prefixBounds != null ? !prefixBounds.equals(matcher.prefixBounds) : matcher.prefixBounds != null)
-            return false;
-        if (suffixBounds != null ? !suffixBounds.equals(matcher.suffixBounds) : matcher.suffixBounds != null)
-            return false;
-        return targetBounds != null ? targetBounds.equals(matcher.targetBounds) : matcher.targetBounds == null;
+        return prefixBounds != null ? prefixBounds.equals(matcher.prefixBounds) : matcher.prefixBounds == null && (suffixBounds != null ? suffixBounds.equals(matcher.suffixBounds) : matcher.suffixBounds == null && (targetBounds != null ? targetBounds.equals(matcher.targetBounds) : matcher.targetBounds == null));
 
     }
 
@@ -2208,7 +2186,7 @@ class SearchEntry {
     private MState mHead, mCurrent;
     private CState cHead, cCurrent;
 
-    final static void saveMemregState(SearchEntry entry, int memreg, MemReg mr) {
+    static void saveMemregState(SearchEntry entry, int memreg, MemReg mr) {
         entry.isState = true;
         MState current = entry.mCurrent;
         if (current == null) {
@@ -2229,7 +2207,7 @@ class SearchEntry {
         entry.mCurrent = current;
     }
 
-    final static void saveCntState(SearchEntry entry, int cntreg, int value) {
+    static void saveCntState(SearchEntry entry, int cntreg, int value) {
         entry.isState = true;
         CState current = entry.cCurrent;
         if (current == null) {
@@ -2249,7 +2227,7 @@ class SearchEntry {
         entry.cCurrent = current;
     }
 
-    final static void popState(SearchEntry entry, MemReg[] memregs, int[] counters) {
+    static void popState(SearchEntry entry, MemReg[] memregs, int[] counters) {
         MState ms = entry.mCurrent;
         while (ms != null) {
             MemReg mr = memregs[ms.index];
@@ -2300,9 +2278,7 @@ class SearchEntry {
         if (sub != null ? !sub.equals(that.sub) : that.sub != null) return false;
         if (on != null ? !on.equals(that.on) : that.on != null) return false;
         if (mHead != null ? !mHead.equals(that.mHead) : that.mHead != null) return false;
-        if (mCurrent != null ? !mCurrent.equals(that.mCurrent) : that.mCurrent != null) return false;
-        if (cHead != null ? !cHead.equals(that.cHead) : that.cHead != null) return false;
-        return cCurrent != null ? cCurrent.equals(that.cCurrent) : that.cCurrent == null;
+        return mCurrent != null ? mCurrent.equals(that.mCurrent) : that.mCurrent == null && (cHead != null ? cHead.equals(that.cHead) : that.cHead == null && (cCurrent != null ? cCurrent.equals(that.cCurrent) : that.cCurrent == null));
 
     }
 
@@ -2324,7 +2300,7 @@ class SearchEntry {
 }
 
 class MemReg {
-    int index;
+    private int index;
 
     int in = -1, out = -1;
     int tmp = -1;  //for assuming at GROUP_IN
@@ -2345,9 +2321,7 @@ class MemReg {
         MemReg memReg = (MemReg) o;
 
         if (index != memReg.index) return false;
-        if (in != memReg.in) return false;
-        if (out != memReg.out) return false;
-        return tmp == memReg.tmp;
+        return in == memReg.in && out == memReg.out && tmp == memReg.tmp;
 
     }
 
@@ -2372,9 +2346,7 @@ class LAEntry {
 
         LAEntry laEntry = (LAEntry) o;
 
-        if (index != laEntry.index) return false;
-        if (top != null ? !top.equals(laEntry.top) : laEntry.top != null) return false;
-        return actual != null ? actual.equals(laEntry.actual) : laEntry.actual == null;
+        return index == laEntry.index && (top != null ? top.equals(laEntry.top) : laEntry.top == null && (actual != null ? actual.equals(laEntry.actual) : laEntry.actual == null));
 
     }
 

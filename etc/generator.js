@@ -89,6 +89,16 @@ for (ct of categories)
     require("unicode-8.0.0/categories/Mn/code-points"),
     require("unicode-8.0.0/categories/Mc/code-points"),
     ["_".charCodeAt(0)]).sort(function(a,b){return a - b;});
+    /*
+    //Identifier
+    var cps = require("unicode-8.0.0/categories/L/code-points").concat(
+    require("unicode-8.0.0/categories/N/code-points"),
+    require("unicode-8.0.0/categories/Mn/code-points"),
+    require("unicode-8.0.0/categories/Mc/code-points"),
+    require("unicode-8.0.0/categories/Pc/code-points"),
+    require("unicode-8.0.0/categories/Sc/code-points")
+    ).sort(function(a,b){return a - b;});
+    */
 
     var dict, str;
     var dictSrc, strSrc;

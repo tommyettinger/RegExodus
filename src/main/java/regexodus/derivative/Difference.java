@@ -6,9 +6,10 @@ package regexodus.derivative;
  * δ(L1 - L2) = δ(L1) - δ(L2)
  */
 public class Difference extends RegEx {
-    public RegEx left, right;
+    private RegEx left;
+    private RegEx right;
 
-    public Difference(RegEx left, RegEx right) {
+    private Difference(RegEx left, RegEx right) {
         this.left = left;
         this.right = right;
     }

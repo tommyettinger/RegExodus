@@ -5,7 +5,7 @@ package regexodus.derivative;
  * Not in the original.
  */
 public class Group extends RegEx {
-    public RegEx lang;
+    private RegEx lang;
     public RegEx empty, blank;
     public int matchStart, matchEnd;
     public Group(RegEx lang) {

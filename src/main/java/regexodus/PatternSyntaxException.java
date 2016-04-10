@@ -34,7 +34,7 @@ package regexodus;
  * @see        regexodus.Pattern
  */
 
-public class PatternSyntaxException extends IllegalArgumentException {
+class PatternSyntaxException extends IllegalArgumentException {
     public PatternSyntaxException(String s) {
         super(s);
     }

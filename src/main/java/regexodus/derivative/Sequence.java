@@ -6,7 +6,8 @@ package regexodus.derivative;
  * δ(L1 U L2) = δ(L1) U δ(L2)
  */
 public class Sequence extends RegEx {
-    public RegEx first, second;
+    private RegEx first;
+    private RegEx second;
 
     public Sequence(RegEx first, RegEx second) {
         this.first = first;

@@ -12,18 +12,20 @@ import java.util.LinkedHashMap;
  * depends on) must be commended; that project is https://github.com/mathiasbynens/node-unicode-data
  */
 public class Category {
-    final int[] d;
-    final String s;
+    private final int[] d;
+    private final String s;
     public final int length;
     private int n;
     private CharArrayList cal;
+    final Block[] blocks;
     private Category()
     {
         d = new int[0];
         s = "";
         length = 0;
+        blocks = new Block[0];
     }
-    public Category(int[] directory, String data)
+    private Category(int[] directory, String data)
     {
         d = directory;
         s = data;
@@ -35,6 +37,7 @@ public class Category {
             if((i & 1) == 1) len += 1 + j - cal.getChar(i-1);
         }
         length = len;
+        blocks = makeBlocks();
     }
 
     public char[] contents()
@@ -47,7 +50,7 @@ public class Category {
         return con;
     }
 
-    public Block[] blocks() {
+    private Block[] makeBlocks() {
         int k = 0;
         Block[] bls = new Block[256];
         IntBitSet[] bss = new IntBitSet[256];
@@ -55,7 +58,7 @@ public class Category {
         for (int i = 0; i < n - 1; i += 2) {
             e = cal.getCodePoint(i);
             if(bss[e>>>8] == null) bss[e>>>8] = new IntBitSet();
-            bss[e>>>8].set(e, cal.getCodePoint(i+1) & 0xff );
+            bss[e>>>8].set(e & 0xff, cal.getCodePoint(i+1) & 0xff );
         }
         for (int i = 0; i < 256; i++) {
             if(bss[i] == null)
@@ -157,8 +160,10 @@ public class Category {
 
     public static final Category Word=new Category(new int[]{2,3,0,4,5,1,6,9,7,8,10,11,12,15,13,14,19,25,18,21,48,17,22,30,40,35,37,16,20,23,26,27,33,34,38,42,45,28,31,39,43,46,47,52,53,54,55,57,58,64,68,69,73,75,83,85,116,24,29,32,41,44,51,56,59,62,63,65,66,67,72,74,77,79,82,87,88,89,93,100,101,102,105,107,114,115,122,128,132,134,138,165,245,268,281,321,332,362,365,457,470,619,631,727,1133,1164,6581,8453,11171,20949},"4')1$\" 14\")% \"#%   6 7 \203$+-#)\" \"2X %!! \"(\"   \" 0 j z #!{ :!\")B*] \" % % \"'>& 7*&T$p (!' 2!\"5P!o-L$\"&D0?S<Jw!' 2 (!%!3 & \"#!!)!%!!'\"$% #!+!$)  $$%!3 & % % %!\" #$%! #\")! \")-,  )   3 & % #!'    !\";!!'*\")  (!%!3 & % #!)!%! '%$% #!' &+% $#  !#% \" %#%# #+$##  !!\"(\"-,/! (   6 -#(   !)%  &!!''&!  (   6 ' #!)   !)%)\" !!' %-  (   8!(   #'\")#!-$$!% 5#= ) \"!&#\"$$ \" (('!%/O&/ '8% \"!% \"!\"(! &   \" \"!% ,  !# \" $!'!!@\"Y%(0 \" \" \"$' 9$0 5 9*\"PT(h!: \"&\"!C \200 !!& \" !!8 !![ !!& \" !!/ _ !!d! *0#-5W!$#\205!; 1&g#*), &,<,0.,   %.V#\"$%!'('2 !'(k'C&S+7 +$++G!#,H$1(*B?$a E!*('/\"'.eU$'2).u.N''#4V  A %(|(~!$!:!$!( \" \" \" 7!K & \"#  &#!!$$,&  &X%!$&*(,K,$\"#+2\"$\"!' \"##(\" \" \" ! *!!&#$\" O\207`i3\206Z\210I I x()*\"!: \"&\"!N)\";=*& & & & & & & & F4\"\204 >/ #!#$W!%!  m !&8#n#!+>M-@'F( /@'8/\177\212U\215H\211RD!}#?3J$' tB)!q!A!(Q4'$+^.R,'(=#\" \"!D!9.E#Q-*(7 M*.!'(6#f1 !-!#+$!$!$*& & C '+v %!'(\214.6$4\213\202!rG&.#&+ , # \" % % sA\2010b!L\\+$-5-c# y<')1(1,l#$!$!$! 9");
 
-    public static LinkedHashMap<String, Category> categories;
-    public static LinkedHashMap<String, Category> superCategories;
+    public static final Category IdentifierPart=new Category(new int[]{2,3,0,4,5,1,6,9,7,8,12,15,10,11,13,25,19,18,14,21,40,17,22,30,26,37,48,16,20,23,27,28,33,34,35,38,42,45,31,39,43,46,47,53,54,55,57,58,64,67,68,69,73,75,83,85,24,29,32,36,41,44,51,52,56,59,62,63,66,72,74,77,79,82,87,88,89,93,100,101,102,105,107,114,115,116,122,128,132,134,138,165,245,268,281,321,332,362,365,457,470,619,631,727,1133,1164,6581,8453,11171,20949},"[\"*')/$\" /4!$\")% \"#%   6 7 \203$-+#)\" \"1u %!! \"(\"   \" 0 i z #!{ 9!\")C)\" ] \" % % \"'8& /\"$,&T$o (!' 1!\"5O!n+K$\"&E0>S<Jw!' 1 (!%!3 & \"#!!)!%!!'\"$% #!0 \"&  $$%!3 & % % %!\" #$%! #\")! \")+*  )   3 & % #!'    !\";!!' \")\")  (!%!3 & % #!)!%! '%$% #!' &-% $#  !#% \" %#%# #-$##  !!\"(\"+*(\"(! (   6 +#(   !)%  &!!''&!  (   6 ' #!)   !)%)\" !!' %+  (   4!(   #'\")#!+$$!% 5#= ) \"!&#\"$$ \" (('!%2N$+ '4% \"!% \"!\"(! &   \" \"!% *  !# \" $!'!!@\"X%(0 \" \" \"$' B$0 5 B,\"OT(g!9 \"&\"!D \200 !!& \" !!4 !!Z !!& \" !!2 ` !!d! ,0#+5W!$#\205!; /&f#,)* &*<*0.*   %.V#\"# !'('1 !'(j'D&S-7 -$--G!#*H$/(,C>$b ?!,('2\"'.QU$'1).t.M''#:V  A %(|(~!$!9!$!( \" \" \" 7!_ & \"#  &#!!$$*&  &Q%<\"?%!$&,(*#71*$\"#-1\"$\"!' \"##(\" \" \" ! ,!!&#$\" N\207ah3\206Y\210I I x(),\"!9 \"&\"!M)\";=,& & & & & & & & F:\"\204 82 #!#$W!%!  l !&4#m#!-8L+@'F( 2@'42\177\212U\215H\211RE!}#>3J$' sC)!p!A!(P:'$!\")^.R*'(=#\" \"!E!B.?#P+,(7 L,.!'(6#e/ !+!#-$!$!$,& & D '-v %!'(\214.6$:\213\202!qG&.#&- * # \" % % rA\2010c!K\\*#+5+#%/ 8\"(# y)\"*')/$\" /*k#$!$!$! #%#%/");
+
+    public static final LinkedHashMap<String, Category> categories;
+    public static final LinkedHashMap<String, Category> superCategories;
     static {
 
         superCategories = new LinkedHashMap<String, Category>(8);

@@ -6,7 +6,7 @@ package regexodus.derivative;
  * δ(L*) = eps
  */
 public class Repetition extends RegEx {
-    public RegEx inside;
+    private RegEx inside;
 
     public Repetition(RegEx inside) {
         this.inside = inside;

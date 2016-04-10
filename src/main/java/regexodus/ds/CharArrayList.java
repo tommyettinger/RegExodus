@@ -35,15 +35,15 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
     /**
      * The initial default capacity of an array list.
      */
-    public final static int DEFAULT_INITIAL_CAPACITY = 16;
+    private final static int DEFAULT_INITIAL_CAPACITY = 16;
     /**
      * The backing array.
      */
-    protected transient char a[];
+    private transient char[] a;
     /**
      * The current actual size of the list (never greater than the backing-array length).
      */
-    protected int size;
+    private int size;
     //private static final boolean ASSERTS = false;
 
     /**
@@ -53,7 +53,6 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      *
      * @param a the array that will be used to back this array list.
      */
-    @SuppressWarnings("unused")
     protected CharArrayList(final char a[], boolean dummy) {
         this.a = a;
     }
@@ -72,7 +71,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
     /**
      * Creates a new array list with {@link #DEFAULT_INITIAL_CAPACITY} capacity.
      */
-    public CharArrayList() {
+    private CharArrayList() {
         this(DEFAULT_INITIAL_CAPACITY);
     }
 
@@ -91,7 +90,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      *
      * @param a an array or vararg whose elements will be used to fill the array list.
      */
-    public CharArrayList(final char... a) {
+    private CharArrayList(final char... a) {
         this(a, 0, a.length);
     }
 
@@ -108,7 +107,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * @param offset the first element to use.
      * @param length the number of elements to use.
      */
-    public CharArrayList(final char a[], final int offset, final int length) {
+    private CharArrayList(final char a[], final int offset, final int length) {
         this(length);
         System.arraycopy(a, offset, this.a, 0, length);
         size = length;
@@ -143,7 +142,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * @param length the length of the resulting array list.
      * @return a new array list of the given size, wrapping the given array.
      */
-    public static CharArrayList wrap(final char a[], final int length) {
+    private static CharArrayList wrap(final char a[], final int length) {
         if (length > a.length)
             throw new IllegalArgumentException("The specified length (" + length + ") is greater than the array size (" + a.length + ")");
         final CharArrayList l = new CharArrayList(a, false);
@@ -169,7 +168,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * @param capacity the new minimum capacity for this array list.
      */
 
-    public void ensureCapacity(final int capacity) {
+    private void ensureCapacity(final int capacity) {
         a = CharArrays.ensureCapacity(a, capacity, size);
         //if (ASSERTS) assert size <= a.length;
     }
@@ -185,7 +184,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         //if (ASSERTS) assert size <= a.length;
     }
 
-    public void add(final int index, final char k) {
+    private void add(final int index, final char k) {
         ensureIndex(index);
         grow(size + 1);
         if (index != size) System.arraycopy(a, index, a, index + 1, size - index);
@@ -194,7 +193,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         //if (ASSERTS) assert size <= a.length;
     }
 
-    public boolean add(final char k) {
+    private boolean add(final char k) {
         grow(size + 1);
         a[size++] = k;
         //if (ASSERTS) assert size <= a.length;
@@ -219,7 +218,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         return a[index];
     }
 
-    public int indexOf(final char k) {
+    private int indexOf(final char k) {
         for (int i = 0; i < size; i++)
             if (((k) == (a[i]))) return i;
         return -1;
@@ -231,7 +230,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         return -1;
     }
 
-    public char removeChar(final int index) {
+    private char removeChar(final int index) {
         if (index >= size)
             throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + size + ")");
         final char old = a[index];
@@ -241,7 +240,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         return old;
     }
 
-    public boolean rem(final char k) {
+    private boolean rem(final char k) {
         int index = indexOf(k);
         if (index == -1) return false;
         removeChar(index);
@@ -345,7 +344,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         return 0;
     }
 
-    public char set(final int index, final char k) {
+    private char set(final int index, final char k) {
         if (index >= size)
             throw new IndexOutOfBoundsException("Index (" + index + ") is greater than or equal to list size (" + size + ")");
         char old = a[index];
@@ -450,7 +449,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * @param n the threshold for the trimming.
      */
 
-    public void trim(final int n) {
+    private void trim(final int n) {
         if (n >= a.length || size == a.length) return;
         final char t[] = new char[Math.max(n, size)];
         System.arraycopy(a, 0, t, 0, size);
@@ -466,7 +465,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * @param offset the offset into the destination array where to store the first element copied.
      * @param length the number of elements to be copied.
      */
-    public void getElements(final int from, final char[] a, final int offset, final int length) {
+    private void getElements(final int from, final char[] a, final int offset, final int length) {
         CharArrays.ensureOffsetLength(a, offset, length);
         System.arraycopy(this.a, from, a, offset, length);
     }
@@ -501,7 +500,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         size += length;
     }
 
-    public char[] toCharArray(char a[]) {
+    private char[] toCharArray(char a[]) {
         if (a == null || a.length < size) a = new char[size];
         System.arraycopy(this.a, 0, a, 0, size);
         return a;
@@ -601,7 +600,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
          */
         @Deprecated
         public Character next() {
-            return Character.valueOf(nextChar());
+            return nextChar();
         }
 
         /**
@@ -615,8 +614,6 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         }
 
     }
-
-    ;
 
     public CharListIterator iterator() {
         return listIterator();
@@ -667,7 +664,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      */
     @Override
     public List<Character> subList(int fromIndex, int toIndex) {
-        return null;
+        return new CharArrayList(a, fromIndex, toIndex - fromIndex);
     }
 
     public CharArrayList clone() {
@@ -775,19 +772,19 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
 
     /**
-     * Ensures that the given index is nonnegative and not greater than the list size.
+     * Ensures that the given index is non-negative and not greater than the list size.
      *
      * @param index an index.
      * @throws IndexOutOfBoundsException if the given index is negative or greater than the list size.
      */
-    protected void ensureIndex(final int index) {
+    private void ensureIndex(final int index) {
         if (index < 0) throw new IndexOutOfBoundsException("Index (" + index + ") is negative");
         if (index > size())
             throw new IndexOutOfBoundsException("Index (" + index + ") is greater than list size (" + (size()) + ")");
     }
 
     /**
-     * Ensures that the given index is nonnegative and smaller than the list size.
+     * Ensures that the given index is non-negative and smaller than the list size.
      *
      * @param index an index.
      * @throws IndexOutOfBoundsException if the given index is negative or not smaller than the list size.
@@ -799,7 +796,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
     }
 
 
-    public boolean contains(final char k) {
+    private boolean contains(final char k) {
         return indexOf(k) >= 0;
     }
 
@@ -930,7 +927,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * @param array an array to contain the output of the iterator.
      * @return the number of elements unwrapped.
      */
-    public static <K> int objectUnwrap(final Iterator<? extends K> i, final K array[]) {
+    private static <K> int objectUnwrap(final Iterator<? extends K> i, final K array[]) {
         int j = array.length, offset = 0;
         while (j-- != 0 && i.hasNext())
             array[offset++] = i.next();
@@ -1143,12 +1140,12 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         }
 
         /**
-         * Returns true if the two arrays are elementwise equal.
+         * Returns true if the two arrays are element-wise equal.
          *
          * @param a1 an array.
          * @param a2 another array.
          * @return true if the two arrays are of the same length, and their elements are equal.
-         * @deprecated Please use the corresponding {@link java.util.Arrays} method, which is intrinsified in recent JVMs.
+         * @deprecated Please use the corresponding {@link java.util.Arrays} method, which is intrinsic in recent JVMs.
          */
         @Deprecated
         public static boolean equals(final char[] a1, final char a2[]) {

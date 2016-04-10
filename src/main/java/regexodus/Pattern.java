@@ -56,7 +56,7 @@ import java.util.HashMap;
  * <li><b>REFlags.DOTALL</b> - forces "." to match eols('\r' and '\n' in ASCII);
  * <li><b>REFlags.IGNORE_SPACES</b> - literal spaces in expression are ignored for better readability;
  * <li><b>REFlags.UNICODE</b> - the predefined classes('\w','\d',etc) are referenced to Unicode;
- * <li><b>REFlags.XML_SCHEMA</b> - permits XML Schema regular expressions syntax extentions.
+ * <li><b>REFlags.XML_SCHEMA</b> - permits XML Schema regular expressions syntax extensions.
  * <p>
  * <b>Multithreading</b><br>
  * Pattern instances are not thread-safe, and neither are Matcher objects.
@@ -114,12 +114,12 @@ public class Pattern implements Serializable, REFlags {
      * The flag string should consist of letters 'i','m','s','x','u','X'(the case is significant) and a hyphen.
      * The meaning of letters:
      * <ul>
-     * <li><b>i</b> - case insensitivity, corresponds to REFLlags.IGNORE_CASE;
-     * <li><b>m</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to REFLlags.MULTILINE flag;
-     * <li><b>s</b> - single line treatment('.' matches \r's and \n's),corresponds to REFLlags.DOTALL;
-     * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFLlags.IGNORE_SPACES.
-     * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFLlags.UNICODE; this may yield some performance penalty.
-     * <li><b>X</b> - compatibility with XML Schema, corresponds to REFLlags.XML_SCHEMA.
+     * <li><b>i</b> - case insensitivity, corresponds to REFlags.IGNORE_CASE;
+     * <li><b>m</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to REFlags.MULTILINE flag;
+     * <li><b>s</b> - single line treatment('.' matches \r's and \n's),corresponds to REFlags.DOTALL;
+     * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFlags.IGNORE_SPACES.
+     * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFlags.UNICODE; this may yield some performance penalty.
+     * <li><b>X</b> - compatibility with XML Schema, corresponds to REFlags.XML_SCHEMA.
      * </ul>
      *
      * @param regex the Perl5-compatible regular expression string.
@@ -134,7 +134,7 @@ public class Pattern implements Serializable, REFlags {
 
     /**
      * Compiles a regular expression using REFlags.
-     * The <code>flags</code> parameter is a bitwise OR of the folloing values:
+     * The <code>flags</code> parameter is a bitwise OR of the following values:
      * <ul>
      * <li><b>REFlags.IGNORE_CASE</b> - case insensitivity, corresponds to '<b>i</b>' letter;
      * <li><b>REFlags.MULTILINE</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to '<b>m</b>';
@@ -149,7 +149,7 @@ public class Pattern implements Serializable, REFlags {
      * @throws PatternSyntaxException if the argument doesn't correspond to perl5 regex syntax.
      *                                see REFlags
      */
-    public Pattern(String regex, int flags) throws PatternSyntaxException {
+    private Pattern(String regex, int flags) throws PatternSyntaxException {
         internalCompile(regex, flags);
     }
 
@@ -164,7 +164,7 @@ public class Pattern implements Serializable, REFlags {
     }
 
 
-    protected void internalCompile(String regex, int flags) throws PatternSyntaxException {
+    private void internalCompile(String regex, int flags) throws PatternSyntaxException {
         stringRepr = regex;
         Term.makeTree(regex, flags, this);
     }
@@ -211,7 +211,7 @@ public class Pattern implements Serializable, REFlags {
     }
 
     /**
-     * Returns a targetless matcher.
+     * Returns a target-less matcher.
      * Don't forget to supply a target.
      */
     public Matcher matcher() {
@@ -260,7 +260,7 @@ public class Pattern implements Serializable, REFlags {
     public Matcher matcher(MatchResult res, String groupName) {
         Integer id = res.pattern().groupId(groupName);
         if (id == null) throw new IllegalArgumentException("group not found:" + groupName);
-        int group = id.intValue();
+        int group = id;
         return matcher(res, group);
     }
 
@@ -281,7 +281,7 @@ public class Pattern implements Serializable, REFlags {
 
     /**
      * Returns a replacer of a pattern by specified perl-like expression.
-     * Such replacer will substitute all occurences of a pattern by an evaluated expression
+     * Such replacer will substitute all occurrences of a pattern by an evaluated expression
      * ("$&" and "$0" will substitute by the whole match, "$1" will substitute by group#1, etc).
      * Example:<pre>
      * String text="The quick brown fox jumped over the lazy dog";
@@ -304,7 +304,7 @@ public class Pattern implements Serializable, REFlags {
     }
 
     /**
-     * Returns a replacer will substitute all occurences of a pattern
+     * Returns a replacer will substitute all occurrences of a pattern
      * through applying a user-defined substitution model.
      *
      * @param model a Substitution object which is in charge for match substitution
@@ -315,7 +315,7 @@ public class Pattern implements Serializable, REFlags {
     }
 
     /**
-     * Tokenizes a text by an occurences of the pattern.
+     * Tokenizes a text by an occurrences of the pattern.
      * Note that a series of adjacent matches are regarded as a single separator.
      * The same as new RETokenizer(Pattern,String);
      *
@@ -327,7 +327,7 @@ public class Pattern implements Serializable, REFlags {
     }
 
     /**
-     * Tokenizes a specified region by an occurences of the pattern.
+     * Tokenizes a specified region by an occurrences of the pattern.
      * Note that a series of adjacent matches are regarded as a single separator.
      * The same as new RETokenizer(Pattern,char[],int,int);
      *
@@ -339,7 +339,7 @@ public class Pattern implements Serializable, REFlags {
     }
 
     /**
-     * Tokenizes a specified region by an occurences of the pattern.
+     * Tokenizes a specified region by an occurrences of the pattern.
      * Note that a series of adjacent matches are regarded as a single separator.
      * The same as new RETokenizer(Pattern,Reader,int);
      *
@@ -362,7 +362,7 @@ public class Pattern implements Serializable, REFlags {
         return root.toStringAll();
     }
 
-    static int parseFlags(String flags) throws PatternSyntaxException {
+    private static int parseFlags(String flags) throws PatternSyntaxException {
         boolean enable = true;
         int len = flags.length();
         int result = DEFAULT;
@@ -434,9 +434,7 @@ public class Pattern implements Serializable, REFlags {
         if (counters != pattern.counters) return false;
         if (lookaheads != pattern.lookaheads) return false;
         if (stringRepr != null ? !stringRepr.equals(pattern.stringRepr) : pattern.stringRepr != null) return false;
-        if (root != null ? !root.equals(pattern.root) : pattern.root != null) return false;
-        if (root0 != null ? !root0.equals(pattern.root0) : pattern.root0 != null) return false;
-        return namedGroupMap != null ? namedGroupMap.equals(pattern.namedGroupMap) : pattern.namedGroupMap == null;
+        return root != null ? root.equals(pattern.root) : pattern.root == null && (root0 != null ? root0.equals(pattern.root0) : pattern.root0 == null && (namedGroupMap != null ? namedGroupMap.equals(pattern.namedGroupMap) : pattern.namedGroupMap == null));
 
     }
 

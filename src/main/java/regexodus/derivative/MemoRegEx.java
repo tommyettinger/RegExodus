@@ -9,7 +9,7 @@ import java.util.HashMap;
  */
 public abstract class MemoRegEx extends RegEx {
 
-    protected HashMap<Character, RegEx> derivations = new HashMap<Character, RegEx>(32);
+    private HashMap<Character, RegEx> derivations = new HashMap<Character, RegEx>(32);
     public RegEx derive(char[] c, int idx)
     {
         RegEx got = derivations.get(c[idx]);

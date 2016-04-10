@@ -6,9 +6,9 @@ package regexodus.derivative;
  * δ(~L) = ~(δ(L))
  */
 public class Complement extends RegEx {
-    public RegEx lang;
+    private RegEx lang;
 
-    public Complement(RegEx lang) {
+    private Complement(RegEx lang) {
         this.lang = lang;
     }
 

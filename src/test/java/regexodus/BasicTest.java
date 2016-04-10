@@ -6,19 +6,20 @@ import org.junit.Test;
 import java.util.Random;
 
 /**
+ * Just a quick test.
  * Created by Tommy Ettinger on 3/28/2016.
  */
 public class BasicTest {
-    static Random r = new Random(0x1337CAFE);
-    static char[] tmp = new char[10];
-    static final int STR_LEN = 10;
-    static String[] strings = new String[500000];
-    static char[][] chars = new char[500000][STR_LEN];
+    private static Random r = new Random(0x1337CAFE);
+    private static char[] tmp = new char[10];
+    private static final int STR_LEN = 10, STRING_COUNT = 1000000;
+    private static String[] strings = new String[STRING_COUNT];
+    private static char[][] chars = new char[STRING_COUNT][STR_LEN];
 
     private static char[] exampleString()
     {
         for (int i = 0; i < STR_LEN; i++) {
-            tmp[i] = (char) ('0' + r.nextInt(10));
+            tmp[i] = (char) (33 + r.nextInt(94));
         }
         return tmp;
     }
@@ -30,7 +31,7 @@ public class BasicTest {
         return new String(tmp);
     }
     static {
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < STRING_COUNT; i++) {
             System.arraycopy(exampleString(), 0, chars[i], 0, STR_LEN);
             strings[i] = new String(chars[i]);
         }
@@ -46,12 +47,14 @@ public class BasicTest {
         Matcher m1 = p1.matcher(), m2 = p2.matcher();
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(m1, m2);
+        /*
         System.out.println(p1);
         System.out.println(p2);
         System.out.println(p1.root0);
         System.out.println(p2.root0);
         System.out.println(m1);
         System.out.println(m2);
+        */
         long ctr = 0;
         for (int i = 0; i < 100000; i++) {
             m1.setTarget(strings[i]);
@@ -103,12 +106,11 @@ public class BasicTest {
     public void testMatcherSpeed()
     {
         //Matcher p = new Pattern("[0-9a-fA-F]+").matcher();
-        Matcher p = new Pattern("(.)\\1+").matcher();
+        Pattern p = new Pattern("\\p{Lu}\\p{Ll}\\PP\\p{P}"); //"(.)\\1+"
         //Matcher p = new Pattern("000").matcher();
         long time = System.currentTimeMillis(), ctr = 0;
-        for (int i = 0; i < 500000; i++) {
-            p.setTarget(chars[i], 0, STR_LEN);
-            if(p.find())
+        for (int i = 0; i < STRING_COUNT; i++) {
+            if(p.matcher(chars[i], 0, STR_LEN).find())
                 ctr++;
         }
         System.out.println(System.currentTimeMillis() - time);
@@ -119,11 +121,11 @@ public class BasicTest {
     public void testJUSpeed()
     {
         //java.util.regex.Pattern jup = java.util.regex.Pattern.compile("[0-9a-fA-F]+");
-        java.util.regex.Pattern jup = java.util.regex.Pattern.compile("(.)\\1+");
+        java.util.regex.Pattern jup = java.util.regex.Pattern.compile("\\p{Lu}\\p{Ll}\\PP\\p{P}"); //"(.)\\1+"
         //java.util.regex.Pattern jup = java.util.regex.Pattern.compile("000");
         long time = System.currentTimeMillis(), ctr = 0;
 
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < STRING_COUNT; i++) {
             if(jup.matcher(strings[i]).find())
                 ctr++;
         }

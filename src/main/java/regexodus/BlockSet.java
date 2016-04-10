@@ -48,10 +48,10 @@ class BlockSet implements UnicodeConstants {
     private boolean positive = true;
     private boolean isLarge = false;
 
-    IntBitSet block0 = new IntBitSet();  //1-byte bit set
+    private IntBitSet block0 = new IntBitSet();  //1-byte bit set
     private static final IntBitSet emptyBlock0 = new IntBitSet();
 
-    Block[] blocks;  //2-byte bit set
+    private Block[] blocks;  //2-byte bit set
 
 
 
@@ -99,18 +99,21 @@ class BlockSet implements UnicodeConstants {
         isLarge = true;
     }
 
-    final int getWeight() {
+    private int getWeight() {
         return positive ? weight : MAX_WEIGHT - weight;
     }
 
     final void setWordChar(boolean unicode) {
         if (unicode) {
+            if (!isLarge) enableLargeMode();
+            weight += Block.add(this.blocks, Category.Word.blocks, 0, BLOCK_COUNT - 1, false);
+            /*
             setCategory("Lu");
             setCategory("Ll");
             setCategory("Lt");
             setCategory("Lo");
             setCategory("Nd");
-            setChar('_');
+            setChar('_');*/
         } else {
             setRange('a', 'z');
             setRange('A', 'Z');
@@ -143,7 +146,7 @@ class BlockSet implements UnicodeConstants {
 
     final void setCategory(String c) {
         if (!isLarge) enableLargeMode();
-        Block[] catBits = Category.categories.get(c).blocks();
+        Block[] catBits = Category.categories.get(c).blocks;
         weight += Block.add(this.blocks, catBits, 0, BLOCK_COUNT - 1, false);
 //System.out.println("["+this+"].setCategory("+c+"): weight="+weight);
     }
@@ -213,7 +216,7 @@ class BlockSet implements UnicodeConstants {
         subtract(bs, false);
     }
 
-    final void subtract(BlockSet bs, boolean inverse) {
+    private void subtract(BlockSet bs, boolean inverse) {
 //System.out.println("["+this+"].subtract(["+bs+"],"+inverse+"):");
         weight += subtractImpl(this, bs, !bs.positive ^ inverse);
     }
@@ -239,7 +242,7 @@ class BlockSet implements UnicodeConstants {
         intersect(bs, false);
     }
 
-    final void intersect(BlockSet bs, boolean inverse) {
+    private void intersect(BlockSet bs, boolean inverse) {
 //System.out.println("["+this+"].intersect(["+bs+"],"+inverse+"):");
         subtract(bs, !inverse);
     }
@@ -262,7 +265,7 @@ class BlockSet implements UnicodeConstants {
         return s + bs1.cardinality();
     }
 
-    static int set(IntBitSet arr, int from, int to) {
+    private static int set(IntBitSet arr, int from, int to) {
         int s = arr.cardinality();
         arr.set(from, to);
         return arr.cardinality() - s;
@@ -322,7 +325,7 @@ class BlockSet implements UnicodeConstants {
 class Block implements UnicodeConstants {
     private boolean isFull;
     //private boolean[] bits;
-    public IntBitSet bits;
+    private IntBitSet bits;
     private boolean shared = false;
 
     Block() {
@@ -433,8 +436,7 @@ class Block implements UnicodeConstants {
             Block subtrahend = subtrahends[i];
 
             if (subtrahend == null) {
-                if (!inv) continue;
-                else {
+                if (inv) {
                     if (target.isFull) {
                         s -= BLOCK_SIZE;
                     } else {
@@ -495,7 +497,7 @@ class Block implements UnicodeConstants {
     }
 
     private static IntBitSet copyBits(Block block) {
-        IntBitSet bits = (IntBitSet) block.bits.clone();
+        IntBitSet bits = block.bits.clone();
         block.bits = bits;
         block.shared = false;
         return bits;
@@ -513,7 +515,7 @@ class Block implements UnicodeConstants {
         return bits;
     }
 
-    static int count(IntBitSet arr, int from, int to) {
+    private static int count(IntBitSet arr, int from, int to) {
         int s = 0;
         for (int i = from; i <= to; i++) {
             if (arr.get(i)) s++;

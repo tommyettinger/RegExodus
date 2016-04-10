@@ -30,58 +30,58 @@
 package regexodus;
 
 public interface MatchResult {
-    public int MATCH = 0;
-    public int PREFIX = -1;
-    public int SUFFIX = -2;
-    public int TARGET = -3;
+    int MATCH = 0;
+    int PREFIX = -1;
+    int SUFFIX = -2;
+    int TARGET = -3;
 
-    public Pattern pattern();
+    Pattern pattern();
 
-    public int groupCount();
+    int groupCount();
 
-    public boolean isCaptured();
+    boolean isCaptured();
 
-    public boolean isCaptured(int groupId);
+    boolean isCaptured(int groupId);
 
-    public boolean isCaptured(String groupName);
+    boolean isCaptured(String groupName);
 
-    public String group(int n);
+    String group(int n);
 
-    public boolean getGroup(int n, StringBuffer sb);
+    boolean getGroup(int n, StringBuffer sb);
 
-    public boolean getGroup(int n, TextBuffer tb);
+    boolean getGroup(int n, TextBuffer tb);
 
-    public String group(String name);
+    String group(String name);
 
-    public boolean getGroup(String name, StringBuffer sb);
+    boolean getGroup(String name, StringBuffer sb);
 
-    public boolean getGroup(String name, TextBuffer tb);
+    boolean getGroup(String name, TextBuffer tb);
 
-    public String prefix();
+    String prefix();
 
-    public String suffix();
+    String suffix();
 
-    public String target();
+    String target();
 
-    public int targetStart();
+    int targetStart();
 
-    public int targetEnd();
+    int targetEnd();
 
-    public char[] targetChars();
+    char[] targetChars();
 
-    public int start();
+    int start();
 
-    public int end();
+    int end();
 
-    public int length();
+    int length();
 
-    public int start(int n);
+    int start(int n);
 
-    public int end(int n);
+    int end(int n);
 
-    public int length(int n);
+    int length(int n);
 
-    public char charAt(int i);
+    char charAt(int i);
 
-    public char charAt(int i, int groupNo);
+    char charAt(int i, int groupNo);
 }

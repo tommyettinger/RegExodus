@@ -5,20 +5,31 @@ package regexodus.derivative;
  */
 public abstract class RegEx {
 
-    public static final int EMPTY = 0, GROUP = 1, BLANK = 2, PRIMITIVE = 3, COMPLEMENT = 4, CHOICE = 5,
-            INTERSECTION = 6, DIFFERENCE = 7, SEQUENCE = 8, REPETITION = 9, RANGE = 10, CATEGORY = 11, ANY = 12,
-            CONTAINER = 13;
+    static final int EMPTY = 0;
+    static final int GROUP = 1;
+    static final int BLANK = 2;
+    static final int PRIMITIVE = 3;
+    static final int COMPLEMENT = 4;
+    static final int CHOICE = 5;
+    static final int INTERSECTION = 6;
+    static final int DIFFERENCE = 7;
+    static final int SEQUENCE = 8;
+    static final int REPETITION = 9;
+    static final int RANGE = 10;
+    static final int CATEGORY = 11;
+    static final int ANY = 12;
+    static final int CONTAINER = 13;
 
-    public Group parent = null;
+    Group parent = null;
 
-    public abstract RegEx derive(char[] c, int idx);
+    protected abstract RegEx derive(char[] c, int idx);
 
-    public abstract boolean emptySuccess();
+    protected abstract boolean emptySuccess();
 
-    public abstract int kind();
-    protected boolean midway = false;
-    public abstract void reset();
-    public RegEx shareParent(Group newParent)
+    protected abstract int kind();
+    boolean midway = false;
+    protected abstract void reset();
+    RegEx shareParent(Group newParent)
     {
         parent = newParent;
         return this;
@@ -29,7 +40,7 @@ public abstract class RegEx {
         return matches(s.toCharArray(), 0, s.length());
 //            return derive(s.charAt(0)).matches(s.substring(1, len));
     }
-    public boolean matches(char[] chars, int first, int len)
+    boolean matches(char[] chars, int first, int len)
     {
         if(parent != null)
             parent.matchEnd = first;

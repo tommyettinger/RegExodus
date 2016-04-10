@@ -30,9 +30,9 @@
 package regexodus;
 
 public interface MatchIterator {
-    public boolean hasMore();
+    boolean hasMore();
 
-    public MatchResult nextMatch();
+    MatchResult nextMatch();
 
-    public int count();
+    int count();
 }

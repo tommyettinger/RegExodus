@@ -97,6 +97,7 @@ public class FinneganTest
         }
         System.out.println(Finnegan.ENGLISH.word(0xbababadal, false));
 
+        /*
         System.out.println(Category.L.length);
         System.out.println(Category.Ll.length);
         System.out.println(Category.Lu.length);
@@ -109,5 +110,6 @@ public class FinneganTest
         System.out.println("Word contains z: " + Category.Word.contains('z'));
         System.out.println("Word contains Ж: " + Category.Word.contains('Ж'));
         System.out.println("Word contains _: " + Category.Word.contains('_'));
+        */
     }
 }

@@ -3,10 +3,12 @@ package regexodus.ds;
 import java.util.Arrays;
 
 /**
+ * An implementation of BitSet (that does not technically extend BitSet due to BitSet not existing under GWT) using 32-bit
+ * sections instead of the normal 64-bit (again, for GWT reasons; 64-bit integer math is slower on GWT).
  * Created by Tommy Ettinger on 3/30/2016.
  */
 public class IntBitSet {
-    public int[] data;
+    private int[] data;
     public IntBitSet() {
         data = new int[8];
     }
@@ -27,7 +29,7 @@ public class IntBitSet {
     }
     public IntBitSet(int[] ints) {
         data = new int[8];
-        System.arraycopy(ints, 0, data, 0, 8);
+        System.arraycopy(ints, 0, data, 0, Math.min(8, ints.length));
     }
 
     public void flip(int bitIndex) {

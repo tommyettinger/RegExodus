@@ -36,7 +36,7 @@ import java.util.NoSuchElementException;
 
 /**
  * The Tokenizer class suggests a methods to break a text into tokens using
- * occurences of a pattern as delimiters.
+ * occurrences of a pattern as delimiters.
  * There are two ways to obtain a text tokenizer for some pattern:<pre>
  * Pattern p=new Pattern("\\s+"); //any number of space characters
  * String text="blah blah blah";
@@ -78,7 +78,7 @@ public class RETokenizer implements Iterator<String> {
         this(pattern.matcher(r, len), false);
     }
 
-    public RETokenizer(Matcher m, boolean emptyEnabled) {
+    private RETokenizer(Matcher m, boolean emptyEnabled) {
         matcher = m;
         emptyTokensEnabled = emptyEnabled;
     }
@@ -91,12 +91,12 @@ public class RETokenizer implements Iterator<String> {
         return emptyTokensEnabled;
     }
 
-    public boolean hasMore() {
+    private boolean hasMore() {
         if (!checked) check();
         return hasToken;
     }
 
-    public String nextToken() {
+    private String nextToken() {
         if (!checked) check();
         if (!hasToken) throw new NoSuchElementException();
         checked = false;
@@ -145,7 +145,7 @@ public class RETokenizer implements Iterator<String> {
         }
         if (!hasMatch) {
             endReached = true;
-            if (m.length(m.TARGET) == 0 && !emptyOk) {
+            if (m.length(MatchResult.TARGET) == 0 && !emptyOk) {
                 hasToken = false;
             } else {
                 hasToken = true;
@@ -174,8 +174,6 @@ public class RETokenizer implements Iterator<String> {
      *                                       yet been called, or the {@code remove} method has already
      *                                       been called after the last call to the {@code next}
      *                                       method
-     * @implSpec The default implementation throws an instance of
-     * {@link UnsupportedOperationException} and performs no other action.
      */
     @Override
     public void remove() {

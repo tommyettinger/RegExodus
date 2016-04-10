@@ -36,28 +36,28 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 class CharacterClass extends Term implements UnicodeConstants {
-    static final BlockSet DIGIT = new BlockSet();
-    static final BlockSet WORDCHAR = new BlockSet();
-    static final BlockSet SPACE = new BlockSet();
+    private static final BlockSet DIGIT = new BlockSet();
+    private static final BlockSet WORDCHAR = new BlockSet();
+    private static final BlockSet SPACE = new BlockSet();
 
-    static final BlockSet UDIGIT = new BlockSet();
-    static final BlockSet UWORDCHAR = new BlockSet();
-    static final BlockSet USPACE = new BlockSet();
+    private static final BlockSet UDIGIT = new BlockSet();
+    private static final BlockSet UWORDCHAR = new BlockSet();
+    private static final BlockSet USPACE = new BlockSet();
 
-    static final BlockSet NONDIGIT = new BlockSet();
-    static final BlockSet NONWORDCHAR = new BlockSet();
-    static final BlockSet NONSPACE = new BlockSet();
+    private static final BlockSet NONDIGIT = new BlockSet();
+    private static final BlockSet NONWORDCHAR = new BlockSet();
+    private static final BlockSet NONSPACE = new BlockSet();
 
-    static final BlockSet UNONDIGIT = new BlockSet();
-    static final BlockSet UNONWORDCHAR = new BlockSet();
-    static final BlockSet UNONSPACE = new BlockSet();
+    private static final BlockSet UNONDIGIT = new BlockSet();
+    private static final BlockSet UNONWORDCHAR = new BlockSet();
+    private static final BlockSet UNONSPACE = new BlockSet();
 
     private static boolean namesInitialized = false;
 
-    static final HashMap<String, BlockSet> namedClasses = new HashMap<String, BlockSet>();
-    static final ArrayList<String> unicodeBlocks = new ArrayList<String>();
-    static final ArrayList<String> posixClasses = new ArrayList<String>();
-    static final ArrayList<String> unicodeCategories = new ArrayList<String>();
+    private static final HashMap<String, BlockSet> namedClasses = new HashMap<String, BlockSet>();
+    private static final ArrayList<String> unicodeBlocks = new ArrayList<String>();
+    private static final ArrayList<String> posixClasses = new ArrayList<String>();
+    private static final ArrayList<String> unicodeCategories = new ArrayList<String>();
 
     //modes; used in parseGroup(()
     private final static int ADD = 1;
@@ -265,7 +265,7 @@ class CharacterClass extends Term implements UnicodeConstants {
 
     private static BlockSet getNamedClass(String name) {
         if (!namesInitialized) initNames();
-        return (BlockSet) namedClasses.get(name);
+        return namedClasses.get(name);
     }
 
     static void makeICase(Term term, char c) {
@@ -551,9 +551,10 @@ class CharacterClass extends Term implements UnicodeConstants {
                             continue;
 
                         case 'P':   // \\P{..}
+                            if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\P...]");
                             inv = true;
                         case 'p':   // \\p{..}
-                            if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\w...]");
+                            if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\p...]");
                             if (sb == null) sb = new StringBuffer();
                             else sb.setLength(0);
                             i = parseName(data, i, out, sb, skipspaces);
@@ -614,8 +615,8 @@ class CharacterClass extends Term implements UnicodeConstants {
     }
 
 
-    static int parseName(char[] data, int i, int out, StringBuffer sb,
-                               boolean skipspaces) throws PatternSyntaxException {
+    private static int parseName(char[] data, int i, int out, StringBuffer sb,
+                                 boolean skipspaces) throws PatternSyntaxException {
         char c;
         int start = -1;
         while (i < out) {
@@ -632,6 +633,18 @@ class CharacterClass extends Term implements UnicodeConstants {
                 case '\f':
                     if (skipspaces) continue;
                     //else pass on
+                case 'C':
+                case 'L':
+                case 'M':
+                case 'N':
+                case 'Z':
+                case 'P':
+                case 'S':
+                    if(start < 0)
+                    {
+                            sb.append(c);
+                            return i;
+                    }
                 default:
                     if (start < 0) throw new PatternSyntaxException("named class doesn't start with '{'");
                     sb.append(c);

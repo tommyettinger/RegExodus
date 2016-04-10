@@ -7,7 +7,7 @@ import regexodus.Category;
  * Not in the original.
  */
 public class UnicodeCategory extends RegEx {
-    public Category cat;
+    private Category cat;
 
     public UnicodeCategory(Category c) {
         this.cat = c;
