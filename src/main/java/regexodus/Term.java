@@ -228,15 +228,12 @@ class Term implements REFlags {
 
         Pretokenizer t = new Pretokenizer(data, offset, end);
         Term term = makeTree(t, data, vars, flags, new Group(), iterators, groupNames);
-        // term=(0-...-0)
 
         // convert closing outer bracket into success term
         term.out.type = SUCCESS;
-        // term=(0-...-!!!
 
         //throw out opening bracket
         Term first = term.next;
-        // term=...-!!!
 
         // Optimisation:
         //Term optimized = first;
@@ -1146,7 +1143,9 @@ class Term implements REFlags {
                     term.type = CHAR;
                     term.c = c;
                 } else {
-                    CharacterClass.makeICase(term, c);
+                    term.type = CHAR;
+                    term.c = Category.caseFold(c);
+                    //CharacterClass.makeICase(term, c);
                 }
                 break;
         }

@@ -40,7 +40,7 @@ import java.util.NoSuchElementException;
 import static regexodus.Replacer.wrap;
 
 /**
- * Matcher instance is an automaton that actually performs matching. It provides the following methods:
+ * Matcher is an automaton that actually performs matching. It provides the following methods:
  * <li> searching for a matching sub-strings : matcher.find() or matcher.findAll();
  * <li> testing whether a text matches a whole pattern : matcher.matches();
  * <li> testing whether the text matches the beginning of a pattern : matcher.matchesPrefix();
@@ -53,7 +53,12 @@ import static regexodus.Replacer.wrap;
  * <li> may obtain start and end positions of the match and its length : matcher.start(int),matcher.end(int),matcher.length(int);
  * <li> may obtain match contents as String : matcher.group(int).<br>
  * The same way can be obtained the match prefix and suffix information.
- * The appropriate methods are grouped in MatchResult interface, which the Matcher class implements.<br>
+ * The appropriate methods are grouped in MatchResult interface, which the Matcher class implements.
+ * <br>
+ * You typically obtain a Matcher through a Pattern instance's matcher() method. See the Pattern documentation for the
+ * normal ways to create a Pattern; if you are already familiar with java.util.regex.Pattern, constructing a regexodus
+ * Pattern should be no different.
+ * <br>
  * Matcher (and Pattern) objects are not thread-safe, so only one thread may use a matcher instance at a time.
  */
 
@@ -317,7 +322,7 @@ public class Matcher implements MatchResult {
     }
 
     @GwtIncompatible
-    private void setAll(Reader in) throws IOException {
+    public void setAll(Reader in) throws IOException {
         char[] mychars = data;
         int free;
         if (mychars == null || shared) {
@@ -481,7 +486,7 @@ public class Matcher implements MatchResult {
     /**
      * Returns an iterator over the matches found by subsequently calling find(options), the search starts from the zero position.
      */
-    private MatchIterator findAll(final int options) {
+    public MatchIterator findAll(final int options) {
         //setPosition(0);
         return new MatchIterator() {
             private boolean checked = false;
@@ -1828,11 +1833,13 @@ public class Matcher implements MatchResult {
         if (p1 >= out || p2 >= out) {
             return false;
         }
-        char c1, c2;
         for (int c = len; c > 0; c--, p1--, p2--) {
+            if(Category.caseFold(arr[p1]) != Category.caseFold(arr[p2])) return false;
+            /*
             if ((c1 = arr[p1]) != Character.toLowerCase(c2 = arr[p2]) &&
                     c1 != Character.toUpperCase(c2) &&
                     c1 != Character.toTitleCase(c2)) return false;
+            */
         }
         return true;
     }
@@ -2024,15 +2031,18 @@ public class Matcher implements MatchResult {
             }
         } else if (term.type == Term.REG_I) {
          /*@since 1.2*/
+            /*
             char c = data[regOff];
             char firstLower = Character.toLowerCase(c);
             char firstUpper = Character.toUpperCase(c);
             char firstTitle = Character.toTitleCase(c);
+            */
+            char c, firstChar = Category.caseFold(data[regOff]);
             regOff++;
             regLen--;
             for (; ; ) {
                 i--;
-                if (((c = data[i]) == firstLower || c == firstUpper || c == firstTitle) && compareRegionsI(data, i + 1, regOff, regLen, out))
+                if (((c = Category.caseFold(data[i])) == firstChar) && compareRegionsI(data, i + 1, regOff, regLen, out))
                     break;
                 if (i <= iMin) return -1;
             }

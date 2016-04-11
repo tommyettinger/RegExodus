@@ -19,7 +19,7 @@ apply plugin: 'maven'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 group = 'com.github.tommyettinger'
-version = '1.2.2-SNAPSHOT'
+version = '0.1'
 
 description = """RegExodus"""
 

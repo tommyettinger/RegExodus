@@ -1,5 +1,7 @@
 // Compress list of all Unicode letters to less than 2kB
 // Credit goes to gagern, https://gist.github.com/gagern/89db1179766a702c564d
+var _ = require('lodash');
+
 var categories = [
 "C","Co","Cn","Cc","Cf","Cs",
 "L","Lu","Ll","Lt","Lm","Lo",
@@ -83,7 +85,7 @@ for (ct of categories)
     console.log("public static final Category " + ct + "=new Category(new int[]" + dictSrc + strSrc + ");\n");
 }
 */
-(function main(){
+var word = function (){
     var cps = require("unicode-8.0.0/categories/N/code-points").concat(
     require("unicode-8.0.0/categories/L/code-points"),
     require("unicode-8.0.0/categories/Mn/code-points"),
@@ -185,4 +187,16 @@ for (ct of categories)
     //console.log(res);
 
     console.log("public static final Category Word=new Category(new int[]" + dictSrc + strSrc + ");\n");
-})();
+}
+//word();
+var cases = function()
+{
+    var cps = _.merge(
+    require('unicode-8.0.0/case-folding/C/symbols'),
+    require('unicode-8.0.0/case-folding/S/symbols'));
+    var keySrc = JSON.stringify(_.keys(cps)).replace(/["]/g, "'").replace(/\]/, '},').replace(/\[/, '{');
+    var valSrc = JSON.stringify(_.values(cps)).replace(/["]/g, "'").replace(/\]/, '}').replace(/\[/, '{');
+
+    console.log('static final CharCharMap cases=newCharCharMap(new int[]'+keySrc+'new int[]'+valSrc+');\n');
+}
+cases();

@@ -35,9 +35,15 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * A handle for a precompiled regular expression.<br>
- * To match a regular expression <code>myExpr</code> against a text <code>myString</code> one should first create a Pattern object:<pre>
- * Pattern p=new Pattern(myExpr);
+ * A handle for a precompiled regular expression; core operations should be identical to java.util.regex.Pattern .
+ * Pattern should be no different.
+ * <br>
+ * To match a regular expression <code>myExpr</code> against a text <code>myString</code> one should first
+ * create a Pattern object:<pre>
+ * Pattern p = new Pattern(myExpr);
+ * </pre>
+ * or <pre>
+ * Pattern p = Pattern.compile(myExpr);
  * </pre>
  * then obtain a Matcher object:<pre>
  * Matcher matcher=p.matcher(myText);
@@ -94,6 +100,8 @@ public class Pattern implements Serializable, REFlags {
 
     HashMap<String, Integer> namedGroupMap;
 
+    boolean caseless = false;
+
     protected Pattern() throws PatternSyntaxException {
     }
 
@@ -111,7 +119,7 @@ public class Pattern implements Serializable, REFlags {
 
     /**
      * Compiles a regular expression using Perl5-style flags.
-     * The flag string should consist of letters 'i','m','s','x','u','X'(the case is significant) and a hyphen.
+     * The flag string should consist of letters 'i','m','s','x','u','X'(the case is significant) and a hyphen or plus.
      * The meaning of letters:
      * <ul>
      * <li><b>i</b> - case insensitivity, corresponds to REFlags.IGNORE_CASE;
@@ -120,6 +128,8 @@ public class Pattern implements Serializable, REFlags {
      * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFlags.IGNORE_SPACES.
      * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFlags.UNICODE; this may yield some performance penalty.
      * <li><b>X</b> - compatibility with XML Schema, corresponds to REFlags.XML_SCHEMA.
+     * <li><b>-</b> - turn off the specified flags; normally has no effect unless something adds the flags.
+     * <li><b>+</b> - turn on the specified flags; normally is no different from just using the letters.
      * </ul>
      *
      * @param regex the Perl5-compatible regular expression string.
@@ -128,7 +138,6 @@ public class Pattern implements Serializable, REFlags {
      *                                see REFlags
      */
     public Pattern(String regex, String flags) throws PatternSyntaxException {
-        stringRepr = regex;
         internalCompile(regex, parseFlags(flags));
     }
 
@@ -155,17 +164,68 @@ public class Pattern implements Serializable, REFlags {
 
 
     //java.util.regex.* compatibility
+
+    /**
+     * Compiles the given String into a Pattern that can be used to match text.
+     * The syntax is normal for Java, including backslashes as part of regex syntax, like the digit shorthand "\d",
+     * escaped twice to "\\d" (so the double-quoted String itself doesn't try to interpret the backslash).
+     * @param regex a String in normal Java regular expression format
+     * @return a newly constructed Pattern object that can be used to match text that fits the given regular expression
+     * @throws PatternSyntaxException
+     */
     public static Pattern compile(String regex) throws PatternSyntaxException{
         return new Pattern(regex, DEFAULT);
     }
     //java.util.regex.* compatibility
+
+    /**
+     * Compiles the given String into a Pattern that can be used to match text.
+     * The syntax is normal for Java, including backslashes as part of regex syntax, like the digit shorthand "\d",
+     * escaped twice to "\\d" (so the double-quoted String itself doesn't try to interpret the backslash).
+     * <br>
+     * This variant allows flags to be passed as an int constructed via bitwise OR from REFlags constants. You may prefer
+     * the variant that takes a String for clarity.
+     * @param regex a String in normal Java regular expression format
+     * @param flags integer flags that are constructed via bitwise OR from the flag constants in REFlags.
+     * @return a newly constructed Pattern object that can be used to match text that fits the given regular expression
+     * @throws PatternSyntaxException
+     */
     public static Pattern compile(String regex,int flags) throws PatternSyntaxException{
+        return new Pattern(regex, flags);
+    }
+    //java.util.regex.* compatibility
+    /**
+     * Compiles the given String into a Pattern that can be used to match text.
+     * The syntax is normal for Java, including backslashes as part of regex syntax, like the digit shorthand "\d",
+     * escaped twice to "\\d" (so the double-quoted String itself doesn't try to interpret the backslash).
+     * <br>
+     * This variant allows flags to be passed as an String.
+     * The flag string should consist of letters 'i','m','s','x','u','X'(the case is significant) and a hyphen or plus.
+     * The meaning of letters:
+     * <ul>
+     * <li><b>i</b> - case insensitivity, corresponds to REFlags.IGNORE_CASE;
+     * <li><b>m</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to REFlags.MULTILINE flag;
+     * <li><b>s</b> - single line treatment('.' matches \r's and \n's),corresponds to REFlags.DOTALL;
+     * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFlags.IGNORE_SPACES.
+     * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFlags.UNICODE; this may yield some performance penalty.
+     * <li><b>X</b> - compatibility with XML Schema, corresponds to REFlags.XML_SCHEMA.
+     * <li><b>-</b> - turn off the specified flags; normally has no effect unless something adds the flags.
+     * <li><b>+</b> - turn on the specified flags; normally is no different from just using the letters.
+     * </ul>
+     *
+     * @param regex a String in normal Java regular expression format
+     * @param flags integer flags that are constructed via bitwise OR from the flag constants in REFlags.
+     * @return a newly constructed Pattern object that can be used to match text that fits the given regular expression
+     * @throws PatternSyntaxException
+     */
+    public static Pattern compile(String regex,String flags) throws PatternSyntaxException{
         return new Pattern(regex, flags);
     }
 
 
     private void internalCompile(String regex, int flags) throws PatternSyntaxException {
         stringRepr = regex;
+        caseless = (flags & IGNORE_CASE) == IGNORE_CASE;
         Term.makeTree(regex, flags, this);
     }
 

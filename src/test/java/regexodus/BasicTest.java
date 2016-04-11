@@ -12,7 +12,7 @@ import java.util.Random;
 public class BasicTest {
     private static Random r = new Random(0x1337CAFE);
     private static char[] tmp = new char[10];
-    private static final int STR_LEN = 10, STRING_COUNT = 1000000;
+    private static final int STR_LEN = 10, STRING_COUNT = 10000;
     private static String[] strings = new String[STRING_COUNT];
     private static char[][] chars = new char[STRING_COUNT][STR_LEN];
 
@@ -43,10 +43,10 @@ public class BasicTest {
         for (int i = 0; i < 100000; i++) {
             strings[i] = exampleASCII();
         }
-        Pattern p1 = new Pattern("([0-9a-fA-F])\\1"), p2 = Pattern.compile("([0-9a-fA-F])\\1");
+        Pattern p1 = new Pattern("([0-9a-f])\\1", "i"), p2 = Pattern.compile("([0-9A-F])\\1", "i");
         Matcher m1 = p1.matcher(), m2 = p2.matcher();
-        Assert.assertEquals(p1, p2);
-        Assert.assertEquals(m1, m2);
+        //Assert.assertEquals(p1, p2);
+        //Assert.assertEquals(m1, m2);
         /*
         System.out.println(p1);
         System.out.println(p2);
@@ -56,12 +56,15 @@ public class BasicTest {
         System.out.println(m2);
         */
         long ctr = 0;
+        boolean found;
         for (int i = 0; i < 100000; i++) {
             m1.setTarget(strings[i]);
             m2.setTarget(strings[i]);
-            Assert.assertEquals(m1.find(), m2.find());
+            found = m1.find();
+            if(found) ctr++;
+            Assert.assertEquals(found, m2.find());
         }
-
+        System.out.println(ctr);
 
         /*
         Assert.assertEquals(p, p2);

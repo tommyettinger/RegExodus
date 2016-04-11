@@ -267,14 +267,17 @@ class CharacterClass extends Term implements UnicodeConstants {
         if (!namesInitialized) initNames();
         return namedClasses.get(name);
     }
-
+/*
     static void makeICase(Term term, char c) {
         BlockSet bs = new BlockSet();
-        bs.setChar(Character.toLowerCase(c));
-        bs.setChar(Character.toUpperCase(c));
-        bs.setChar(Character.toTitleCase(c));
+
+        //bs.setChar(Character.toLowerCase(c));
+        //bs.setChar(Character.toUpperCase(c));
+        //bs.setChar(Character.toTitleCase(c));
+
+        bs.setChar(Category.caseFold(c));
         BlockSet.unify(bs, term);
-    }
+    }*/
 
     static void makeDigit(Term term, boolean inverse, boolean unicode) {
         BlockSet digit = unicode ? inverse ? UNONDIGIT : UDIGIT :
@@ -389,9 +392,12 @@ class CharacterClass extends Term implements UnicodeConstants {
                     if (prev >= 0) {
                         char c1 = (char) prev;
                         if (icase) {
+                            /*
                             bs.setChar(Character.toLowerCase(c1));
                             bs.setChar(Character.toUpperCase(c1));
                             bs.setChar(Character.toTitleCase(c1));
+                            */
+                            bs.setChar(Category.caseFold(c1));
                         } else bs.setChar(c1);
                     }
                     return i;
@@ -594,9 +600,12 @@ class CharacterClass extends Term implements UnicodeConstants {
             if (!inRange) {
                 char c1 = (char) prev;
                 if (icase) {
+                    /*
                     bs.setChar(Character.toLowerCase(c1));
                     bs.setChar(Character.toUpperCase(c1));
                     bs.setChar(Character.toTitleCase(c1));
+                    */
+                    bs.setChar(Category.caseFold(c1));
                 } else bs.setChar(c1);
                 prev = c;
             } else {
@@ -605,9 +614,13 @@ class CharacterClass extends Term implements UnicodeConstants {
                 inRange = false;
                 prev = -1;
                 if (icase) {
+                    /*
                     bs.setRange(Character.toLowerCase(c0), Character.toLowerCase(c));
                     bs.setRange(Character.toUpperCase(c0), Character.toUpperCase(c));
                     bs.setRange(Character.toTitleCase(c0), Character.toTitleCase(c));
+                    */
+                    bs.setRange(Category.caseFold(c0), Category.caseFold(c));
+
                 } else bs.setRange(c0, c);
             }
         }

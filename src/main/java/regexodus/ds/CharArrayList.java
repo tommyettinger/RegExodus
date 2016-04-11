@@ -943,6 +943,11 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         return toCharArray(null);
     }
 
+    @Override
+    public String toString() {
+        return new String(a, 0, size);
+    }
+
     /**
      * Unwraps an iterator into an array starting at a given offset for a given number of elements.
      * <p>
