@@ -49,20 +49,25 @@ import java.util.HashMap;
  * Matcher matcher=p.matcher(myText);
  * </pre>
  * The latter is an automaton that actually performs a search. It provides the following methods:
- * <li> search for matching substrings : matcher.find() or matcher.findAll();
- * <li> test whether the text matches the whole pattern : matcher.matches();
- * <li> test whether the text matches the beginning of the pattern : matcher.matchesPrefix();
- * <li> search with custom options : matcher.find(int options)
+ * <ul>
+ * <li> search for matching substrings : matcher.find() or matcher.findAll();</li>
+ * <li> test whether the text matches the whole pattern : matcher.matches();</li>
+ * <li> test whether the text matches the beginning of the pattern : matcher.matchesPrefix();</li>
+ * <li> search with custom options : matcher.find(int options)</li>
+ * </ul>
  * <p>
- * <b>Flags</b><br>
+ * <b>Flags</b>
+ * <br>
  * Flags (see REFlags interface) change the meaning of some regular expression elements at compiletime.
  * These flags may be passed both as string(see Pattern(String,String)) and as bitwise OR of:
- * <li><b>REFlags.IGNORE_CASE</b> - enables case insensitivity
- * <li><b>REFlags.MULTILINE</b> - forces "^" and "$" to match both at the start and the end of line;
- * <li><b>REFlags.DOTALL</b> - forces "." to match eols('\r' and '\n' in ASCII);
- * <li><b>REFlags.IGNORE_SPACES</b> - literal spaces in expression are ignored for better readability;
- * <li><b>REFlags.UNICODE</b> - the predefined classes('\w','\d',etc) are referenced to Unicode;
- * <li><b>REFlags.XML_SCHEMA</b> - permits XML Schema regular expressions syntax extensions.
+ * <ul>
+ * <li><b>REFlags.IGNORE_CASE</b> - enables case insensitivity</li>
+ * <li><b>REFlags.MULTILINE</b> - forces "^" and "$" to match both at the start and the end of line;</li>
+ * <li><b>REFlags.DOTALL</b> - forces "." to match eols('\r' and '\n' in ASCII);</li>
+ * <li><b>REFlags.IGNORE_SPACES</b> - literal spaces in expression are ignored for better readability;</li>
+ * <li><b>REFlags.UNICODE</b> - the predefined classes('\w','\d',etc) are referenced to Unicode;</li>
+ * <li><b>REFlags.XML_SCHEMA</b> - permits XML Schema regular expressions syntax extensions.</li>
+ * </ul>
  * <p>
  * <b>Multithreading</b><br>
  * Pattern instances are not thread-safe, and neither are Matcher objects.
@@ -122,14 +127,14 @@ public class Pattern implements Serializable, REFlags {
      * The flag string should consist of letters 'i','m','s','x','u','X'(the case is significant) and a hyphen or plus.
      * The meaning of letters:
      * <ul>
-     * <li><b>i</b> - case insensitivity, corresponds to REFlags.IGNORE_CASE;
-     * <li><b>m</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to REFlags.MULTILINE flag;
-     * <li><b>s</b> - single line treatment('.' matches \r's and \n's),corresponds to REFlags.DOTALL;
-     * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFlags.IGNORE_SPACES.
-     * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFlags.UNICODE; this may yield some performance penalty.
-     * <li><b>X</b> - compatibility with XML Schema, corresponds to REFlags.XML_SCHEMA.
-     * <li><b>-</b> - turn off the specified flags; normally has no effect unless something adds the flags.
-     * <li><b>+</b> - turn on the specified flags; normally is no different from just using the letters.
+     * <li><b>i</b> - case insensitivity, corresponds to REFlags.IGNORE_CASE;</li>
+     * <li><b>m</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to REFlags.MULTILINE flag;</li>
+     * <li><b>s</b> - single line treatment('.' matches \r's and \n's),corresponds to REFlags.DOTALL;</li>
+     * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFlags.IGNORE_SPACES.</li>
+     * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFlags.UNICODE; this may yield some performance penalty.</li>
+     * <li><b>X</b> - compatibility with XML Schema, corresponds to REFlags.XML_SCHEMA.</li>
+     * <li><b>-</b> - turn off the specified flags; normally has no effect unless something adds the flags.</li>
+     * <li><b>+</b> - turn on the specified flags; normally is no different from just using the letters.</li>
      * </ul>
      *
      * @param regex the Perl5-compatible regular expression string.
@@ -145,12 +150,12 @@ public class Pattern implements Serializable, REFlags {
      * Compiles a regular expression using REFlags.
      * The <code>flags</code> parameter is a bitwise OR of the following values:
      * <ul>
-     * <li><b>REFlags.IGNORE_CASE</b> - case insensitivity, corresponds to '<b>i</b>' letter;
-     * <li><b>REFlags.MULTILINE</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to '<b>m</b>';
-     * <li><b>REFlags.DOTALL</b> - single line treatment('.' matches \r's and \n's),corresponds to '<b>s</b>';
-     * <li><b>REFlags.IGNORE_SPACES</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to '<b>x</b>'.
-     * <li><b>REFlags.UNICODE</b> - predefined classes are regarded as belonging to Unicode, corresponds to '<b>u</b>'; this may yield some performance penalty.
-     * <li><b>REFlags.XML_SCHEMA</b> - compatibility with XML Schema, corresponds to '<b>X</b>'.
+     * <li><b>REFlags.IGNORE_CASE</b> - case insensitivity, corresponds to '<b>i</b>' letter;</li>
+     * <li><b>REFlags.MULTILINE</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to '<b>m</b>';</li>
+     * <li><b>REFlags.DOTALL</b> - single line treatment('.' matches \r's and \n's),corresponds to '<b>s</b>';</li>
+     * <li><b>REFlags.IGNORE_SPACES</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to '<b>x</b>'.</li>
+     * <li><b>REFlags.UNICODE</b> - predefined classes are regarded as belonging to Unicode, corresponds to '<b>u</b>'; this may yield some performance penalty.</li>
+     * <li><b>REFlags.XML_SCHEMA</b> - compatibility with XML Schema, corresponds to '<b>X</b>'.</li>
      * </ul>
      *
      * @param regex the Perl5-compatible regular expression string.
@@ -203,14 +208,14 @@ public class Pattern implements Serializable, REFlags {
      * The flag string should consist of letters 'i','m','s','x','u','X'(the case is significant) and a hyphen or plus.
      * The meaning of letters:
      * <ul>
-     * <li><b>i</b> - case insensitivity, corresponds to REFlags.IGNORE_CASE;
-     * <li><b>m</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to REFlags.MULTILINE flag;
-     * <li><b>s</b> - single line treatment('.' matches \r's and \n's),corresponds to REFlags.DOTALL;
-     * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFlags.IGNORE_SPACES.
-     * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFlags.UNICODE; this may yield some performance penalty.
-     * <li><b>X</b> - compatibility with XML Schema, corresponds to REFlags.XML_SCHEMA.
-     * <li><b>-</b> - turn off the specified flags; normally has no effect unless something adds the flags.
-     * <li><b>+</b> - turn on the specified flags; normally is no different from just using the letters.
+     * <li><b>i</b> - case insensitivity, corresponds to REFlags.IGNORE_CASE;</li>
+     * <li><b>m</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to REFlags.MULTILINE flag;</li>
+     * <li><b>s</b> - single line treatment('.' matches \r's and \n's),corresponds to REFlags.DOTALL;</li>
+     * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFlags.IGNORE_SPACES.</li>
+     * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFlags.UNICODE; this may yield some performance penalty.</li>
+     * <li><b>X</b> - compatibility with XML Schema, corresponds to REFlags.XML_SCHEMA.</li>
+     * <li><b>-</b> - turn off the specified flags; normally has no effect unless something adds the flags.</li>
+     * <li><b>+</b> - turn on the specified flags; normally is no different from just using the letters.</li>
      * </ul>
      *
      * @param regex a String in normal Java regular expression format
@@ -342,11 +347,11 @@ public class Pattern implements Serializable, REFlags {
     /**
      * Returns a replacer of a pattern by specified perl-like expression.
      * Such replacer will substitute all occurrences of a pattern by an evaluated expression
-     * ("$&" and "$0" will substitute by the whole match, "$1" will substitute by group#1, etc).
+     * ("$&amp;" and "$0" will substitute by the whole match, "$1" will substitute by group#1, etc).
      * Example:<pre>
      * String text="The quick brown fox jumped over the lazy dog";
      * Pattern word=new Pattern("\\w+");
-     * System.out.println(word.replacer("[$&]").replace(text));
+     * System.out.println(word.replacer("[$&amp;]").replace(text));
      * //prints "[The] [quick] [brown] [fox] [jumped] [over] [the] [lazy] [dog]"
      * Pattern swap=new Pattern("(fox|dog)(.*?)(fox|dog)");
      * System.out.println(swap.replacer("$3$2$1").replace(text));
@@ -356,7 +361,7 @@ public class Pattern implements Serializable, REFlags {
      * //prints "quick The fox brown over jumped lazy the dog"
      * </pre>
      *
-     * @param expr a perl-like expression, the "$&" and "${&}" standing for whole match, the "$N" and "${N}" standing for group#N, and "${Foo}" standing for named group Foo.
+     * @param expr a perl-like expression, the "$&amp;" and "${&amp;}" standing for whole match, the "$N" and "${N}" standing for group#N, and "${Foo}" standing for named group Foo.
      * @see Replacer
      */
     public Replacer replacer(String expr) {

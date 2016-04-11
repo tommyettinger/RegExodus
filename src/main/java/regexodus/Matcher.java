@@ -41,17 +41,23 @@ import static regexodus.Replacer.wrap;
 
 /**
  * Matcher is an automaton that actually performs matching. It provides the following methods:
- * <li> searching for a matching sub-strings : matcher.find() or matcher.findAll();
- * <li> testing whether a text matches a whole pattern : matcher.matches();
- * <li> testing whether the text matches the beginning of a pattern : matcher.matchesPrefix();
- * <li> searching with custom options : matcher.find(int options)
+ * <ul>
+ * <li> searching for a matching sub-strings : matcher.find() or matcher.findAll();</li>
+ * <li> testing whether a text matches a whole pattern : matcher.matches();</li>
+ * <li> testing whether the text matches the beginning of a pattern : matcher.matchesPrefix();</li>
+ * <li> searching with custom options : matcher.find(int options)</li>
+ * </ul>
  * <p>
- * <b>Obtaining results</b><br>
+ * <b>Obtaining results</b>
+ * <br>
  * After the search succeeded, i.e. if one of above methods returned <code>true</code>
  * one may obtain an information on the match:
- * <li> may check whether some group is captured : matcher.isCaptured(int);
- * <li> may obtain start and end positions of the match and its length : matcher.start(int),matcher.end(int),matcher.length(int);
- * <li> may obtain match contents as String : matcher.group(int).<br>
+ * <ul>
+ * <li> may check whether some group is captured : matcher.isCaptured(int);</li>
+ * <li> may obtain start and end positions of the match and its length : matcher.start(int),matcher.end(int),matcher.length(int);</li>
+ * <li> may obtain match contents as String : matcher.group(int).</li>
+ * </ul>
+ * <br>
  * The same way can be obtained the match prefix and suffix information.
  * The appropriate methods are grouped in MatchResult interface, which the Matcher class implements.
  * <br>
@@ -271,7 +277,7 @@ public class Matcher implements MatchResult {
      * @param text   - a data source
      * @param start  - where the target starts
      * @param len    - how long is the target
-     * @param shared - if <code>true<code>: data are shared or used later, <b>don't</b> modify it; if <code>false<code>: possible modifications of the text on subsequent <code>setTarget()</code> calls are perceived and allowed.
+     * @param shared - if <code>true</code>: data are shared or used later, <b>don't</b> modify it; if <code>false</code>: possible modifications of the text on subsequent <code>setTarget()</code> calls are perceived and allowed.
      * @see Matcher#setTarget(regexodus.Matcher, int)
      * @see Matcher#setTarget(java.lang.String)
      * @see Matcher#setTarget(java.lang.String, int, int)
@@ -374,7 +380,7 @@ public class Matcher implements MatchResult {
      * This feature allows to find a mismatch by examining only a beginning part of
      * the target (as if the beginning of the target doesn't match the beginning of the pattern, then the entire target
      * also couldn't match).<br>
-     * For example the following assertions yield <code>true<code>:<pre>
+     * For example the following assertions yield <code>true</code>:<pre>
      *   Pattern p=new Pattern("abcd");
      *   p.matcher("").matchesPrefix();
      *   p.matcher("a").matchesPrefix();
@@ -382,7 +388,7 @@ public class Matcher implements MatchResult {
      *   p.matcher("abc").matchesPrefix();
      *   p.matcher("abcd").matchesPrefix();
      * </pre>
-     * and the following yield <code>false<code>:<pre>
+     * and the following yield <code>false</code>:<pre>
      *   p.matcher("b").isPrefix();
      *   p.matcher("abcdef").isPrefix();
      *   p.matcher("x").isPrefix();
@@ -407,13 +413,13 @@ public class Matcher implements MatchResult {
 
     /**
      * Tells whether a current target matches the whole pattern.
-     * For example the following yields the <code>true<code>:<pre>
+     * For example the following yields the <code>true</code>:<pre>
      *   Pattern p=new Pattern("\\w+");
      *   p.matcher("a").matches();
      *   p.matcher("ab").matches();
      *   p.matcher("abc").matches();
      * </pre>
-     * and the following yields the <code>false<code>:<pre>
+     * and the following yields the <code>false</code>:<pre>
      *   p.matcher("abc def").matches();
      *   p.matcher("bcd ").matches();
      *   p.matcher(" bcd").matches();
@@ -551,9 +557,9 @@ public class Matcher implements MatchResult {
      *       String match=m.group(0);
      *       if(isOdd(Integer.parseInt(match))) System.out.println(match);
      *    }
-     * <p>
+     *
      *    static boolean isOdd(int i){
-     *       return (i&1)>0;
+     *       return (i&amp;1)&gt;0;
      *    }
      * </pre>
      * This outputs:<pre>

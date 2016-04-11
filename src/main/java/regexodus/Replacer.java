@@ -39,7 +39,7 @@ import java.io.Writer;
  * or according to a custom substitution model, provided as a Substitution interface implementation.<br>
  * A Replacer instance may be obtained either using Pattern.replacer(...) method, or by constructor:<pre>
  * Pattern p=new Pattern("\\w+");
- * Replacer perlExpressionReplacer=p.replacer("[$&]");
+ * Replacer perlExpressionReplacer=p.replacer("[$&amp;]");
  * //or another way to do the same
  * Substitution myOwnModel=new Substitution(){
  *    public void appendSubstitution(MatchResult match,TextBuffer tb){
@@ -56,7 +56,7 @@ import java.io.Writer;
  * System.out.println(myVeryOwnReplacer.replace("are belong to us"));
  * //result: "[All] [your] [base] [are] [belong] [to] [us]"
  * </pre>
- *
+ * This code was mostly written in 2001, I hope the reference isn't too outdated...
  * @see Substitution
  * @see PerlSubstitution
  * @see Replacer#Replacer(regexodus.Pattern, regexodus.Substitution)

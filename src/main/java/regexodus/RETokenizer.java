@@ -48,10 +48,10 @@ import java.util.NoSuchElementException;
  * Now the one way is to use the tokenizer as a token enumeration/iterator:<pre>
  * while(tok1.hasMore()) System.out.println(tok1.nextToken());
  * </pre>
- * and another way is to split it into a String array:<pre>
+ * and another way is to split it into a String array:
+ * {@code
  * String[] arr=tok2.split();
- * for(int i=0;i<tok2.length;i++) System.out.println(arr[i]);
- * </pre>
+ * for(int i=0;i<tok2.length;i++) System.out.println(arr[i]);}
  *
  * @see Pattern#tokenizer(java.lang.String)
  */
