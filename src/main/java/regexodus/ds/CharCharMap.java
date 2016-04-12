@@ -382,7 +382,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
         if (l >= n || size > maxFill(l, f)) return true;
         try {
             rehash(l);
-        } catch (OutOfMemoryError cantDoIt) {
+        } catch (Error cantDoIt) {
             return false;
         }
         return true;
@@ -406,7 +406,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
         if (l >= n || size > maxFill(l, f)) return true;
         try {
             rehash(l);
-        } catch (OutOfMemoryError cantDoIt) {
+        } catch (Error cantDoIt) {
             return false;
         }
         return true;
@@ -446,22 +446,15 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
     /**
      * Returns a deep copy of this map.
      * <p>
-     * <P>This method performs a deep copy of this hash map; the data stored in the map, however, is not cloned. Note that this makes a difference only for object keys.
-     *
+     * This method performs a deep copy of this hash map, but with primitive keys and values it doesn't matter much.
      * @return a deep copy of this map.
      */
 
     public CharCharMap clone() {
-        CharCharMap c;
-        try {
-            c = (CharCharMap) super.clone();
-        } catch (CloneNotSupportedException cantHappen) {
-            throw new InternalError();
-        }
-        c.containsNullKey = containsNullKey;
-        c.key = key.clone();
-        c.value = value.clone();
-        return c;
+        char[] k = new char[key.length], v = new char[value.length];
+        System.arraycopy(key, 0, k, 0, key.length);
+        System.arraycopy(value, 0, v, 0, value.length);
+        return new CharCharMap(k, v, f);
     }
 
     /**
@@ -661,7 +654,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
          */
 
         final public static int float2int(final float f) {
-            return Float.floatToRawIntBits(f);
+            return Float.floatToIntBits(f);
         }
 
         /**
@@ -672,7 +665,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
          */
 
         final public static int double2int(final double d) {
-            final long l = Double.doubleToRawLongBits(d);
+            final long l = Double.doubleToLongBits(d);
             return (int) (l ^ (l >>> 32));
         }
 

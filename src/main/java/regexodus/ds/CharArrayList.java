@@ -15,7 +15,13 @@
  */
 package regexodus.ds;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 
 /**
  * A type-specific array-based list; provides some additional methods that use polymorphism to avoid (un)boxing.
@@ -1109,7 +1115,9 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
          * @return a copy of <code>array</code>.
          */
         public static char[] copy(final char[] array) {
-            return array.clone();
+            char[] next = new char[array.length];
+            System.arraycopy(array, 0, next, 0, array.length);
+            return next;
         }
 
         /**
