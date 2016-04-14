@@ -124,7 +124,7 @@ public class Matcher implements MatchResult {
 
     private int minQueueLength;
 
-    private String cache;
+    private CharSequence cache;
 
     //cache may be longer than the actual data
     //and contrariwise; so cacheOffset may have both signs.
@@ -183,8 +183,8 @@ public class Matcher implements MatchResult {
      *
      * @param m       - a matcher that is a source of data
      * @param groupId - which group to take data from
-     * @see Matcher#setTarget(java.lang.String)
-     * @see Matcher#setTarget(java.lang.String, int, int)
+     * @see Matcher#setTarget(java.lang.CharSequence)
+     * @see Matcher#setTarget(java.lang.CharSequence, int, int)
      * @see Matcher#setTarget(char[], int, int)
      * @see Matcher#setTarget(java.io.Reader, int)
      */
@@ -211,13 +211,14 @@ public class Matcher implements MatchResult {
      *
      * @param text - a data
      * @see Matcher#setTarget(regexodus.Matcher, int)
-     * @see Matcher#setTarget(java.lang.String, int, int)
+     * @see Matcher#setTarget(java.lang.CharSequence, int, int)
      * @see Matcher#setTarget(char[], int, int)
      * @see Matcher#setTarget(java.io.Reader, int)
      */
-    public void setTarget(String text) {
+    public void setTarget(CharSequence text) {
         setTarget(text, 0, text.length());
     }
+    
 
     /**
      * Supplies a text to search in/match with, as a part of String.
@@ -227,17 +228,20 @@ public class Matcher implements MatchResult {
      * @param start - where the target starts
      * @param len   - how long is the target
      * @see Matcher#setTarget(regexodus.Matcher, int)
-     * @see Matcher#setTarget(java.lang.String)
+     * @see Matcher#setTarget(java.lang.CharSequence)
      * @see Matcher#setTarget(char[], int, int)
      * @see Matcher#setTarget(java.io.Reader, int)
      */
-    public void setTarget(String text, int start, int len) {
+    public void setTarget(CharSequence text, int start, int len) {
         char[] mychars = data;
         if (mychars == null || shared || mychars.length < len) {
             data = mychars = new char[(int) (1.7f * len)];
             shared = false;
         }
-        text.getChars(start, len, mychars, 0); //(srcBegin,srcEnd,dst[],dstBegin)
+        for (int i = start, p = 0; i < len; i++, p++) {
+            mychars[p] = text.charAt(i);
+        }
+        //text.getChars(start, len, mychars, 0); //(srcBegin,srcEnd,dst[],dstBegin)
         offset = 0;
         end = len;
 
@@ -256,8 +260,8 @@ public class Matcher implements MatchResult {
      * @param start - where the target starts
      * @param len   - how long is the target
      * @see Matcher#setTarget(regexodus.Matcher, int)
-     * @see Matcher#setTarget(java.lang.String)
-     * @see Matcher#setTarget(java.lang.String, int, int)
+     * @see Matcher#setTarget(java.lang.CharSequence)
+     * @see Matcher#setTarget(java.lang.CharSequence, int, int)
      * @see Matcher#setTarget(java.io.Reader, int)
      */
     public void setTarget(char[] text, int start, int len) {
@@ -279,8 +283,8 @@ public class Matcher implements MatchResult {
      * @param len    - how long is the target
      * @param shared - if <code>true</code>: data are shared or used later, <b>don't</b> modify it; if <code>false</code>: possible modifications of the text on subsequent <code>setTarget()</code> calls are perceived and allowed.
      * @see Matcher#setTarget(regexodus.Matcher, int)
-     * @see Matcher#setTarget(java.lang.String)
-     * @see Matcher#setTarget(java.lang.String, int, int)
+     * @see Matcher#setTarget(java.lang.CharSequence)
+     * @see Matcher#setTarget(java.lang.CharSequence, int, int)
      * @see Matcher#setTarget(char[], int, int)
      * @see Matcher#setTarget(java.io.Reader, int)
      */
@@ -301,8 +305,8 @@ public class Matcher implements MatchResult {
      * @param in  - a data stream;
      * @param len - how much characters should be read; if len is -1, read the entire stream.
      * @see Matcher#setTarget(regexodus.Matcher, int)
-     * @see Matcher#setTarget(java.lang.String)
-     * @see Matcher#setTarget(java.lang.String, int, int)
+     * @see Matcher#setTarget(java.lang.CharSequence)
+     * @see Matcher#setTarget(java.lang.CharSequence, int, int)
      * @see Matcher#setTarget(char[], int, int)
      */
     @GwtIncompatible
@@ -355,11 +359,11 @@ public class Matcher implements MatchResult {
         {
             return "<<<Incomplete Match>>> " + cache;
         }*/
-        String src = cache;
-        if (src != null) {
+        if (cache != null) {
             int co = cacheOffset;
-            return src.substring(start - co, end - co);
+            return cache.toString().substring(start - co, end - co);
         }
+        CharSequence src;
         int tOffset = this.offset, tLen = this.end - tOffset;
         char[] data = this.data;
         if ((end - start) >= (tLen / 3)) {
@@ -367,7 +371,7 @@ public class Matcher implements MatchResult {
             cache = src = new String(data, tOffset, tLen);
             cacheOffset = tOffset;
             cacheLength = tLen;
-            return src.substring(start - tOffset, end - tOffset);
+            return src.toString().substring(start - tOffset, end - tOffset);
         }
         return new String(data, start, end - start);
     }

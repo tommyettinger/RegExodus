@@ -286,7 +286,7 @@ public class Pattern implements Serializable, REFlags {
     /**
      * Returns a matcher for a specified string.
      */
-    public Matcher matcher(String s) {
+    public Matcher matcher(CharSequence s) {
         Matcher m = new Matcher(this);
         m.setTarget(s);
         return m;

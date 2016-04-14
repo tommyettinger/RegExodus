@@ -29,7 +29,7 @@
 
 package regexodus;
 
-interface Substitution {
+public interface Substitution {
     /**
      */
     void appendSubstitution(MatchResult match, TextBuffer dest);

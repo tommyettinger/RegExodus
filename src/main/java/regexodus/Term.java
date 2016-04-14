@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-class Term implements REFlags {
+public class Term implements REFlags {
 
     //runtime Term types
     static final int CHAR = 0;

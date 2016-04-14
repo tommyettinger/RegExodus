@@ -73,6 +73,32 @@ public class BasicTest {
         Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
         */
     }
+    @Test
+    public void testReplace()
+    {
+        String[] strings = new String[10000];
+        for (int i = 0; i < 10000; i++) {
+            strings[i] = exampleASCII();
+        }
+        Replacer r1 = new Pattern("([0-9a-f])\\1", "i").replacer("  "),
+                r2 = Pattern.compile("([0-9A-F])\\1", "i").replacer("  ");
+        StringBuilder sb = new StringBuilder(5000), sb2 = new StringBuilder(5000);
+        boolean found;
+        for (int i = 0; i < 10000; i++) {
+            r1.replace(strings[i], sb);
+            r2.replace(strings[i], sb2);
+            Assert.assertEquals(sb.toString(), sb2.toString());
+        }
+        System.out.println(sb.toString());
+        System.out.println(sb2.toString());
+
+        /*
+        Assert.assertEquals(p, p2);
+        Assert.assertNotEquals(p2, p3);
+        Assert.assertTrue(p.matches("1337ca7CAFE"));
+        Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
+        */
+    }
     //@Test
     public void testMatcherProblems()
     {

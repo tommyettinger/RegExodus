@@ -66,11 +66,21 @@ public class Replacer {
     private Pattern pattern;
     private Substitution substitution;
 
+    /**
+     * Unlikely to be used directly.
+     * @param pattern a regexodus.Pattern that determines what should be replaced
+     * @param substitution an implementation of the Substitution interface, which allows custom replacement behavior
+     */
     public Replacer(Pattern pattern, Substitution substitution) {
         this.pattern = pattern;
         this.substitution = substitution;
     }
 
+    /**
+     * Constructs a Replacer from a Pattern and a String to replace occurrences of the Pattern with.
+     * @param pattern a regexodus.Pattern that determines what should be replaced
+     * @param substitution a String that will be used to replace occurrences of the Pattern
+     */
     public Replacer(Pattern pattern, String substitution) {
         this(pattern, substitution, true);
     }
@@ -86,7 +96,12 @@ public class Replacer {
                 new DummySubstitution(s);
     }
 
-    public String replace(String text) {
+    /**
+     * Takes all instances in text of the Pattern this was constructed with, and replaces them with substitution.
+     * @param text a String, StringBuilder, or other CharSequence that may contain the text to replace
+     * @return the post-replacement text
+     */
+    public String replace(CharSequence text) {
         TextBuffer tb = wrap(new StringBuilder(text.length()));
         replace(pattern.matcher(text), substitution, tb);
         return tb.toString();
@@ -112,8 +127,13 @@ public class Replacer {
     }
 
     /**
+     * Takes all occurrences of the pattern this was constructed with in text and replaces them with the substitution.
+     * Appends the replaced text into sb.
+     * @param text a String, StringBuilder, or other CharSequence that may contain the text to replace
+     * @param sb the StringBuilder to append the result into
+     * @return the number of individual replacements performed; the results are applied to sb
      */
-    public int replace(String text, StringBuilder sb) {
+    public int replace(CharSequence text, StringBuilder sb) {
         return replace(pattern.matcher(text), substitution, wrap(sb));
     }
 
@@ -142,7 +162,7 @@ public class Replacer {
 
     /**
      */
-    public int replace(String text, TextBuffer dest) {
+    public int replace(CharSequence text, TextBuffer dest) {
         return replace(pattern.matcher(text), substitution, dest);
     }
 
@@ -221,7 +241,7 @@ public class Replacer {
     }
 
     @GwtIncompatible
-    public void replace(String text, Writer out) throws IOException {
+    public void replace(CharSequence text, Writer out) throws IOException {
         replace(pattern.matcher(text), substitution, out);
     }
 

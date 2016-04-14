@@ -29,7 +29,7 @@
 
 package regexodus;
 
-interface REFlags {
+public interface REFlags {
     /**
      * All the following options turned off
      */

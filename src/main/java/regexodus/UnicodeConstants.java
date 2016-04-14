@@ -29,7 +29,7 @@
 
 package regexodus;
 
-interface UnicodeConstants {
+public interface UnicodeConstants {
     int CATEGORY_COUNT = 32;
     int Cc = 15;//Character.CONTROL;
     int Cf = 16;//Character.FORMAT;
