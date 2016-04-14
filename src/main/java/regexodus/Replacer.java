@@ -31,6 +31,7 @@ package regexodus;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.Writer;
 
 /**
@@ -62,7 +63,9 @@ import java.io.Writer;
  * @see Replacer#Replacer(regexodus.Pattern, regexodus.Substitution)
  */
 
-public class Replacer {
+public class Replacer implements Serializable {
+    private static final long serialVersionUID = 2528136757932720807L;
+
     private Pattern pattern;
     private Substitution substitution;
 

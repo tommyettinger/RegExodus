@@ -74,8 +74,8 @@ import java.util.HashMap;
  *
  * @see REFlags
  * @see Matcher
- * @see Matcher#setTarget(java.lang.String)
- * @see Matcher#setTarget(java.lang.String, int, int)
+ * @see Matcher#setTarget(java.lang.CharSequence)
+ * @see Matcher#setTarget(java.lang.CharSequence, int, int)
  * @see Matcher#setTarget(char[], int, int)
  * @see Matcher#setTarget(java.io.Reader, int)
  * @see MatchResult
@@ -89,6 +89,8 @@ import java.util.HashMap;
  */
 
 public class Pattern implements Serializable, REFlags {
+    private static final long serialVersionUID = -3628346657932720807L;
+
     String stringRepr;
 
     // tree entry

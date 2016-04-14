@@ -29,6 +29,8 @@
 
 package regexodus;
 
+import java.io.Serializable;
+
 /**
  * An implementation of the Substitution interface. Performs substitutions in accordance with Perl-like substitution scripts.<br>
  * The latter is a string, containing a mix of memory register references and plain text blocks.<br>
@@ -50,8 +52,10 @@ package regexodus;
  */
 
 
-public class PerlSubstitution implements Substitution {
+public class PerlSubstitution implements Substitution, Serializable {
     //private static Pattern refPtn,argsPtn;
+    private static final long serialVersionUID = -1537346657932720807L;
+
     private static Pattern refPtn;
     private static int NAME_ID;
     private static int ESC_ID;
