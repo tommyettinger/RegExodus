@@ -47,13 +47,13 @@ public interface MatchResult {
 
     String group(int n);
 
-    boolean getGroup(int n, StringBuffer sb);
+    boolean getGroup(int n, StringBuilder sb);
 
     boolean getGroup(int n, TextBuffer tb);
 
     String group(String name);
 
-    boolean getGroup(String name, StringBuffer sb);
+    boolean getGroup(String name, StringBuilder sb);
 
     boolean getGroup(String name, TextBuffer tb);
 

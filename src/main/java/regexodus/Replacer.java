@@ -354,4 +354,12 @@ public class Replacer implements Serializable {
         result = 31 * result + (substitution != null ? substitution.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Replacer{" +
+                "pattern=" + pattern +
+                ", substitution=" + substitution +
+                '}';
+    }
 }

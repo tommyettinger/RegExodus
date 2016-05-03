@@ -192,4 +192,46 @@ public class RETokenizer implements Iterator<String> {
     public String next() {
         return nextToken();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RETokenizer that = (RETokenizer) o;
+
+        if (checked != that.checked) return false;
+        if (hasToken != that.hasToken) return false;
+        if (pos != that.pos) return false;
+        if (endReached != that.endReached) return false;
+        if (emptyTokensEnabled != that.emptyTokensEnabled) return false;
+        if (matcher != null ? !matcher.equals(that.matcher) : that.matcher != null) return false;
+        return token != null ? token.equals(that.token) : that.token == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = matcher != null ? matcher.hashCode() : 0;
+        result = 31 * result + (checked ? 1 : 0);
+        result = 31 * result + (hasToken ? 1 : 0);
+        result = 31 * result + (token != null ? token.hashCode() : 0);
+        result = 31 * result + pos;
+        result = 31 * result + (endReached ? 1 : 0);
+        result = 31 * result + (emptyTokensEnabled ? 1 : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "RETokenizer{" +
+                "matcher=" + matcher +
+                ", checked=" + checked +
+                ", hasToken=" + hasToken +
+                ", token='" + token + '\'' +
+                ", pos=" + pos +
+                ", endReached=" + endReached +
+                ", emptyTokensEnabled=" + emptyTokensEnabled +
+                '}';
+    }
 }

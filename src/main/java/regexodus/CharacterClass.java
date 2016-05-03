@@ -361,7 +361,7 @@ class CharacterClass extends Term implements UnicodeConstants {
 
     static int parseName(char[] data, int i, int out, Term term, boolean inverse,
                                boolean skipspaces) throws PatternSyntaxException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         i = parseName(data, i, out, sb, skipspaces);
         BlockSet bs = getNamedClass(sb.toString());
         if (bs == null) throw new PatternSyntaxException("unknow class: {" + sb + "}");
@@ -380,7 +380,7 @@ class CharacterClass extends Term implements UnicodeConstants {
         int prev = -1;
         boolean isFirst = true, setFirst = false, inRange = false;
         BlockSet bs1 = null;
-        StringBuffer sb = null;
+        StringBuilder sb = null;
         for (; i < out; isFirst = setFirst, setFirst = false) {
             handle_special:
             switch (c = data[i++]) {
@@ -470,15 +470,6 @@ class CharacterClass extends Term implements UnicodeConstants {
                                     + toHexDigit(data[i++]));
                             break handle_special;
 
-                        case 'v':
-                            c = (char) ((toHexDigit(c) << 24) +
-                                    (toHexDigit(data[i++]) << 16) +
-                                    (toHexDigit(data[i++]) << 12) +
-                                    (toHexDigit(data[i++]) << 8) +
-                                    (toHexDigit(data[i++]) << 4) +
-                                    toHexDigit(data[i++]));
-                            break handle_special;
-
                         case 'b':
                             c = 8; // backspace
                             break handle_special;
@@ -487,11 +478,13 @@ class CharacterClass extends Term implements UnicodeConstants {
                             int hex = 0;
                             char d;
                             if ((d = data[i++]) == '{') {
-                                while ((d = data[i++]) != '}') {
+                                while (i < out && (d = data[i++]) != '}') {
                                     hex = (hex << 4) + toHexDigit(d);
                                 }
-                                if (hex > 0xffff) throw new PatternSyntaxException("\\x{<out of range>}");
+                                if (hex > 0xffff || i == out)
+                                    throw new PatternSyntaxException("\\x{<out of range or incomplete>}");
                             } else {
+                                if(i >= out - 2) throw new PatternSyntaxException("incomplete escape sequence \\xHH");
                                 hex = (toHexDigit(d) << 4) + toHexDigit(data[i++]);
                             }
                             c = (char) hex;
@@ -504,7 +497,11 @@ class CharacterClass extends Term implements UnicodeConstants {
                                 if (d >= '0' && d <= '7') {
                                     oct *= 8;
                                     oct += d - '0';
-                                    if (oct > 0xffff) break;
+                                    if (oct > 0xffff){
+                                        oct -= d - '0';
+                                        oct /= 8;
+                                        break;
+                                    }
                                 } else break;
                             }
                             c = (char) oct;
@@ -517,7 +514,11 @@ class CharacterClass extends Term implements UnicodeConstants {
                                 if (d >= '0' && d <= '9') {
                                     dec *= 10;
                                     dec += d - '0';
-                                    if (dec > 0xffff) break;
+                                    if (dec > 0xffff) {
+                                        dec -= d - '0';
+                                        dec /= 10;
+                                        break;
+                                    }
                                 } else break;
                             }
                             c = (char) dec;
@@ -556,19 +557,31 @@ class CharacterClass extends Term implements UnicodeConstants {
                             bs.setWordChar(unicode);
                             continue;
 
+                        case 'h':   // horizontal whitespace
+                            if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\w...]");
+                            bs.setHorizontalSpace(unicode);
+                            continue;
+
+                        case 'v':   // vertical whitespace
+                            if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\w...]");
+                            bs.setVerticalSpace(unicode);
+                            continue;
+
                         case 'P':   // \\P{..}
                             if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\P...]");
                             inv = true;
                         case 'p':   // \\p{..}
                             if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\p...]");
-                            if (sb == null) sb = new StringBuffer();
+                            if (sb == null) sb = new StringBuilder();
                             else sb.setLength(0);
                             i = parseName(data, i, out, sb, skipspaces);
                             BlockSet nc = getNamedClass(sb.toString());
                             if (nc == null) throw new PatternSyntaxException("unknown named class: {" + sb + "}");
                             bs.add(nc, inv);
                             continue;
-
+                        case 'Q':
+                        case 'E':
+                            throw new PatternSyntaxException("Escaped \\Q\\E literals cannot be inside character classes");
                         default:
                             //other escaped treat as normal
                             break handle_special;
@@ -581,7 +594,7 @@ class CharacterClass extends Term implements UnicodeConstants {
 
                 case '{':   //
                     if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\w...]");
-                    if (sb == null) sb = new StringBuffer();
+                    if (sb == null) sb = new StringBuilder();
                     else sb.setLength(0);
                     i = parseName(data, i - 1, out, sb, skipspaces);
                     BlockSet nc = getNamedClass(sb.toString());
@@ -628,7 +641,7 @@ class CharacterClass extends Term implements UnicodeConstants {
     }
 
 
-    private static int parseName(char[] data, int i, int out, StringBuffer sb,
+    private static int parseName(char[] data, int i, int out, StringBuilder sb,
                                  boolean skipspaces) throws PatternSyntaxException {
         char c;
         int start = -1;

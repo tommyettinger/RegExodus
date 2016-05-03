@@ -769,7 +769,7 @@ public class Matcher implements MatchResult {
 
     /**
      */
-    public boolean getGroup(int n, StringBuffer sb) {
+    public boolean getGroup(int n, StringBuilder sb) {
         MemReg mr = bounds(n);
         if (mr == null) return false;
         int in;
@@ -779,7 +779,7 @@ public class Matcher implements MatchResult {
 
     /**
      */
-    public boolean getGroup(String name, StringBuffer sb) {
+    public boolean getGroup(String name, StringBuilder sb) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("unknown group: \"" + name + "\"");
         return getGroup(id, sb);
@@ -2180,7 +2180,6 @@ public class Matcher implements MatchResult {
         return tb.toString();
     }
 
-
 }
 
 class SearchEntry {
@@ -2317,6 +2316,23 @@ class SearchEntry {
         result = 31 * result + (cCurrent != null ? cCurrent.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "SearchEntry{" +
+                "term=" + term +
+                ", index=" + index +
+                ", cnt=" + cnt +
+                ", regLen=" + regLen +
+                ", isState=" + isState +
+                ", sub=" + sub +
+                ", on=" + on +
+                ", mHead=" + mHead +
+                ", mCurrent=" + mCurrent +
+                ", cHead=" + cHead +
+                ", cCurrent=" + cCurrent +
+                '}';
+    }
 }
 
 class MemReg {
@@ -2353,6 +2369,16 @@ class MemReg {
         result = 31 * result + tmp;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "MemReg{" +
+                "index=" + index +
+                ", in=" + in +
+                ", out=" + out +
+                ", tmp=" + tmp +
+                '}';
+    }
 }
 
 class LAEntry {
@@ -2376,5 +2402,14 @@ class LAEntry {
         result = 31 * result + (top != null ? top.hashCode() : 0);
         result = 31 * result + (actual != null ? actual.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "LAEntry{" +
+                "index=" + index +
+                ", top=" + top +
+                ", actual=" + actual +
+                '}';
     }
 }

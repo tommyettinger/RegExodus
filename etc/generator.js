@@ -86,11 +86,13 @@ for (ct of categories)
 }
 */
 var word = function (){
+    /*
     var cps = require("unicode-8.0.0/categories/N/code-points").concat(
     require("unicode-8.0.0/categories/L/code-points"),
     require("unicode-8.0.0/categories/Mn/code-points"),
     require("unicode-8.0.0/categories/Mc/code-points"),
     ["_".charCodeAt(0)]).sort(function(a,b){return a - b;});
+    */
     /*
     //Identifier
     var cps = require("unicode-8.0.0/categories/L/code-points").concat(
@@ -101,6 +103,9 @@ var word = function (){
     require("unicode-8.0.0/categories/Sc/code-points")
     ).sort(function(a,b){return a - b;});
     */
+    var cps = [10, 11, 12, 13, 133, 8232, 8233];
+    //var cps = require("unicode-8.0.0/categories/Zs/code-points").concat(
+    //["\t".charCodeAt(0)]).sort(function(a,b){return a - b;});
 
     var dict, str;
     var dictSrc, strSrc;
@@ -186,9 +191,9 @@ var word = function (){
     //    ')(' + dictSrc + ',' + strSrc + ');';
     //console.log(res);
 
-    console.log("public static final Category Word=new Category(new int[]" + dictSrc + strSrc + ");\n");
+    console.log("public static final Category Vertical=new Category(new int[]" + dictSrc + strSrc + ");\n");
 }
-//word();
+word();
 var cases = function()
 {
     var cps = _.merge(
@@ -199,4 +204,4 @@ var cases = function()
 
     console.log('static final CharCharMap cases=newCharCharMap(new int[]'+keySrc+'new int[]'+valSrc+');\n');
 }
-cases();
+//cases();

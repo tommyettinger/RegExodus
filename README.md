@@ -14,7 +14,7 @@ HTML via GWT. This incompatibility is particularly painful in regards to Unicode
 where JS is rather crippled compared to Java's fully-fledged understanding of Unicode.
 
 Matching any letter seems easy enough with `[A-Za-z]` until the need to match letters
-in French, German, Hebrew, and more comes up as the application finds a need for I18N.
+in French, German, Hebrew, and more comes up as the application finds I18N necessary.
 Then if you need to perform case-insensitive matching, things get even more troubling
 with naive solutions... There needs to be a better way.
 
@@ -58,12 +58,22 @@ when I was thinking of names for the project.
 
 Code-wise, usage should be transparent or require minimal changes if porting from
 java.util.regex code like Pattern and Matcher; just change the package from
-java.util.regex.Pattern to regexodus.Pattern.
+java.util.regex.Pattern to regexodus.Pattern. It is possible that GWT's option for
+"super-sourced" packages to replace unimplemented parts of the JRE may work here
+to imitate an implementation of java.util.regex with a close approximation, but it
+hasn't been attempted. Super-sourcing may require a fork/branch to change some
+compatibility traits and also possibly change the package name.
 
 Installation should be simple if you use JitPack (recommended). [Instructions for
 various build tools are here](https://jitpack.io/#tommyettinger/RegExodus); the
-0.1 release is preferred for now, based on the 1.2 line of JRegex. You can also
+0.1.2 release is preferred for now, based on the 1.2 line of JRegex. You can also
 build from source; this has no dependencies other than JUnit for tests.
+
+0.1.2 adds support for a missing Java regex feature, `\Q...\E` literal sections.
+It also fixes some not-insignificant issues with features not present in Java's
+regex implementation, like an array index bug involving `\m...`, where those
+character escapes with base-10 numbers could check outside the input string and
+crash if the escape was at the end of a pattern.
 
 ## Credit
 

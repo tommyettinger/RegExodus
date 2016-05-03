@@ -31,9 +31,13 @@ package regexodus;
 
 public interface REFlags {
     /**
-     * All the following options turned off
+     * All the following options turned off, EXCEPT UNICODE. Unicode handling can be turned off with "-u" at the end
+     * of a flag string, or by simply specifying only the flags you want in a bitmask, like
+     * {@code (REFlags.IGNORE_CASE | REFlags.MULTILINE | REFlags.DOTALL)}.
+     * <br>
+     * This behavior changed between the 0.1.1 and 0.1.2 release.
      */
-    int DEFAULT = 0;
+    int DEFAULT = 16;
 
     /**
      * Pattern "a" matches both "a" and "A".
@@ -99,4 +103,6 @@ public interface REFlags {
      * Turns on the compatibility with XML Schema regular expressions.
      */
     int XML_SCHEMA = 1 << 5;
+
+
 }

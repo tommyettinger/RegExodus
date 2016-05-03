@@ -39,22 +39,14 @@ public class BasicTest {
     @Test
     public void testASCII()
     {
+
         String[] strings = new String[100000];
         for (int i = 0; i < 100000; i++) {
             strings[i] = exampleASCII();
         }
         Pattern p1 = new Pattern("([0-9a-f])\\1", "i"), p2 = Pattern.compile("([0-9A-F])\\1", "i");
         Matcher m1 = p1.matcher(), m2 = p2.matcher();
-        //Assert.assertEquals(p1, p2);
-        //Assert.assertEquals(m1, m2);
-        /*
-        System.out.println(p1);
-        System.out.println(p2);
-        System.out.println(p1.root0);
-        System.out.println(p2.root0);
-        System.out.println(m1);
-        System.out.println(m2);
-        */
+
         long ctr = 0;
         boolean found;
         for (int i = 0; i < 100000; i++) {
@@ -66,12 +58,17 @@ public class BasicTest {
         }
         System.out.println(ctr);
 
+
         /*
         Assert.assertEquals(p, p2);
         Assert.assertNotEquals(p2, p3);
         Assert.assertTrue(p.matches("1337ca7CAFE"));
         Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
         */
+        System.out.println(Pattern.compile("(\\Q[]\\){)$^(\\E)").matches("[]\\){)$^("));
+        System.out.println(Pattern.compile("\\m11").matches("\13")); //decimal is nicer than octal, huh
+        System.out.println(Pattern.compile("[\\v]{3}").matches("\u2028\r\n"));
+        System.out.println(Pattern.compile("[\\h]{5}").matches("\u1680\u00A0 \u2009\t"));
     }
     @Test
     public void testReplace()

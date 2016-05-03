@@ -31,6 +31,8 @@ package regexodus;
 
 import regexodus.ds.IntBitSet;
 
+import java.util.Arrays;
+
 class BlockSet implements UnicodeConstants {
     /*
     private static final Block[][] categoryBits = new Block[CATEGORY_COUNT][BLOCK_COUNT];
@@ -141,6 +143,25 @@ class BlockSet implements UnicodeConstants {
             setChar('\n');
             setChar('\t');
             setChar('\f');
+        }
+    }
+
+    final void setHorizontalSpace(boolean unicode) {
+        if (unicode) {
+            setCategory("Zh");
+        } else {
+            setChar(' ');
+            setChar('\t');
+        }
+    }
+    final void setVerticalSpace(boolean unicode) {
+        if (unicode) {
+            setCategory("Zv");
+        } else {
+            setChar('\n');
+            setChar('\r');
+            setChar('\f');
+            setChar('\u000B');
         }
     }
 
@@ -283,8 +304,34 @@ class BlockSet implements UnicodeConstants {
         sb.append(')');
         return sb.toString();
     }
-   
-   /*
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BlockSet blockSet = (BlockSet) o;
+
+        if (positive != blockSet.positive) return false;
+        if (isLarge != blockSet.isLarge) return false;
+        if (weight != blockSet.weight) return false;
+        if (block0 != null ? !block0.equals(blockSet.block0) : blockSet.block0 != null) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        return Arrays.equals(blocks, blockSet.blocks);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (positive ? 1 : 0);
+        result = 31 * result + (isLarge ? 1 : 0);
+        result = 31 * result + (block0 != null ? block0.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(blocks);
+        result = 31 * result + weight;
+        return result;
+    }
+
+    /*
    public static void main(String[] args){
       //System.out.print("blocks(Lu)=");
       //System.out.println(CharacterClass.stringValue2(Block.toBitset2(categoryBits[Lu])));
@@ -538,6 +585,36 @@ class Block implements UnicodeConstants {
 
     private final static IntBitSet EMPTY_BITS = new IntBitSet(BLOCK_SIZE);
     private final static IntBitSet FULL_BITS = new IntBitSet(BLOCK_SIZE);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Block block = (Block) o;
+
+        if (isFull != block.isFull) return false;
+        if (shared != block.shared) return false;
+        return bits != null ? bits.equals(block.bits) : block.bits == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (isFull ? 1 : 0);
+        result = 31 * result + (bits != null ? bits.hashCode() : 0);
+        result = 31 * result + (shared ? 1 : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Block{" +
+                "isFull=" + isFull +
+                ", bits=" + bits +
+                ", shared=" + shared +
+                '}';
+    }
 
     static {
         FULL_BITS.set(0, BLOCK_SIZE-1);

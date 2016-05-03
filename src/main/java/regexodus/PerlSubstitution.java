@@ -223,6 +223,7 @@ abstract class GReference {
         }
         return new StringReference((match.group(grp)));
     }
+
 }
 
 class IntReference extends GReference {
@@ -251,6 +252,13 @@ class IntReference extends GReference {
     public int hashCode() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "IntReference{" +
+                "id=" + id +
+                '}';
+    }
 }
 
 class StringReference extends GReference {
@@ -278,5 +286,12 @@ class StringReference extends GReference {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "StringReference{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

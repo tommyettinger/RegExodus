@@ -77,6 +77,10 @@ public class Term implements REFlags {
     static final int CR_LT = 30;
     static final int CR_GT_EQ = 31;
 
+
+    static final int LITERAL_START = 60;
+    static final int LITERAL_END = 61;
+
     /*optimization-nontransparent types*/
     static final int BRANCH = 32;
     static final int BRANCH_STORE_CNT = 33;
@@ -128,6 +132,8 @@ public class Term implements REFlags {
     private static final int LIMITS_PARSE_RESULT_INDEX = 2;
     private static final int LIMITS_OK = 1;
     private static final int LIMITS_FAILURE = 2;
+
+    private static final int LITERAL_FLAG = 64;
 
     //static CustomParser[] customParsers=new CustomParser[256];
 
@@ -243,7 +249,6 @@ public class Term implements REFlags {
         for (TermIterator i : iterators) {
             i.optimize();
         }
-        // ===
 
         //re.root = optimized;
         re.root = first;
@@ -413,105 +418,133 @@ public class Term implements REFlags {
         while (i < end) {
             char c = data[i];
             boolean greedy = true;
-            switch (c) {
-                //operations
-                case '*':
-                    if (current == null) throw new PatternSyntaxException("missing term before *");
-                    i++;
-                    if (i < end && data[i] == '?') {
-                        greedy = false;
+            if((flags & LITERAL_FLAG) != LITERAL_FLAG) {
+                switch (c) {
+                    //operations
+                    case '*':
+                        if (current == null) throw new PatternSyntaxException("missing term before *");
                         i++;
-                    }
-                    tmp = greedy ? makeGreedyStar(vars, current, iterators) :
-                            makeLazyStar(vars, current);
-                    current = replaceCurrent(tmp);
-                    break;
-
-                case '+':
-                    if (current == null) throw new PatternSyntaxException("missing term before +");
-                    i++;
-                    if (i < end && data[i] == '?') {
-                        greedy = false;
-                        i++;
-                    }
-                    tmp = greedy ? makeGreedyPlus(vars, current, iterators) :
-                            makeLazyPlus(vars, current);
-                    current = replaceCurrent(tmp);
-                    break;
-
-                case '?':
-                    if (current == null) throw new PatternSyntaxException("missing term before ?");
-                    i++;
-                    if (i < end && data[i] == '?') {
-                        greedy = false;
-                        i++;
-                    }
-
-                    tmp = greedy ? makeGreedyQMark(vars, current) :
-                            makeLazyQMark(vars, current);
-                    current = replaceCurrent(tmp);
-                    break;
-
-                case '{':
-                    limits[0] = 0;
-                    limits[1] = -1;
-                    int le = parseLimits(i + 1, end, data, limits);
-                    if (limits[LIMITS_PARSE_RESULT_INDEX] == LIMITS_OK) { //parse ok
-                        if (current == null) throw new PatternSyntaxException("missing term before {}");
-                        i = le;
                         if (i < end && data[i] == '?') {
                             greedy = false;
                             i++;
                         }
-                        tmp = greedy ? makeGreedyLimits(vars, current, limits, iterators) :
-                                makeLazyLimits(vars, current, limits);
+                        tmp = greedy ? makeGreedyStar(vars, current, iterators) :
+                                makeLazyStar(vars, current);
                         current = replaceCurrent(tmp);
                         break;
-                    } else { //unicode class or named backreference
-                        if (data[i + 1] == '\\') { //'{\name}' - backreference
-                            int p = i + 2;
-                            if (p == end) throw new PatternSyntaxException("'group_id' expected");
-                            while (Category.Z.contains(data[p])) {
-                                p++;
-                                if (p == end) throw new PatternSyntaxException("'group_id' expected");
+
+                    case '+':
+                        if (current == null) throw new PatternSyntaxException("missing term before +");
+                        i++;
+                        if (i < end && data[i] == '?') {
+                            greedy = false;
+                            i++;
+                        }
+                        tmp = greedy ? makeGreedyPlus(vars, current, iterators) :
+                                makeLazyPlus(vars, current);
+                        current = replaceCurrent(tmp);
+                        break;
+
+                    case '?':
+                        if (current == null) throw new PatternSyntaxException("missing term before ?");
+                        i++;
+                        if (i < end && data[i] == '?') {
+                            greedy = false;
+                            i++;
+                        }
+
+                        tmp = greedy ? makeGreedyQMark(vars, current) :
+                                makeLazyQMark(vars, current);
+                        current = replaceCurrent(tmp);
+                        break;
+
+                    case '{':
+                        limits[0] = 0;
+                        limits[1] = -1;
+                        int le = parseLimits(i + 1, end, data, limits);
+                        if (limits[LIMITS_PARSE_RESULT_INDEX] == LIMITS_OK) { //parse ok
+                            if (current == null) throw new PatternSyntaxException("missing term before {}");
+                            i = le;
+                            if (i < end && data[i] == '?') {
+                                greedy = false;
+                                i++;
                             }
-                            BackReference br = new BackReference(-1, (flags & IGNORE_CASE) > 0);
-                            i = parseGroupId(data, p, end, br, gmap);
-                            current = append(br);
-                            continue;
-                        } else {
-                            Term t = new Term();
-                            i = CharacterClass.parseName(data, i, end, t, false, (flags & IGNORE_SPACES) > 0);
-                            current = append(t);
+                            tmp = greedy ? makeGreedyLimits(vars, current, limits, iterators) :
+                                    makeLazyLimits(vars, current, limits);
+                            current = replaceCurrent(tmp);
+                            break;
+                        } else { //unicode class or named backreference
+                            if (data[i + 1] == '\\') { //'{\name}' - backreference
+                                int p = i + 2;
+                                if (p == end) throw new PatternSyntaxException("'group_id' expected");
+                                while (Category.Z.contains(data[p])) {
+                                    p++;
+                                    if (p == end) throw new PatternSyntaxException("'group_id' expected");
+                                }
+                                BackReference br = new BackReference(-1, (flags & IGNORE_CASE) > 0);
+                                i = parseGroupId(data, p, end, br, gmap);
+                                current = append(br);
+                                continue;
+                            } else {
+                                Term t = new Term();
+                                i = CharacterClass.parseName(data, i, end, t, false, (flags & IGNORE_SPACES) > 0);
+                                current = append(t);
+                                continue;
+                            }
+                        }
+
+                    case ' ':
+                    case '\t':
+                    case '\r':
+                    case '\n':
+                        if ((flags & IGNORE_SPACES) > 0) {
+                            i++;
                             continue;
                         }
-                    }
+                        //else go on as default
 
-                case ' ':
-                case '\t':
-                case '\r':
-                case '\n':
-                    if ((flags & IGNORE_SPACES) > 0) {
-                        i++;
-                        continue;
-                    }
-                    //else go on as default
+                        //symbolic items
+                    default:
+                        tmp = new Term();
+                        i = parseTerm(data, i, end, tmp, flags);
 
-                    //symbolic items
-                default:
-                    tmp = new Term();
-                    i = parseTerm(data, i, end, tmp, flags);
+                        if (tmp.type == LITERAL_START) {
+                            flags |= LITERAL_FLAG;
+                            break;
+                        } else if (tmp.type == LITERAL_END) {
+                            flags &= ~LITERAL_FLAG;
+                            break;
+                        }
 
-                    if (tmp.type == END && i < end) {
-                        throw new PatternSyntaxException("'$' is not a last term in the group: <" + new String(data, offset, end - offset) + ">");
-                    }
-                    //"\A"
-                    //if(tmp.type==START && i>(offset+1)){
-                    //   throw new PatternSyntaxException("'^' is not a first term in the group: <"+new String(data,offset,end-offset)+">");
-                    //}
+                        if (tmp.type == END && i < end) {
+                            throw new PatternSyntaxException("'$' is not a last term in the group: <" + new String(data, offset, end - offset) + ">");
+                        }
+                        //"\A"
+                        //if(tmp.type==START && i>(offset+1)){
+                        //   throw new PatternSyntaxException("'^' is not a first term in the group: <"+new String(data,offset,end-offset)+">");
+                        //}
 
-                    current = append(tmp);
+                        current = append(tmp);
+                        break;
+                }
+            }
+            else {
+                tmp = new Term();
+                i = parseTerm(data, i, end, tmp, flags);
+
+                if (tmp.type == LITERAL_START) {
+                    flags |= LITERAL_FLAG;
                     break;
+                } else if (tmp.type == LITERAL_END) {
+                    flags &= ~LITERAL_FLAG;
+                    break;
+                }
+
+                if (tmp.type == END && i < end) {
+                    throw new PatternSyntaxException("'$' is not a last term in the group: <" + new String(data, offset, end - offset) + ">");
+                }
+
+                current = append(tmp);
             }
         }
     }
@@ -956,6 +989,26 @@ public class Term implements REFlags {
                           int flags) throws PatternSyntaxException {
         char c = data[i++];
         boolean inv = false;
+        if((flags & LITERAL_FLAG) == LITERAL_FLAG)
+        {
+            switch (c)
+            {
+                case '\\':
+                    if(i < out + 1 && data[i] == 'E')
+                    {
+                        term.type = LITERAL_END;
+                        return i + 1;
+                    }
+                default:
+                    term.type = CHAR;
+                    if ((flags & IGNORE_CASE) == 0) {
+                        term.c = c;
+                    } else {
+                        term.c = Category.caseFold(c);
+                    }
+                    return i;
+            }
+        }
         switch (c) {
             case '[':
                 return CharacterClass.parseClass(data, i, out, term, (flags & IGNORE_CASE) > 0, (flags & IGNORE_SPACES) > 0, (flags & UNICODE) > 0, (flags & XML_SCHEMA) > 0);
@@ -989,33 +1042,32 @@ public class Term implements REFlags {
                         c = '\r'; // carriage return
                         break;
 
+
+
                     case 't':
                         c = '\t'; // tab
                         break;
 
                     case 'u':
-                        c = (char) ((CharacterClass.toHexDigit(data[i++]) << 12) +
+                        if(i < out - 3)
+                            c = (char) ((CharacterClass.toHexDigit(data[i++]) << 12) +
                                 (CharacterClass.toHexDigit(data[i++]) << 8) +
                                 (CharacterClass.toHexDigit(data[i++]) << 4) +
                                 CharacterClass.toHexDigit(data[i++]));
-                        break;
-
-                    case 'v':
-                        c = (char) ((CharacterClass.toHexDigit(data[i++]) << 24) +
-                                (CharacterClass.toHexDigit(data[i++]) << 16) +
-                                (CharacterClass.toHexDigit(data[i++]) << 12) +
-                                (CharacterClass.toHexDigit(data[i++]) << 8) +
-                                (CharacterClass.toHexDigit(data[i++]) << 4) +
-                                CharacterClass.toHexDigit(data[i++]));
+                        else {
+                            c = '\0';
+                            i = out;
+                        }
                         break;
 
                     case 'x': {   // hex 2-digit number -> char
                         int hex = 0;
                         char d;
                         if ((d = data[i++]) == '{') {
-                            while ((d = data[i++]) != '}') {
+                            while (i < out && (d = data[i++]) != '}') {
                                 hex = (hex << 4) + CharacterClass.toHexDigit(d);
-                                if (hex > 0xffff) throw new PatternSyntaxException("\\x{<out of range>}");
+                                if (hex > 0xffff || i == out)
+                                    throw new PatternSyntaxException("\\x{<out of range or incomplete>}");
                             }
                         } else {
                             hex = (CharacterClass.toHexDigit(d) << 4) +
@@ -1027,12 +1079,16 @@ public class Term implements REFlags {
                     case '0':
                     case 'o':   // oct 2- or 3-digit number -> char
                         int oct = 0;
-                        for (; ; ) {
+                        for (; i < out; ) {
                             char d = data[i++];
                             if (d >= '0' && d <= '7') {
                                 oct *= 8;
                                 oct += d - '0';
-                                if (oct > 0xffff) break;
+                                if (oct > 0xffff) {
+                                    oct -= d - '0';
+                                    oct /= 8;
+                                    break;
+                                }
                             } else break;
                         }
                         c = (char) oct;
@@ -1040,12 +1096,16 @@ public class Term implements REFlags {
 
                     case 'm':   // decimal number -> char
                         int dec = 0;
-                        for (; ; ) {
+                        for (; i < out; ) {
                             char d = data[i++];
                             if (d >= '0' && d <= '9') {
                                 dec *= 10;
                                 dec += d - '0';
-                                if (dec > 0xffff) break;
+                                if (dec > 0xffff){
+                                    dec -= d - '0';
+                                    dec /= 10;
+                                    break;
+                                }
                             } else break;
                         }
                         c = (char) dec;
@@ -1083,11 +1143,11 @@ public class Term implements REFlags {
                         CharacterClass.makeWordBoundary(term, inv, (flags & UNICODE) > 0);
                         return i;
 
-                    case '<':   // non-(word boundary)
+                    case '<':   // word start
                         CharacterClass.makeWordStart(term, (flags & UNICODE) > 0);
                         return i;
 
-                    case '>':   // word boundary
+                    case '>':   // word end
                         CharacterClass.makeWordEnd(term, (flags & UNICODE) > 0);
                         return i;
 
@@ -1112,6 +1172,10 @@ public class Term implements REFlags {
                     case 'p':   // \\p{..}
                         i = CharacterClass.parseName(data, i, out, term, inv, (flags & IGNORE_SPACES) > 0);
                         return i;
+                    case 'Q':
+                        term.type = LITERAL_START;
+                        return i;
+
 
                     default:
                         if (c >= '1' && c <= '9') {
@@ -1732,11 +1796,27 @@ class Pretokenizer {
         char[] data = this.data;
         boolean esc = false;
         for (int i = tOffset; i < end; i++) {
+            char c = data[i];
             if (esc) {
-                esc = false;
+                if(c == 'Q')
+                {
+
+                    for (; i < end; i++) {
+                        char c1 = data[i];
+                        if(c1 == '\\') {
+                            if (i + 1 < end && data[i + 1] == 'E') {
+                                i++;
+                                esc = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else {
+                    esc = false;
+                }
                 continue;
             }
-            char c = data[i];
             switch (c) {
                 case '\\':
                     esc = true;
