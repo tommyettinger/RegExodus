@@ -990,7 +990,8 @@ public class Matcher implements MatchResult {
                     case Term.CHAR:
                         //can only be 1-char-wide
                         //  \/
-                        if (i >= end || data[i] != term.c) break;
+                        if (i >= end || (re.caseless ? Category.caseFold(data[i]) : data[i]) != term.c)
+                            break;
                         i++;
                         term = term.next;
                         continue matchHere;
@@ -1113,7 +1114,7 @@ public class Matcher implements MatchResult {
                         //can only be 1-char-wide
                         //  \/
                         if (i >= end) break;
-                        c = data[i];
+                        c = re.caseless ? Category.caseFold(data[i]) : data[i];
                         if (!(c <= 255 && term.bitset.get(c)) ^ term.inverse) break;
                         i++;
                         term = term.next;
@@ -1123,7 +1124,7 @@ public class Matcher implements MatchResult {
                         //can only be 1-char-wide
                         //  \/
                         if (i >= end) break;
-                        c = data[i];
+                        c = re.caseless ? Category.caseFold(data[i]) : data[i];
                         IntBitSet arr = term.bitset2[c >> 8];
                         if (arr == null || !arr.get(c & 255) ^ term.inverse) break;
                         i++;
@@ -1138,14 +1139,14 @@ public class Matcher implements MatchResult {
                             int j = i - 1;
                             //if(j<offset || j>=end) break test1;
                             if (j < offset) break test1;
-                            c = data[j];
+                            c = re.caseless ? Category.caseFold(data[j]) : data[j];
                             ch1Meets = (c < 256 && bitset.get(c));
                         }
                         test2:
                         {
                             //if(i<offset || i>=end) break test2;
                             if (i >= end) break test2;
-                            c = data[i];
+                            c = re.caseless ? Category.caseFold(data[i]) : data[i];
                             ch2Meets = (c < 256 && bitset.get(c));
                         }
                         if (ch1Meets ^ ch2Meets ^ term.inverse) {  //meets
@@ -1161,7 +1162,7 @@ public class Matcher implements MatchResult {
                             int j = i - 1;
                             //if(j<offset || j>=end) break test1;
                             if (j < offset) break test1;
-                            c = data[j];
+                            c = re.caseless ? Category.caseFold(data[j]) : data[j];
                             IntBitSet bits = bitset2[c >> 8];
                             ch1Meets = bits != null && bits.get(c & 0xff);
                         }
@@ -1169,7 +1170,7 @@ public class Matcher implements MatchResult {
                         {
                             //if(i<offset || i>=end) break test2;
                             if (i >= end) break test2;
-                            c = data[i];
+                            c = re.caseless ? Category.caseFold(data[i]) : data[i];
                             IntBitSet bits = bitset2[c >> 8];
                             ch2Meets = bits != null && bits.get(c & 0xff);
                         }
@@ -1185,14 +1186,14 @@ public class Matcher implements MatchResult {
                         int j = i - 1;
                         //if(j>=offset && j<end){
                         if (j >= offset) {
-                            c = data[j];
+                            c = re.caseless ? Category.caseFold(data[j]) : data[j];
                             ch1Meets = c < 256 && bitset.get(c);
                         }
                         if (ch1Meets ^ inv) break;
 
                         //if(i>=offset && i<end){
                         if (i < end) {
-                            c = data[i];
+                            c = re.caseless ? Category.caseFold(data[i]) : data[i];
                             ch2Meets = c < 256 && bitset.get(c);
                         }
                         if (!ch2Meets ^ inv) break;
@@ -1209,7 +1210,7 @@ public class Matcher implements MatchResult {
 
                         //if(j>=offset && j<end){
                         if (j >= offset) {
-                            c = data[j];
+                            c = re.caseless ? Category.caseFold(data[j]) : data[j];
                             IntBitSet bits = bitset2[c >> 8];
                             ch1Meets = bits != null && bits.get(c & 0xff);
                         }
@@ -1217,7 +1218,7 @@ public class Matcher implements MatchResult {
 
                         //if(i>=offset && i<end){
                         if (i < end) {
-                            c = data[i];
+                            c = re.caseless ? Category.caseFold(data[i]) : data[i];
                             IntBitSet bits = bitset2[c >> 8];
                             ch2Meets = bits != null && bits.get(c & 0xff);
                         }

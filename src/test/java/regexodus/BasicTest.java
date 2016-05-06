@@ -46,16 +46,35 @@ public class BasicTest {
         }
         Pattern p1 = new Pattern("([0-9a-f])\\1", "i"), p2 = Pattern.compile("([0-9A-F])\\1", "i");
         Matcher m1 = p1.matcher(), m2 = p2.matcher();
-
+        Replacer r1 = p1.replacer("$1$1$1$1"), r2 = p2.replacer("$1$1$1$1");
         long ctr = 0;
         boolean found;
+        /*
         for (int i = 0; i < 100000; i++) {
             m1.setTarget(strings[i]);
             m2.setTarget(strings[i]);
             found = m1.find();
             if(found) ctr++;
             Assert.assertEquals(found, m2.find());
-        }
+            //System.out.println(r1.replace(strings[i]) + ";;;" + r2.replace(strings[i]));
+        }*/
+        System.out.println(r1.replace("aaB") + ";;;" + r2.replace("aaB"));
+        m1.setTarget("aaB");
+        m2.setTarget("aaB");
+        System.out.println(m1.find() + "---" + m2.find());
+        System.out.println(r1.replace("AAB") + ";;;" + r2.replace("AAB"));
+        m1.setTarget("AAB");
+        m2.setTarget("AAB");
+        System.out.println(m1.find() + "---" + m2.find());
+        System.out.println(r1.replace("aaB") + ";;;" + r2.replace("AAB"));
+        m1.setTarget("aaB");
+        m2.setTarget("AAB");
+        System.out.println(m1.find() + "---" + m2.find());
+        System.out.println(r1.replace("AAB") + ";;;" + r2.replace("aaB"));
+        m1.setTarget("AAB");
+        m2.setTarget("aaB");
+        System.out.println(m1.find() + "---" + m2.find());
+
         System.out.println(ctr);
 
 
@@ -69,6 +88,8 @@ public class BasicTest {
         System.out.println(Pattern.compile("\\m11").matches("\13")); //decimal is nicer than octal, huh
         System.out.println(Pattern.compile("[\\v]{3}").matches("\u2028\r\n"));
         System.out.println(Pattern.compile("[\\h]{5}").matches("\u1680\u00A0 \u2009\t"));
+        System.out.println(Pattern.compile("\\bDorothy\\b", "ui").replacer("Nadanno")
+                .replace("Dorothy lived in the midst of the great Kansas prairies"));
     }
     @Test
     public void testReplace()
