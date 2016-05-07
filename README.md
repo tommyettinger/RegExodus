@@ -46,7 +46,7 @@ code is not in the distributed jar of source, but is in etc/generator.js , and t
 result is distributed in src/main/java/regexodus/Category.java (which also has case
 folding information, and uses primitive equivalents to `List<char>` and `Map<char, char>`
 (sic) from [FastUtil](https://github.com/vigna/fastutil)). Now RegExodus acts like an
-updated version of JRegex that carries much of Unicode with it, in a jar no more than 1/8
+updated version of JRegex that carries much of Unicode with it, in a jar no more than 1/7
 of a megabyte in size (currently). Though testing so far has been light, it seems to be
 fully compatible with GWT, in development or production mode.
 
@@ -64,16 +64,28 @@ to imitate an implementation of java.util.regex with a close approximation, but 
 hasn't been attempted. Super-sourcing may require a fork/branch to change some
 compatibility traits and also possibly change the package name.
 
-Installation should be simple if you use JitPack (recommended). [Instructions for
-various build tools are here](https://jitpack.io/#tommyettinger/RegExodus); the
-0.1.2 release is preferred for now, based on the 1.2 line of JRegex. You can also
-build from source; this has no dependencies other than JUnit for tests.
+Installation should be simple if you use a build tool like Maven, Gradle, or the like.
+For version or snapshot releases you can use JitPack (this repository is recommended
+if you want snapshots) and Maven Central is an easy alternative for
+version releases if you aren't able to add a third-party repository.
+[JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
+and [Maven Central instructions for more build tools are
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.3%7Cjar);
+the 0.1.3 release is preferred for now, based on the 1.2 line of JRegex. You can
+also download pre-built jars from the GitHub Releases page, or build from
+source; this has no dependencies other than JUnit for tests.
 
 0.1.2 adds support for a missing Java regex feature, `\Q...\E` literal sections.
 It also fixes some not-insignificant issues with features not present in Java's
 regex implementation, like an array index bug involving `\m...`, where those
 character escapes with base-10 numbers could check outside the input string and
 crash if the escape was at the end of a pattern.
+
+0.1.3 fixes a bug in case-insensitive matching where it would previously only
+match lower-case text if case-insensitive mode was on. Now it correctly matches
+both `"A"` and `"a"` if given either `Pattern.compile("A", "i")` or
+`Pattern.compile("a", "i")`. This was thought to have been tested, but the test
+wasn't very good and this behavior may have persisted through several releases.
 
 ## Credit
 
