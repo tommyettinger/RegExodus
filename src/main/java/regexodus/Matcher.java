@@ -2309,8 +2309,6 @@ class SearchEntry {
         result = 31 * result + cnt;
         result = 31 * result + regLen;
         result = 31 * result + (isState ? 1 : 0);
-        result = 31 * result + (sub != null ? sub.hashCode() : 0);
-        result = 31 * result + (on != null ? on.hashCode() : 0);
         result = 31 * result + (mHead != null ? mHead.hashCode() : 0);
         result = 31 * result + (mCurrent != null ? mCurrent.hashCode() : 0);
         result = 31 * result + (cHead != null ? cHead.hashCode() : 0);
@@ -2320,19 +2318,7 @@ class SearchEntry {
 
     @Override
     public String toString() {
-        return "SearchEntry{" +
-                "term=" + term +
-                ", index=" + index +
-                ", cnt=" + cnt +
-                ", regLen=" + regLen +
-                ", isState=" + isState +
-                ", sub=" + sub +
-                ", on=" + on +
-                ", mHead=" + mHead +
-                ", mCurrent=" + mCurrent +
-                ", cHead=" + cHead +
-                ", cCurrent=" + cCurrent +
-                '}';
+        return "SearchEntry{???}";
     }
 }
 

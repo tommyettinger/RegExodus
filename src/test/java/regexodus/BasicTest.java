@@ -90,6 +90,7 @@ public class BasicTest {
         System.out.println(Pattern.compile("[\\h]{5}").matches("\u1680\u00A0 \u2009\t"));
         System.out.println(Pattern.compile("\\bDorothy\\b", "ui").replacer("Nadanno")
                 .replace("Dorothy lived in the midst of the great Kansas prairies"));
+        System.out.println(Pattern.compile("\\b(?:(?:\\Qciploû\\E)|(?:\\Qlaounctouige\\E))\\b", "ui").matches("ciploû"));
     }
     @Test
     public void testReplace()

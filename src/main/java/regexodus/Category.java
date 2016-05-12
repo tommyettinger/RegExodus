@@ -56,11 +56,25 @@ public class Category {
         int k = 0;
         Block[] bls = new Block[256];
         IntBitSet[] bss = new IntBitSet[256];
-        int e;
+        int e, e2, eb, e2b;
         for (int i = 0; i < n - 1; i += 2) {
             e = cal.getCodePoint(i);
-            if(bss[e>>>8] == null) bss[e>>>8] = new IntBitSet();
-            bss[e>>>8].set(e & 0xff, cal.getCodePoint(i+1) & 0xff );
+            e2 = cal.getCodePoint(i+1);
+            eb = e >>> 8;
+            e2b = e2 >>> 8;
+            if(bss[eb] == null) bss[eb] = new IntBitSet();
+            if(eb == e2b)
+            {
+                bss[eb].set(e & 0xff, e2 & 0xff);
+                continue;
+            }
+            bss[eb++].set(e & 0xff, 255);
+            while (eb != e2b) {
+                if(bss[eb] == null) bss[eb] = new IntBitSet();
+                bss[eb++].set(0, 255);
+            }
+            if(bss[e2b] == null) bss[e2b] = new IntBitSet();
+            bss[e2b].set(0, e2 & 0xff);
         }
         for (int i = 0; i < 256; i++) {
             if(bss[i] == null)

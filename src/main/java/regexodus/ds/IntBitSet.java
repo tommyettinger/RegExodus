@@ -79,7 +79,7 @@ public class IntBitSet {
     }
 
     public boolean get(int bitIndex) {
-        return ((data[bitIndex >> 5] >> (bitIndex & 31)) & 1) != 0;
+        return ((data[bitIndex >> 5] >>> (bitIndex & 31)) & 1) != 0;
     }
 
     public IntBitSet get(int fromIndex, int toIndex) {
