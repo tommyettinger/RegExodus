@@ -193,7 +193,7 @@ var word = function (){
 
     console.log("public static final Category Vertical=new Category(new int[]" + dictSrc + strSrc + ");\n");
 }
-word();
+//word();
 var cases = function()
 {
     var cps = _.merge(
@@ -205,3 +205,15 @@ var cases = function()
     console.log('static final CharCharMap cases=newCharCharMap(new int[]'+keySrc+'new int[]'+valSrc+');\n');
 }
 //cases();
+
+var brackets = function()
+{
+    var starts = require('unicode-8.0.0/categories/Ps/symbols');
+    var ends   = require('unicode-8.0.0/categories/Pe/symbols');
+    var startStr = JSON.stringify(starts).replace(/["]/g, "'").replace(/[\r\n]+/g, '');
+    var endStr   = JSON.stringify(ends).replace(/["]/g, "'").replace(/[\r\n]+/g, '');
+
+    console.log(startStr);
+    console.log(endStr);
+}
+brackets();

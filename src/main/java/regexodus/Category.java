@@ -241,11 +241,53 @@ public class Category {
                     "ᏡᏢᏣᏤᏥᏦᏧᏨᏩᏪᏫᏬᏭᏮᏯａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ").toCharArray()
     );
 
+    private static final char[] openers =
+            new char[]{'(','<','[','{','༺','༼','᚛','⁅','⁽','₍','⌈','⌊','〈','❨','❪','❬','❮','❰','❲','❴','⟅','⟦',
+                    '⟨','⟪','⟬','⟮','⦃','⦅','⦇','⦉','⦋','⦍','⦏','⦑','⦓','⦕','⦗','⧘','⧚','⧼','⸢','⸤','⸦','⸨',
+                    '〈','《','「','『','【','〔','〖','〘','〚','〝','﴿','︗','︵','︷','︹','︻','︽','︿','﹁',
+                    '﹃','﹇','﹙','﹛','﹝','（','［','｛','｟','｢'},
+    closers =
+            new char[]{')','>',']','}','༻','༽','᚜','⁆','⁾','₎','⌉','⌋','〉','❩','❫','❭','❯','❱','❳','❵','⟆','⟧',
+                    '⟩','⟫','⟭','⟯','⦄','⦆','⦈','⦊','⦌','⦎','⦐','⦒','⦔','⦖','⦘','⧙','⧛','⧽','⸣','⸥','⸧','⸩',
+                    '〉','》','」','』','】','〕','〗','〙','〛','〞','﴾','︘','︶','︸','︺','︼','︾','﹀','﹂',
+                    '﹄','﹈','﹚','﹜','﹞','）','］','｝','｠','｣'};
+
+    private static final CharCharMap openBrackets = new CharCharMap(openers, closers),
+            closingBrackets = new CharCharMap(closers, openers);
+
+    /**
+     * Returns the given char c's lower-case representation, if it has one, otherwise returns it verbatim.
+     * @param c any char; this should only return a case-folded different char for upper-case letters
+     * @return the single-char case-folded version of c, of it has one, otherwise c
+     */
     public static char caseFold(char c)
     {
         if(cases.containsKey(c))
         {
             return cases.get(c);
+        }
+        return c;
+    }
+
+    /**
+     * Finds the matching closing or opening bracket when given an opening or closing bracket as the char c. If c is not
+     * a bracket character this recognizes, then this will return c verbatim; you can check if the return value of this
+     * method is equal to c to determine if a matching bracket char is possible. This does recognize '&lt;' as opening
+     * and '&gt;' as closing, despite those two not being in Unicode's categories of opening or closing brackets,
+     * because more programmers should find that behavior useful and matching always should need to be specified anyway
+     * (you won't have '&lt;' or '&gt;' change meaning unless you're expecting a matching bracket).
+     * @param c any char; if it is a bracket this will different behavior than non-bracket characters
+     * @return a char; if c is a bracket this will return its opening or closing counterpart, otherwise returns c
+     */
+    public static char matchBracket(char c)
+    {
+        if(openBrackets.containsKey(c))
+        {
+            return openBrackets.get(c);
+        }
+        else if(closingBrackets.containsKey(c))
+        {
+            return closingBrackets.get(c);
         }
         return c;
     }

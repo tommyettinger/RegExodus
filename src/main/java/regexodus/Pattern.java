@@ -233,7 +233,7 @@ public class Pattern implements Serializable, REFlags {
     private void internalCompile(String regex, int flags) throws PatternSyntaxException {
         stringRepr = regex;
         caseless = (flags & IGNORE_CASE) == IGNORE_CASE;
-        Term.makeTree(regex, flags, this);
+        Term.makeTree(regex, new int[]{flags}, this);
     }
 
     /**

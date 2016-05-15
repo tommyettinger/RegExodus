@@ -1227,7 +1227,8 @@ public class Matcher implements MatchResult {
                         term = term.next;
                         continue matchHere;
                     }
-                    case Term.REG: {
+                    case Term.REG:
+                    case Term.REG_I: {
                         MemReg mr = memregs[term.memreg];
                         int sampleOffset = mr.in;
                         int sampleOutside = mr.out;
@@ -1242,14 +1243,14 @@ public class Matcher implements MatchResult {
                         // don't prevent us from reaching the 'end'
                         if ((i + rLen) > end) break;
 
-                        if (compareRegions(data, sampleOffset, i, rLen, end)) {
+                        if (compareRegions(data, sampleOffset, i, rLen, end, term)) {
                             i += rLen;
                             term = term.next;
                             continue matchHere;
                         }
                         break;
                     }
-                    case Term.REG_I: {
+                    /*case Term.REG_I: {
                         MemReg mr = memregs[term.memreg];
                         int sampleOffset = mr.in;
                         int sampleOutside = mr.out;
@@ -1270,7 +1271,7 @@ public class Matcher implements MatchResult {
                             continue matchHere;
                         }
                         break;
-                    }
+                    }*/
                     case Term.REPEAT_0_INF: {
                         //i+=(cnt=repeat(data,i,end,term.target));
                         if ((cnt = repeat(data, i, end, term.target)) <= 0) {
@@ -1344,7 +1345,7 @@ public class Matcher implements MatchResult {
 
                         cnt = 0;
 
-                        while (compareRegions(data, i, sampleOffset, bitset, end)) {
+                        while (compareRegions(data, i, sampleOffset, bitset, end, term)) {
                             cnt++;
                             i += bitset;
                         }
@@ -1379,7 +1380,7 @@ public class Matcher implements MatchResult {
 
                         cnt = 0;
                         int countBack = term.maxCount;
-                        while (countBack > 0 && compareRegions(data, i, sampleOffset, bitset, end)) {
+                        while (countBack > 0 && compareRegions(data, i, sampleOffset, bitset, end, term)) {
                             cnt++;
                             i += bitset;
                             countBack--;
@@ -1824,14 +1825,63 @@ public class Matcher implements MatchResult {
         return false;
     }
 
-    private static boolean compareRegions(char[] arr, int off1, int off2, int len, int out) {
+    private static boolean compareRegions(char[] arr, int off1, int off2, int len, int out, Term opts) {
+        if(opts.mode_reverse)
+        {
+            return compareRegionsReverse(arr, off1, off2, len, out, opts.mode_insensitive, opts.mode_bracket);
+        }
+        else
+        {
+            return compareRegionsForward(arr, off1, off2, len, out, opts.mode_insensitive, opts.mode_bracket);
+        }
+    }
+    private static boolean compareRegionsForward(char[] arr, int off1, int off2, int len, int out,
+                                                 boolean insensitive, boolean bracket) {
         int p1 = off1 + len - 1;
         int p2 = off2 + len - 1;
         if (p1 >= out || p2 >= out) {
             return false;
         }
+        char a, b;
         for (int c = len; c > 0; c--, p1--, p2--) {
-            if (arr[p1] != arr[p2]) {
+            a = arr[p1];
+            b = arr[p2];
+            if(insensitive)
+            {
+                a = Category.caseFold(a);
+                b = Category.caseFold(b);
+            }
+            if(bracket)
+            {
+                b = Category.matchBracket(b);
+            }
+            if (a != b) {
+                return false;
+            }
+        }
+        return true;
+    }
+    private static boolean compareRegionsReverse(char[] arr, int off1, int off2, int len, int out,
+                                                 boolean insensitive, boolean bracket) {
+        int p1 = off1 + len - 1;
+        int p2 = off2;
+        if (p1 >= out || p2 >= out) {
+            return false;
+        }
+        char a, b;
+        for (int c = len; c > 0 && p2 < out; c--, p1--, p2++) {
+            a = arr[p1];
+            b = arr[p2];
+            if(insensitive)
+            {
+                a = Category.caseFold(a);
+                b = Category.caseFold(b);
+            }
+            if(bracket)
+            {
+                b = Category.matchBracket(b);
+            }
+            if (a != b) {
                 return false;
             }
         }
@@ -1964,14 +2014,9 @@ public class Matcher implements MatchResult {
     private static int findReg(char[] data, int off, int regOff, int regLen, Term term, int out) {
         if (off >= out) return -1;
         int i = off;
-        if (term.type == Term.REG) {
+        if (term.type == Term.REG || term.type == Term.REG_I) {
             while (i < out) {
-                if (compareRegions(data, i, regOff, regLen, out)) break;
-                i++;
-            }
-        } else if (term.type == Term.REG_I) {
-            while (i < out) {
-                if (compareRegionsI(data, i, regOff, regLen, out)) break;
+                if (compareRegions(data, i, regOff, regLen, out, term)) break;
                 i++;
             }
         } else throw new IllegalArgumentException("wrong findReg() target:" + term.type);
@@ -2030,24 +2075,17 @@ public class Matcher implements MatchResult {
         //assume that the cases when regLen==0 or maxCount==0 are handled by caller
         int i = off;
         int iMin = off - maxCount;
-        if (term.type == Term.REG) {
+        if (term.type == Term.REG || term.type == Term.REG_I) {
          /*@since 1.2*/
             char first = data[regOff];
             regOff++;
             regLen--;
             for (; ; ) {
                 i--;
-                if (data[i] == first && compareRegions(data, i + 1, regOff, regLen, out)) break;
+                if (data[i] == first && compareRegions(data, i + 1, regOff, regLen, out, term)) break;
                 if (i <= iMin) return -1;
             }
-        } else if (term.type == Term.REG_I) {
-         /*@since 1.2*/
-            /*
-            char c = data[regOff];
-            char firstLower = Character.toLowerCase(c);
-            char firstUpper = Character.toUpperCase(c);
-            char firstTitle = Character.toTitleCase(c);
-            */
+        }/* else if (term.type == Term.REG_I) {
             char c, firstChar = Category.caseFold(data[regOff]);
             regOff++;
             regLen--;
@@ -2058,7 +2096,8 @@ public class Matcher implements MatchResult {
                 if (i <= iMin) return -1;
             }
             return off - i;
-        } else throw new IllegalArgumentException("wrong findBackReg() target type :" + term.type);
+        }*/
+        else throw new IllegalArgumentException("wrong findBackReg() target type :" + term.type);
         return off - i;
     }
 

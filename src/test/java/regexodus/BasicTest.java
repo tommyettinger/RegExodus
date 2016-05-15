@@ -37,8 +37,7 @@ public class BasicTest {
         }
     }
     @Test
-    public void testASCII()
-    {
+    public void testASCII() {
 
         String[] strings = new String[100000];
         for (int i = 0; i < 100000; i++) {
@@ -75,8 +74,6 @@ public class BasicTest {
         m2.setTarget("aaB");
         System.out.println(m1.find() + "---" + m2.find());
 
-        System.out.println(ctr);
-
 
         /*
         Assert.assertEquals(p, p2);
@@ -91,11 +88,16 @@ public class BasicTest {
         System.out.println(Pattern.compile("\\bDorothy\\b", "ui").replacer("Nadanno")
                 .replace("Dorothy lived in the midst of the great Kansas prairies"));
         System.out.println(Pattern.compile("\\b(?:(?:\\Qciploû\\E)|(?:\\Qlaounctouige\\E))\\b", "ui").matches("ciploû"));
+        System.out.println(Pattern.compile("\\((?:[\\s,]*(?:[^\\s,]+)|(?:\\((?:[\\s,]*[^\\s,]+)*\\)))*\\)").matches("(ciploû (+ 1 2))"));
+        System.out.println(Pattern.compile("(z\\p{Ps}\\*)\\QABC\\E{\\:@/1}").matches("z(*ABC*)Z"));
+        System.out.println(Pattern.compile("([\\(\\[\\{]){\\:/1}").matches("()"));
+
     }
     @Test
     public void testReplace()
     {
         String[] strings = new String[10000];
+
         for (int i = 0; i < 10000; i++) {
             strings[i] = exampleASCII();
         }

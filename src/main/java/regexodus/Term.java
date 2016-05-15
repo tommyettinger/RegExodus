@@ -158,9 +158,9 @@ public class Term implements REFlags {
     IntBitSet bitset;
     IntBitSet[] bitset2;
     private boolean[] categoryBitset;  //types(unicode categories)
-
-    // used with type=BALANCE;
-    private char[] brackets;
+    boolean mode_insensitive;
+    boolean mode_reverse;
+    boolean mode_bracket;
 
     // used for optimization with type=BITSET,BITSET2
     int weight;
@@ -217,14 +217,14 @@ public class Term implements REFlags {
         this.type = type;
     }
 
-    static void makeTree(String s, int flags, Pattern re) throws PatternSyntaxException {
+    static void makeTree(String s, int[] flags, Pattern re) throws PatternSyntaxException {
         instances = 0;
         char[] data = s.toCharArray();
         makeTree(data, 0, data.length, flags, re);
     }
 
     private static void makeTree(char[] data, int offset, int end,
-                                 int flags, Pattern re) throws PatternSyntaxException {
+                                 int[] flags, Pattern re) throws PatternSyntaxException {
         // memreg,counter,depth,lookahead
         int[] vars = {1, 0, 0, 0}; //don't use counters[0]
 
@@ -260,7 +260,7 @@ public class Term implements REFlags {
     }
 
     private static Term makeTree(Pretokenizer t, char[] data, int[] vars,
-                                 int flags, Term term, ArrayList<TermIterator> iterators, HashMap<String, Integer> groupNames) throws PatternSyntaxException {
+                                 int[] flags, Term term, ArrayList<TermIterator> iterators, HashMap<String, Integer> groupNames) throws PatternSyntaxException {
         if (vars.length != VARS_LENGTH)
             throw new IllegalArgumentException("vars.length should be " + VARS_LENGTH + ", not " + vars.length);
         //Term term=new Term(isMemReg? vars[MEMREG_COUNT]: -1);
@@ -271,19 +271,19 @@ public class Term implements REFlags {
             term.append(t.tOffset, t.tOutside, data, vars, flags, iterators, groupNames);
             switch (t.ttype) {
                 case Pretokenizer.FLAGS:
-                    flags = t.flags(flags);
+                    flags[0] = t.flags(flags[0]);
                     continue;
                 case Pretokenizer.CLASS_GROUP:
                     t.next();
                     Term clg = new Term();
                     CharacterClass.parseGroup(data, t.tOffset, t.tOutside, clg,
-                            (flags & IGNORE_CASE) > 0, (flags & IGNORE_SPACES) > 0,
-                            (flags & UNICODE) > 0, (flags & XML_SCHEMA) > 0);
+                            (flags[0] & IGNORE_CASE) > 0, (flags[0] & IGNORE_SPACES) > 0,
+                            (flags[0] & UNICODE) > 0, (flags[0] & XML_SCHEMA) > 0);
                     term.append(clg);
                     continue;
                 case Pretokenizer.PLAIN_GROUP:
                     vars[DEPTH]++;
-                    term.append(makeTree(t, data, vars, t.flags(flags), new Group(), iterators, groupNames));
+                    term.append(makeTree(t, data, vars, new int[]{t.flags(flags[0])}, new Group(), iterators, groupNames));
                     break;
                 case Pretokenizer.NAMED_GROUP:
                     String gname = t.groupName;
@@ -411,14 +411,14 @@ public class Term implements REFlags {
     }
 
     private void append(int offset, int end, char[] data,
-                        int[] vars, int flags, ArrayList<TermIterator> iterators, HashMap<String, Integer> gmap) throws PatternSyntaxException {
+                        int[] vars, int[] flags, ArrayList<TermIterator> iterators, HashMap<String, Integer> gmap) throws PatternSyntaxException {
         int[] limits = new int[3];
         int i = offset;
         Term tmp, current = this.current;
         while (i < end) {
             char c = data[i];
             boolean greedy = true;
-            if((flags & LITERAL_FLAG) != LITERAL_FLAG) {
+            if((flags[0] & LITERAL_FLAG) != LITERAL_FLAG) {
                 switch (c) {
                     //operations
                     case '*':
@@ -477,17 +477,29 @@ public class Term implements REFlags {
                             if (data[i + 1] == '\\') { //'{\name}' - backreference
                                 int p = i + 2;
                                 if (p == end) throw new PatternSyntaxException("'group_id' expected");
-                                while (Category.Z.contains(data[p])) {
+                                char cp = data[p];
+                                boolean mi = false, mb = false, mr = false;
+                                while (Category.Z.contains(cp) || Category.Po.contains(cp)) {
                                     p++;
                                     if (p == end) throw new PatternSyntaxException("'group_id' expected");
+                                    switch (cp)
+                                    {
+                                        case '@': mi = !mi;
+                                            break;
+                                        case '/': mr = !mr;
+                                            break;
+                                        case ':': mb = !mb;
+                                            break;
+                                    }
+                                    cp = data[p];
                                 }
-                                BackReference br = new BackReference(-1, (flags & IGNORE_CASE) > 0);
+                                BackReference br = new BackReference(-1, mi || (flags[0] & IGNORE_CASE) > 0, mr, mb);
                                 i = parseGroupId(data, p, end, br, gmap);
                                 current = append(br);
                                 continue;
                             } else {
                                 Term t = new Term();
-                                i = CharacterClass.parseName(data, i, end, t, false, (flags & IGNORE_SPACES) > 0);
+                                i = CharacterClass.parseName(data, i, end, t, false, (flags[0] & IGNORE_SPACES) > 0);
                                 current = append(t);
                                 continue;
                             }
@@ -497,7 +509,7 @@ public class Term implements REFlags {
                     case '\t':
                     case '\r':
                     case '\n':
-                        if ((flags & IGNORE_SPACES) > 0) {
+                        if ((flags[0] & IGNORE_SPACES) > 0) {
                             i++;
                             continue;
                         }
@@ -506,14 +518,14 @@ public class Term implements REFlags {
                         //symbolic items
                     default:
                         tmp = new Term();
-                        i = parseTerm(data, i, end, tmp, flags);
+                        i = parseTerm(data, i, end, tmp, flags[0]);
 
                         if (tmp.type == LITERAL_START) {
-                            flags |= LITERAL_FLAG;
-                            break;
+                            flags[0] |= LITERAL_FLAG;
+                            continue;
                         } else if (tmp.type == LITERAL_END) {
-                            flags &= ~LITERAL_FLAG;
-                            break;
+                            flags[0] &= ~LITERAL_FLAG;
+                            continue;
                         }
 
                         if (tmp.type == END && i < end) {
@@ -530,14 +542,14 @@ public class Term implements REFlags {
             }
             else {
                 tmp = new Term();
-                i = parseTerm(data, i, end, tmp, flags);
+                i = parseTerm(data, i, end, tmp, flags[0]);
 
                 if (tmp.type == LITERAL_START) {
-                    flags |= LITERAL_FLAG;
-                    break;
+                    flags[0] |= LITERAL_FLAG;
+                    continue;
                 } else if (tmp.type == LITERAL_END) {
-                    flags &= ~LITERAL_FLAG;
-                    break;
+                    flags[0] &= ~LITERAL_FLAG;
+                    continue;
                 }
 
                 if (tmp.type == END && i < end) {
@@ -1687,7 +1699,7 @@ public class Term implements REFlags {
         if (next != null ? !next.equals(term.next) : term.next != null) return false;
         if (bitset != null ? !bitset.equals(term.bitset) : term.bitset != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        return Arrays.equals(bitset2, term.bitset2) && Arrays.equals(categoryBitset, term.categoryBitset) && Arrays.equals(brackets, term.brackets);
+        return Arrays.equals(bitset2, term.bitset2) && Arrays.equals(categoryBitset, term.categoryBitset);
 //if (!Arrays.equals(brackets, term.brackets)) return false;
         /*
         if (failNext != null ? !failNext.equals(term.failNext) : term.failNext != null) return false;
@@ -1713,7 +1725,6 @@ public class Term implements REFlags {
         result = 31 * result + (bitset != null ? bitset.hashCode() : 0);
         result = 31 * result + Arrays.hashCode(bitset2);
         result = 31 * result + Arrays.hashCode(categoryBitset);
-        result = 31 * result + Arrays.hashCode(brackets);
         result = 31 * result + weight;
         result = 31 * result + memreg;
         result = 31 * result + minCount;
@@ -1765,7 +1776,6 @@ class Pretokenizer {
     private int flags;
     private boolean flagsChanged;
 
-    char[] brackets;
     String groupName;
     boolean groupDeclared;
 
@@ -1997,8 +2007,11 @@ class Branch extends Term {
 }
 
 class BackReference extends Term {
-    BackReference(int no, boolean icase) {
+    BackReference(int no, boolean icase, boolean reverse, boolean bracket) {
         super(icase ? REG_I : REG);
+        mode_reverse = reverse;
+        mode_bracket = bracket;
+        mode_insensitive = icase;
         memreg = no;
     }
 }
