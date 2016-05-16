@@ -749,37 +749,104 @@ public class Matcher implements MatchResult {
         return group(id);
     }
 
-    /**
-     */
     public boolean getGroup(int n, TextBuffer tb) {
+        return getGroup(n, tb, 0);
+    }
+    public boolean getGroup(int n, TextBuffer tb, int modes) {
         MemReg mr = bounds(n);
         if (mr == null) return false;
-        int in;
-        tb.append(data, in = mr.in, mr.out - in);
+        int in = mr.in;
+        if(modes == 0)
+        {
+            tb.append(data, in, mr.out - in);
+        }
+        else
+        {
+            char[] working = new char[mr.out - in];
+            char t;
+            if((modes & PerlSubstitution.MODE_REVERSE) > 0)
+            {
+                for (int i = working.length - 1, j = in; i >= 0; i--, j++) {
+                    t = data[j];
+                    if((modes & PerlSubstitution.MODE_INSENSITIVE) > 0)
+                        t = Category.caseFold(t);
+                    if((modes & PerlSubstitution.MODE_BRACKET) > 0)
+                        t = Category.matchBracket(t);
+                    working[i] = t;
+                }
+            }
+            else
+            {
+                for (int i = 0, j = in; i < working.length; i++, j++) {
+                    t = data[j];
+                    if((modes & PerlSubstitution.MODE_INSENSITIVE) > 0)
+                        t = Category.caseFold(t);
+                    if((modes & PerlSubstitution.MODE_BRACKET) > 0)
+                        t = Category.matchBracket(t);
+                    working[i] = t;
+                }
+            }
+            tb.append(working, 0, working.length);
+        }
         return true;
     }
 
-    /**
-     */
     public boolean getGroup(String name, TextBuffer tb) {
+        return getGroup(name, tb, 0);
+    }
+    public boolean getGroup(String name, TextBuffer tb, int modes) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("unknown group: \"" + name + "\"");
         return getGroup(id, tb);
     }
 
-    /**
-     */
     public boolean getGroup(int n, StringBuilder sb) {
+        return getGroup(n, sb, 0);
+    }
+    public boolean getGroup(int n, StringBuilder sb, int modes) {
         MemReg mr = bounds(n);
         if (mr == null) return false;
-        int in;
-        sb.append(data, in = mr.in, mr.out - in);
+        int in = mr.in;
+        if(modes == 0)
+        {
+            sb.append(data, in, mr.out - in);
+        }
+        else
+        {
+            char[] working = new char[mr.out - in];
+            char t;
+            if((modes & PerlSubstitution.MODE_REVERSE) > 0)
+            {
+                for (int i = working.length - 1, j = in; i >= 0; i--, j++) {
+                    t = data[j];
+                    if((modes & PerlSubstitution.MODE_INSENSITIVE) > 0)
+                        t = Category.caseFold(t);
+                    if((modes & PerlSubstitution.MODE_BRACKET) > 0)
+                        t = Category.matchBracket(t);
+                    working[i] = t;
+                }
+            }
+            else
+            {
+                for (int i = 0, j = in; i < working.length; i++, j++) {
+                    t = data[j];
+                    if((modes & PerlSubstitution.MODE_INSENSITIVE) > 0)
+                        t = Category.caseFold(t);
+                    if((modes & PerlSubstitution.MODE_BRACKET) > 0)
+                        t = Category.matchBracket(t);
+                    working[i] = t;
+                }
+            }
+            sb.append(working);
+        }
         return true;
     }
 
-    /**
-     */
+
     public boolean getGroup(String name, StringBuilder sb) {
+        return getGroup(name, sb, 0);
+    }
+    public boolean getGroup(String name, StringBuilder sb, int modes) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("unknown group: \"" + name + "\"");
         return getGroup(id, sb);

@@ -35,8 +35,15 @@ import java.io.Serializable;
  * An implementation of the Substitution interface. Performs substitutions in accordance with Perl-like substitution scripts.<br>
  * The latter is a string, containing a mix of memory register references and plain text blocks.<br>
  * It may look like "some_chars $1 some_chars$2some_chars" or "123${1}45${2}67".<br>
- * A tag consisting of '$',not preceded by the escape character'\' and  followed by some digits (possibly enclosed in the curled brackets) is interpreted as a memory register reference, the digits forming a register ID.
- * All the rest is considered as a plain text.<br>
+ * A tag consisting of '$',not preceded by the escape character'\' and followed by some digits (possibly enclosed in the
+ * curly brackets) is interpreted as a memory register reference, the digits forming a register ID. If you follow '$'
+ * with curly brackets, you can also use the Java-identifier-like named groups that may have been defined in the search
+ * pattern (as well as pure numbers for non-named register IDs), and can specify different modes for the replacement
+ * with punctuation between the opening bracket and the group name. Modes can be specified by any combination or order
+ * of '@' to get a case-folded (lower-case-only) replacement of the matched group, '/' to get the reverse of the string
+ * matched by the group, and ':' to get any opening or closing bracket characters (Unicode categories Ps and Pe,
+ * including parentheses, square brackets, and curly brackets among many others) in the matched group replaced by their
+ * closing or opening counterparts. All the rest is considered plain text.<br>
  * Upon the Replacer has found a text block that matches the pattern, a references in a replacement string are replaced by the contents of 
  * corresponding memory registers, and the resulting text replaces the matched block.<br>
  * For example, the following code:
@@ -57,13 +64,19 @@ public class PerlSubstitution implements Substitution, Serializable {
     private static final long serialVersionUID = -1537346657932720807L;
 
     private static Pattern refPtn;
+    private static int MODE_ID;
     private static int NAME_ID;
     private static int ESC_ID;
+
+    static final int MODE_INSENSITIVE = 1,
+            MODE_REVERSE = 2,
+            MODE_BRACKET = 4;
+
     //private static int FN_NAME_ID;
     //private static int FN_ARGS_ID;
     //private static int ARG_NAME_ID;
 
-    private static final String groupRef = "\\$(?:\\{({=name}\\w+)\\}|({=name}\\d+|&))|\\\\({esc}.)";
+    private static final String groupRef = "\\$(?:\\{({=mode}\\p{Po}+)?({=name}\\w+)\\}|({=name}\\d+|&))|\\\\({esc}.)";
     //private static final String fnRef="\\&({fn_name}\\w+)\\(({fn_args}"+groupRef+"(?:,"+groupRef+")*)*\\)";
 
     static {
@@ -72,6 +85,7 @@ public class PerlSubstitution implements Substitution, Serializable {
             //argsPtn=new Pattern(groupRef);
             //refPtn=new Pattern("(?<!\\\\)"+groupRef);
             refPtn = new Pattern(groupRef);
+            MODE_ID = refPtn.groupId("mode");
             NAME_ID = refPtn.groupId("name");
             ESC_ID = refPtn.groupId("esc");
             //ARG_NAME_ID=argsPtn.groupId("name").intValue();
@@ -86,6 +100,9 @@ public class PerlSubstitution implements Substitution, Serializable {
 
     //It seems we should somehow throw an IllegalArgumentException if an expression
     //holds a reference to a non-existing group. Such checking will require a Pattern instance.
+    public PerlSubstitution() {
+        this("");
+    }
     public PerlSubstitution(String s) {
         Matcher refMatcher = new Matcher(refPtn);
         refMatcher.setTarget(s);
@@ -101,14 +118,30 @@ public class PerlSubstitution implements Substitution, Serializable {
     private static Element makeQueue(Matcher refMatcher) {
         if (refMatcher.find()) {
             Element element;
+            int modes = 0;
             if (refMatcher.isCaptured(NAME_ID)) {
+                if(refMatcher.isCaptured(MODE_ID))
+                {
+                    String md = refMatcher.group(MODE_ID);
+                    for (int i = 0; i < md.length(); i++) {
+                        switch (md.charAt(i))
+                        {
+                            case '@': modes ^= MODE_INSENSITIVE;
+                                break;
+                            case '/': modes ^= MODE_REVERSE;
+                                break;
+                            case ':': modes ^= MODE_BRACKET;
+                                break;
+                        }
+                    }
+                }
                 char c = refMatcher.charAt(0, NAME_ID);
                 if (c == '&') {
-                    element = new IntRefHandler(refMatcher.prefix(), 0);
+                    element = new IntRefHandler(refMatcher.prefix(), 0, modes);
                 } else if (Character.isDigit(c)) {
-                    element = new IntRefHandler(refMatcher.prefix(), new Integer(refMatcher.group(NAME_ID)));
+                    element = new IntRefHandler(refMatcher.prefix(), new Integer(refMatcher.group(NAME_ID)), modes);
                 } else
-                    element = new StringRefHandler(refMatcher.prefix(), refMatcher.group(NAME_ID));
+                    element = new StringRefHandler(refMatcher.prefix(), refMatcher.group(NAME_ID), modes);
             } else {
                 //escaped char
                 element = new PlainElement(refMatcher.prefix(), refMatcher.group(ESC_ID));
@@ -131,6 +164,22 @@ public class PerlSubstitution implements Substitution, Serializable {
             sb.append(element.toString());
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PerlSubstitution that = (PerlSubstitution) o;
+
+        return queueEntry != null ? queueEntry.equals(that.queueEntry) : that.queueEntry == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return queueEntry != null ? queueEntry.hashCode() : 0;
     }
 
     private static abstract class Element {
@@ -156,14 +205,32 @@ public class PerlSubstitution implements Substitution, Serializable {
             if (prefix != null) dest.append(prefix);
             if (str != null) dest.append(str);
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            PlainElement that = (PlainElement) o;
+
+            return str != null ? str.equals(that.str) : that.str == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return str != null ? str.hashCode() : 0;
+        }
     }
 
     private static class IntRefHandler extends Element {
         private Integer index;
+        private int modes;
 
-        IntRefHandler(String s, Integer ind) {
+        IntRefHandler(String s, Integer ind, int modes) {
             prefix = s;
             index = ind;
+            this.modes = modes;
         }
 
         void append(MatchResult match, TextBuffer dest) {
@@ -171,16 +238,36 @@ public class PerlSubstitution implements Substitution, Serializable {
             if (index == null) return;
             int i = index;
             if (i >= match.pattern().groupCount()) return;
-            if (match.isCaptured(i)) match.getGroup(i, dest);
+            if (match.isCaptured(i)) match.getGroup(i, dest, modes);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            IntRefHandler that = (IntRefHandler) o;
+
+            if (modes != that.modes) return false;
+            return index != null ? index.equals(that.index) : that.index == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = index != null ? index.hashCode() : 0;
+            result = 31 * result + modes;
+            return result;
         }
     }
 
     private static class StringRefHandler extends Element {
         private String index;
-
-        StringRefHandler(String s, String ind) {
+        private int modes;
+        StringRefHandler(String s, String ind, int modes) {
             prefix = s;
             index = ind;
+            this.modes = modes;
         }
 
         void append(MatchResult match, TextBuffer dest) {
@@ -188,110 +275,27 @@ public class PerlSubstitution implements Substitution, Serializable {
             if (index == null) return;
             //if(id==null) return; //???
             int i = match.pattern().groupId(index);
-            if (match.isCaptured(i)) match.getGroup(i, dest);
+            if (match.isCaptured(i)) match.getGroup(i, dest, modes);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            StringRefHandler that = (StringRefHandler) o;
+
+            if (modes != that.modes) return false;
+            return index != null ? index.equals(that.index) : that.index == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = index != null ? index.hashCode() : 0;
+            result = 31 * result + modes;
+            return result;
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PerlSubstitution that = (PerlSubstitution) o;
-
-        return queueEntry != null ? queueEntry.equals(that.queueEntry) : that.queueEntry == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return queueEntry != null ? queueEntry.hashCode() : 0;
-    }
-}
-
-abstract class GReference {
-    public abstract String stringValue(MatchResult match);
-
-    public static GReference createInstance(MatchResult match, int grp) {
-        if (match.length(grp) == 0) throw new IllegalArgumentException("arg name cannot be an empty string");
-        if (Character.isDigit(match.charAt(0, grp))) {
-            try {
-                return new IntReference(Integer.parseInt(match.group(grp)));
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("illegal arg name, starts with digit but is not a number");
-            }
-        }
-        return new StringReference((match.group(grp)));
-    }
-
-}
-
-class IntReference extends GReference {
-    private int id;
-
-    IntReference(int id) {
-        this.id = id;
-    }
-
-    public String stringValue(MatchResult match) {
-        return match.group(id);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        IntReference that = (IntReference) o;
-
-        return id == that.id;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
-    @Override
-    public String toString() {
-        return "IntReference{" +
-                "id=" + id +
-                '}';
-    }
-}
-
-class StringReference extends GReference {
-    private String name;
-
-    StringReference(String name) {
-        this.name = name;
-    }
-
-    public String stringValue(MatchResult match) {
-        return match.group(name);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        StringReference that = (StringReference) o;
-
-        return name != null ? name.equals(that.name) : that.name == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return name != null ? name.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return "StringReference{" +
-                "name='" + name + '\'' +
-                '}';
-    }
 }

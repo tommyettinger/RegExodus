@@ -101,17 +101,20 @@ public class BasicTest {
         for (int i = 0; i < 10000; i++) {
             strings[i] = exampleASCII();
         }
-        Replacer r1 = new Pattern("([0-9a-f])\\1", "i").replacer("  "),
+        Replacer br = new Pattern("([\\p{Ps}\\p{Pe}])").replacer("${1}${:1}"),
+                r1 = Pattern.compile("([0-9a-f])\\1", "i").replacer("  "),
                 r2 = Pattern.compile("([0-9A-F])\\1", "i").replacer("  ");
-        StringBuilder sb = new StringBuilder(5000), sb2 = new StringBuilder(5000);
+        StringBuilder sb = new StringBuilder(5000), sb2 = new StringBuilder(5000), sb3 = new StringBuilder(5000);
         boolean found;
         for (int i = 0; i < 10000; i++) {
             r1.replace(strings[i], sb);
             r2.replace(strings[i], sb2);
             Assert.assertEquals(sb.toString(), sb2.toString());
+            br.replace(strings[i], sb3);
         }
-        System.out.println(sb.toString());
-        System.out.println(sb2.toString());
+        //System.out.println(sb.toString());
+        //System.out.println(sb2.toString());
+        System.out.println(sb3);
 
         /*
         Assert.assertEquals(p, p2);

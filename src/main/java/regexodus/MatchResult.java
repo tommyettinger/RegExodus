@@ -47,11 +47,19 @@ public interface MatchResult {
 
     String group(int n);
 
+    boolean getGroup(int n, StringBuilder sb, int modes);
+
+    boolean getGroup(int n, TextBuffer tb, int modes);
+
     boolean getGroup(int n, StringBuilder sb);
 
     boolean getGroup(int n, TextBuffer tb);
 
     String group(String name);
+
+    boolean getGroup(String name, StringBuilder sb, int modes);
+
+    boolean getGroup(String name, TextBuffer tb, int modes);
 
     boolean getGroup(String name, StringBuilder sb);
 
