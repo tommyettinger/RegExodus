@@ -110,6 +110,21 @@ public class Replacer implements Serializable {
         return tb.toString();
     }
 
+    /**
+     * Takes instances in text of the Pattern this was constructed with, up to count times, and replaces them with
+     * substitution. If you want to change the position in a Matcher so you start the next replacement at a later point
+     * in text, you can use {@code replace(Matcher, Substitution, TextBuffer, int)}, which this uses internally, but
+     * with a temporary Matcher that doesn't store the change in position.
+     * @param text a String, StringBuilder, or other CharSequence that may contain the text to replace
+     * @param count the maximum number of replacements to perform; will make no changes if less than 1
+     * @return the post-replacement text
+     */
+    public String replace(CharSequence text, int count) {
+        TextBuffer tb = wrap(new StringBuilder(text.length()));
+        replace(pattern.matcher(text), substitution, tb, count);
+        return tb.toString();
+    }
+
     public String replace(char[] chars, int off, int len) {
         TextBuffer tb = wrap(new StringBuilder(len));
         replace(pattern.matcher(chars, off, len), substitution, tb);
@@ -138,6 +153,18 @@ public class Replacer implements Serializable {
      */
     public int replace(CharSequence text, StringBuilder sb) {
         return replace(pattern.matcher(text), substitution, wrap(sb));
+    }
+
+    /**
+     * Takes instances in text of the Pattern this was constructed with, up to count times, and replaces them with the
+     * substitution. Appends the replaced text into sb.
+     * @param text a String, StringBuilder, or other CharSequence that may contain the text to replace
+     * @param sb the StringBuilder to append the result into
+     * @param count the maximum number of replacements to perform; will make no changes if less than 1
+     * @return the number of individual replacements performed; the results are applied to sb
+     */
+    public int replace(CharSequence text, StringBuilder sb, int count) {
+        return replace(pattern.matcher(text), substitution, wrap(sb), count);
     }
 
     /**
@@ -218,6 +245,11 @@ public class Replacer implements Serializable {
      * in a matcher's target by a given substitution, appending the result to a buffer.
      * <br>
      * The substitution starts from current matcher's position, current match not included.
+     * @param m a Matcher
+     * @param substitution a Substitution, typically a PerlSubstitution
+     * @param dest the TextBuffer this will write to; see Replacer.wrap()
+     * @param count the number of replacements to attempt
+     * @return the number of replacements performed
      */
     public static int replace(Matcher m, Substitution substitution, TextBuffer dest, int count) {
         boolean firstPass = true;
@@ -232,6 +264,33 @@ public class Replacer implements Serializable {
         }
         m.getGroup(MatchResult.TARGET, dest);
         return c;
+    }
+
+    /**
+     * Replaces the next occurrence of a matcher's pattern in a matcher's target by a given substitution, appending the
+     * result to a buffer but not writing the remainder of m's match to the end of dest.
+     * <br>
+     * The substitution starts from current matcher's position, current match not included.
+     * <br>
+     * You typically want to call {@code m.getGroup(MatchResult.TARGET, dest);} after you have called replaceStep()
+     * until it returns false, which will fill in the remainder of the matching text into dest.
+     * @param m a Matcher
+     * @param substitution a Substitution, typically a PerlSubstitution
+     * @param dest the TextBuffer this will write to; see Replacer.wrap()
+     * @return the number of replacements performed
+     */
+    public static boolean replaceStep(Matcher m, Substitution substitution, TextBuffer dest) {
+        boolean firstPass = true;
+        int c = 0, count = 1;
+        while (c < count && m.find()) {
+            if (m.end() == 0 && !firstPass) continue;  //allow to replace at "^"
+            if (m.start() > 0) m.getGroup(MatchResult.PREFIX, dest);
+            substitution.appendSubstitution(m, dest);
+            c++;
+            m.setTarget(m, MatchResult.SUFFIX);
+            firstPass = false;
+        }
+        return c > 0;
     }
 
     @GwtIncompatible
@@ -335,6 +394,26 @@ public class Replacer implements Serializable {
         WriteException(IOException io) {
             reason = io;
         }
+    }
+
+    public Pattern getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(Pattern pattern) {
+        this.pattern = pattern;
+    }
+
+    public Substitution getSubstitution() {
+        return substitution;
+    }
+
+    public void setSubstitution(Substitution substitution) {
+        this.substitution = substitution;
+    }
+
+    public void setSubstitution(String substitution) {
+        this.substitution = new PerlSubstitution(substitution);
     }
 
     @Override

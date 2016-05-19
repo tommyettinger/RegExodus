@@ -2266,6 +2266,13 @@ public class Matcher implements MatchResult {
         return result;
     }
 
+    /**
+     * Replaces the first match this Matcher can find with replacement, as interpreted by PerlSubstitution (so $1 refers
+     * to the first group and so on). Advances the search position for this Matcher, so it can also be used to
+     * repeatedly replace the next match when called successively.
+     * @param replacement the String to replace the first match with
+     * @return this Matcher's String it operated on, after a replacement
+     */
     public String replaceFirst(String replacement)
     {
         TextBuffer tb = wrap(new StringBuilder(data.length));
@@ -2273,6 +2280,14 @@ public class Matcher implements MatchResult {
         return tb.toString();
     }
 
+    /**
+     * Replaces the first amount matches this Matcher can find with replacement, as interpreted by PerlSubstitution (so
+     * $1 refers to the first group and so on). Advances the search position for this Matcher, so it can also be used to
+     * repeatedly replace the next amount matches when called successively.
+     * @param replacement the String to replace the first match with
+     * @param amount the number of replacements to perform
+     * @return this Matcher's String it operated on, after replacements
+     */
     public String replaceAmount(String replacement, int amount)
     {
         TextBuffer tb = wrap(new StringBuilder(data.length));
@@ -2280,10 +2295,59 @@ public class Matcher implements MatchResult {
         return tb.toString();
     }
 
+    /**
+     * Replaces all matches this Matcher can find with replacement, as interpreted by PerlSubstitution (so $1 refers to
+     * the first group and so on).
+     * @param replacement the String to replace the first match with
+     * @return this Matcher's String it operated on, after replacements
+     */
     public String replaceAll(String replacement)
     {
         TextBuffer tb = wrap(new StringBuilder(data.length));
         Replacer.replace(this, new PerlSubstitution(replacement), tb);
+        return tb.toString();
+    }
+
+
+    /**
+     * Replaces the first match this Matcher can find with replacement, as interpreted by PerlSubstitution (so $1 refers
+     * to the first group and so on). Advances the search position for this Matcher, so it can also be used to
+     * repeatedly replace the next match when called successively.
+     * @param replacement the String to replace the first match with
+     * @return this Matcher's String it operated on, after a replacement
+     */
+    public String replaceFirst(Substitution replacement)
+    {
+        TextBuffer tb = wrap(new StringBuilder(data.length));
+        Replacer.replace(this, replacement, tb, 1);
+        return tb.toString();
+    }
+
+    /**
+     * Replaces the first amount matches this Matcher can find with replacement, as interpreted by PerlSubstitution (so
+     * $1 refers to the first group and so on). Advances the search position for this Matcher, so it can also be used to
+     * repeatedly replace the next amount matches when called successively.
+     * @param replacement the String to replace the first match with
+     * @param amount the number of replacements to perform
+     * @return this Matcher's String it operated on, after replacements
+     */
+    public String replaceAmount(Substitution replacement, int amount)
+    {
+        TextBuffer tb = wrap(new StringBuilder(data.length));
+        Replacer.replace(this, replacement, tb, amount);
+        return tb.toString();
+    }
+
+    /**
+     * Replaces all matches this Matcher can find with replacement, as interpreted by PerlSubstitution (so $1 refers to
+     * the first group and so on).
+     * @param replacement the String to replace the first match with
+     * @return this Matcher's String it operated on, after replacements
+     */
+    public String replaceAll(Substitution replacement)
+    {
+        TextBuffer tb = wrap(new StringBuilder(data.length));
+        Replacer.replace(this, replacement, tb);
         return tb.toString();
     }
 
