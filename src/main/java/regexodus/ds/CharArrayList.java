@@ -25,13 +25,11 @@ import java.util.RandomAccess;
 
 /**
  * A type-specific array-based list; provides some additional methods that use polymorphism to avoid (un)boxing.
- * <p>
- * <P>This class implements a lightweight, fast, open, optimized, reuse-oriented version of array-based lists. Instances of this class represent a list with an array that is enlarged as needed when
+ * <br>This class implements a lightweight, fast, open, optimized, reuse-oriented version of array-based lists. Instances of this class represent a list with an array that is enlarged as needed when
  * new entries are created (by doubling its current length), but is <em>never</em> made smaller (even on a {@link #clear()}). A family of {@linkplain #trim() trimming methods} lets you control the size
  * of the backing array; this is particularly useful if you reuse instances of this class. Range checks are equivalent to those of {@link java.util}'s classes, but they are delayed as much as
  * possible. The backing array is exposed by the {@link #elements()} method.
- * <p>
- * <p>This class implements the bulk methods <code>removeElements()</code>, <code>addElements()</code> and <code>getElements()</code> using high-performance system calls (e.g.,
+ * <br>This class implements the bulk methods <code>removeElements()</code>, <code>addElements()</code> and <code>getElements()</code> using high-performance system calls (e.g.,
  * {@link System#arraycopy(Object, int, Object, int, int) System.arraycopy()} instead of expensive loops.
  *
  * @see java.util.ArrayList
@@ -54,8 +52,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
     /**
      * Creates a new array list using a given array.
-     * <p>
-     * <P>This constructor is only meant to be used by the wrapping methods.
+     * <br>This constructor is only meant to be used by the wrapping methods.
      *
      * @param a the array that will be used to back this array list.
      */
@@ -141,8 +138,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
     /**
      * Wraps a given array into an array list of given size.
-     * <p>
-     * <P>Note it is guaranteed that the type of the array returned by {@link #elements()} will be the same (see the comments in the class documentation).
+     * <br>Note it is guaranteed that the type of the array returned by {@link #elements()} will be the same (see the comments in the class documentation).
      *
      * @param a      an array to wrap.
      * @param length the length of the resulting array list.
@@ -158,8 +154,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
     /**
      * Wraps a given array into an array list.
-     * <p>
-     * <P>Note it is guaranteed that the type of the array returned by {@link #elements()} will be the same (see the comments in the class documentation).
+     * <br>Note it is guaranteed that the type of the array returned by {@link #elements()} will be the same (see the comments in the class documentation).
      *
      * @param a an array to wrap.
      * @return a new array list wrapping the given array.
@@ -446,10 +441,9 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
     /**
      * Trims the backing array if it is too large.
-     * <p>
+     * <br>
      * If the current array length is smaller than or equal to <code>n</code>, this method does nothing. Otherwise, it trims the array length to the maximum between <code>n</code> and {@link #size()}.
-     * <p>
-     * <P>This method is useful when reusing lists. {@linkplain #clear() Clearing a list} leaves the array length untouched. If you are reusing a list many times, you can call this method with a
+     * <br>This method is useful when reusing lists. {@linkplain #clear() Clearing a list} leaves the array length untouched. If you are reusing a list many times, you can call this method with a
      * typical size to avoid keeping around a very large array just because of a few large transient lists.
      *
      * @param n the threshold for the trimming.
@@ -641,8 +635,8 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * empty.)  The returned list is backed by this list, so non-structural
      * changes in the returned list are reflected in this list, and vice-versa.
      * The returned list supports all of the optional list operations supported
-     * by this list.<p>
-     * <p>
+     * by this list.
+     * <br>
      * This method eliminates the need for explicit range operations (of
      * the sort that commonly exist for arrays).  Any operation that expects
      * a list can be used as a range operation by passing a subList view
@@ -653,8 +647,8 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * }</pre>
      * Similar idioms may be constructed for <tt>indexOf</tt> and
      * <tt>lastIndexOf</tt>, and all of the algorithms in the
-     * <tt>Collections</tt> class can be applied to a subList.<p>
-     * <p>
+     * <tt>Collections</tt> class can be applied to a subList.
+     * <br>
      * The semantics of the list returned by this method become undefined if
      * the backing list (i.e., this list) is <i>structurally modified</i> in
      * any way other than via the returned list.  (Structural modifications are
@@ -682,8 +676,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
     /**
      * Compares this type-specific array list to another one.
-     * <p>
-     * <P>This method exists only for sake of efficiency. The implementation inherited from the abstract implementation would already work.
+     * <br>This method exists only for sake of efficiency. The implementation inherited from the abstract implementation would already work.
      *
      * @param l a type-specific array list.
      * @return true if the argument contains the same elements of this type-specific array list.
@@ -701,8 +694,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
     /**
      * Compares this array list to another array list.
-     * <p>
-     * <P>This method exists only for sake of efficiency. The implementation inherited from the abstract implementation would already work.
+     * <br>This method exists only for sake of efficiency. The implementation inherited from the abstract implementation would already work.
      *
      * @param l an array list.
      * @return a negative integer, zero, or a positive integer as this list is lexicographically less than, equal to, or greater than the argument.
@@ -827,26 +819,23 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
      * in the specified array, it is returned therein.  Otherwise, a new
      * array is allocated with the runtime type of the specified array and
      * the size of this list.
-     * <p>
-     * <p>If the list fits in the specified array with room to spare (i.e.,
+     * <br>If the list fits in the specified array with room to spare (i.e.,
      * the array has more elements than the list), the element in the array
      * immediately following the end of the list is set to <tt>null</tt>.
      * (This is useful in determining the length of the list <i>only</i> if
      * the caller knows that the list does not contain any null elements.)
-     * <p>
-     * <p>Like the {@link #toArray()} method, this method acts as bridge between
+     * <br>Like the {@link #toArray()} method, this method acts as bridge between
      * array-based and collection-based APIs.  Further, this method allows
      * precise control over the runtime type of the output array, and may,
      * under certain circumstances, be used to save allocation costs.
-     * <p>
-     * <p>Suppose <tt>x</tt> is a list known to contain only strings.
+     * <br>Suppose <tt>x</tt> is a list known to contain only strings.
      * The following code can be used to dump the list into a newly
      * allocated array of <tt>String</tt>:
-     * <p>
+     * <br>
      * <pre>{@code
      *     String[] y = x.toArray(new String[0]);
      * }</pre>
-     * <p>
+     * <br>
      * Note that <tt>toArray(new Object[0])</tt> is identical in function to
      * <tt>toArray()</tt>.
      *
@@ -925,8 +914,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
     /**
      * Unwraps an iterator into an array starting at a given offset for a given number of elements.
-     * <p>
-     * <P>This method iterates over the given type-specific iterator and stores the elements returned, up to a maximum of <code>length</code>, in the given array starting at <code>offset</code>. The
+     * <br>This method iterates over the given type-specific iterator and stores the elements returned, up to a maximum of <code>length</code>, in the given array starting at <code>offset</code>. The
      * number of actually unwrapped elements is returned (it may be less than <code>max</code> if the iterator emits less than <code>max</code> elements).
      *
      * @param i     a type-specific iterator.
@@ -956,8 +944,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
     /**
      * Unwraps an iterator into an array starting at a given offset for a given number of elements.
-     * <p>
-     * <P>This method iterates over the given type-specific iterator and stores the elements returned, up to a maximum of <code>length</code>, in the given array starting at <code>offset</code>. The
+     * <br>This method iterates over the given type-specific iterator and stores the elements returned, up to a maximum of <code>length</code>, in the given array starting at <code>offset</code>. The
      * number of actually unwrapped elements is returned (it may be less than <code>max</code> if the iterator emits less than <code>max</code> elements).
      *
      * @param i     a type-specific iterator.
@@ -980,8 +967,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
         /**
          * Ensures that an array can contain the given number of entries.
-         * <p>
-         * <P>If you cannot foresee whether this array will need again to be enlarged, you should probably use <code>grow()</code> instead.
+         * <br>If you cannot foresee whether this array will need again to be enlarged, you should probably use <code>grow()</code> instead.
          *
          * @param array  an array.
          * @param length the new minimum length for this array.
@@ -1019,8 +1005,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
         /**
          * Grows the given array to the maximum between the given length and the current length multiplied by two, provided that the given length is larger than the current length.
-         * <p>
-         * <P>If you want complete control on the array growth, you should probably use <code>ensureCapacity()</code> instead.
+         * <br>If you want complete control on the array growth, you should probably use <code>ensureCapacity()</code> instead.
          *
          * @param array  an array.
          * @param length the new minimum length for this array.
@@ -1041,8 +1026,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         /**
          * Grows the given array to the maximum between the given length and the current length multiplied by two, provided that the given length is larger than the current length, preserving just a part
          * of the array.
-         * <p>
-         * <P>If you want complete control on the array growth, you should probably use <code>ensureCapacity()</code> instead.
+         * <br>If you want complete control on the array growth, you should probably use <code>ensureCapacity()</code> instead.
          *
          * @param array    an array.
          * @param length   the new minimum length for this array.
@@ -1171,8 +1155,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
         /**
          * Ensures that a range given by its first (inclusive) and last (exclusive) elements fits an array.
-         * <p>
-         * <P>This method may be used whenever an array range check is needed.
+         * <br>This method may be used whenever an array range check is needed.
          *
          * @param a    an array.
          * @param from a start index (inclusive).
@@ -1186,8 +1169,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
         /**
          * Ensures that a range given by an offset and a length fits an array.
-         * <p>
-         * <P>This method may be used whenever an array range check is needed.
+         * <br>This method may be used whenever an array range check is needed.
          *
          * @param a      an array.
          * @param offset a start index.
@@ -1213,8 +1195,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
         /**
          * Ensures that a range given by its first (inclusive) and last (exclusive) elements fits an array of given length.
-         * <p>
-         * <P>This method may be used whenever an array range check is needed.
+         * <br>This method may be used whenever an array range check is needed.
          *
          * @param arrayLength an array length.
          * @param from        a start index (inclusive).
@@ -1233,8 +1214,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
 
         /**
          * Ensures that a range given by an offset and a length fits an array of given length.
-         * <p>
-         * <P>This method may be used whenever an array range check is needed.
+         * <br>This method may be used whenever an array range check is needed.
          *
          * @param arrayLength an array length.
          * @param offset      a start index for the fragment

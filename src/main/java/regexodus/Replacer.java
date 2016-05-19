@@ -1,10 +1,10 @@
 /**
  * Copyright (c) 2001, Sergey A. Samokhodkin
  * All rights reserved.
- * <p>
+ * <br>
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * <p>
+ * <br>
  * - Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
  * - Redistributions in binary form
@@ -13,7 +13,7 @@
  * - Neither the name of jregex nor the names of its contributors may be used
  * to endorse or promote products derived from this software without specific prior
  * written permission.
- * <p>
+ * <br>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -339,24 +339,42 @@ public class Replacer implements Serializable {
         }
     }
 
-    public static TextBuffer wrap(final StringBuilder sb) {
-        return new TextBuffer() {
-            public void append(char c) {
-                sb.append(c);
-            }
+    public static StringBuilderBuffer wrap(final StringBuilder sb) {
+        return new StringBuilderBuffer(sb);
+    }
 
-            public void append(char[] chars, int start, int len) {
-                sb.append(chars, start, len);
-            }
+    public static class StringBuilderBuffer implements TextBuffer, Serializable
+    {
+        private static final long serialVersionUID = 2589054766833218313L;
 
-            public void append(String s) {
-                sb.append(s);
-            }
+        public StringBuilder sb;
 
-            public String toString() {
-                return sb.toString();
-            }
-        };
+        public StringBuilderBuffer() {
+            sb = new StringBuilder();
+        }
+        public StringBuilderBuffer(final StringBuilder builder) {
+            sb = builder;
+        }
+        public void append(char c) {
+            sb.append(c);
+        }
+
+        public void append(char[] chars, int start, int len) {
+            sb.append(chars, start, len);
+        }
+
+        public void append(String s) {
+            sb.append(s);
+        }
+
+        public String toString() {
+            return sb.toString();
+        }
+
+        public StringBuilder toStringBuilder()
+        {
+            return sb;
+        }
     }
 
     @GwtIncompatible

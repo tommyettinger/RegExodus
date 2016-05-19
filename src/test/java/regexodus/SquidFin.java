@@ -343,7 +343,7 @@ public class SquidFin implements Serializable {
                     Pattern.compile("[ñńņňŋṅṇ]").replacer("n"),
                     Pattern.compile("[ŕŗřṛṝŗŕ]").replacer("r"),
                     Pattern.compile("[śŝşšșṣ]").replacer("s"),
-                    Pattern.compile("[ţťŧțṭ]").replacer("t"),
+                    Pattern.compile("[ţťțṭ]").replacer("t"),
                     Pattern.compile("[ŵẁẃẅ]").replacer("w"),
                     Pattern.compile("[ýÿŷỳ]").replacer("y"),
                     Pattern.compile("[źżž]").replacer("z"),
@@ -358,7 +358,7 @@ public class SquidFin implements Serializable {
                     Pattern.compile("[ÑŃŅŇŊṄṆ]").replacer("N"),
                     Pattern.compile("[ŔŖŘṚṜŖŔ]").replacer("R"),
                     Pattern.compile("[ŚŜŞŠȘṢ]").replacer("S"),
-                    Pattern.compile("[ŢŤŦȚṬ]").replacer("T"),
+                    Pattern.compile("[ŢŤȚṬ]").replacer("T"),
                     Pattern.compile("[ŴẀẂẄ]").replacer("W"),
                     Pattern.compile("[ÝŸŶỲ]").replacer("Y"),
                     Pattern.compile("[ŹŻŽ]").replacer("Z"),
@@ -2306,7 +2306,7 @@ public class SquidFin implements Serializable {
         public StringBuilder modify(RNG rng, StringBuilder sb)
         {
             Matcher m;
-            TextBuffer tb, working = Replacer.wrap(sb);
+            Replacer.StringBuilderBuffer tb, working = Replacer.wrap(sb);
             String tmp;
             boolean found;
             for(Alteration alt : alterations) {
@@ -2336,13 +2336,13 @@ public class SquidFin implements Serializable {
                     working = tb;
                 }
             }
-            return new StringBuilder(working.toString());
+            return working.toStringBuilder();
         }
 
         /**
          * For a character who always pronounces 's', 'ss', and 'sh' as 'th'.
          */
-        public static final Modifier LISP = new Modifier("[sśŝşšș]+h?", "th");
+        public static final Modifier LISP = new Modifier("[tţťțṭ]?[sśŝşšș]+h?", "th");
 
         /**
          * For a character who always lengthens 's' and 'z' sounds not starting a word.
@@ -2426,7 +2426,7 @@ public class SquidFin implements Serializable {
         public double chance;
         public Alteration()
         {
-            this("[sśŝşšș]+h?", "th");
+            this("[tţťțṭ]?[sśŝşšș]+h?", "th");
         }
         public Alteration(String pattern, String replacement)
         {

@@ -1,10 +1,10 @@
 /**
  * Copyright (c) 2001, Sergey A. Samokhodkin
  * All rights reserved.
- * <p>
+ * <br>
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * <p>
+ * <br>
  * - Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
  * - Redistributions in binary form
@@ -13,7 +13,7 @@
  * - Neither the name of jregex nor the names of its contributors may be used
  * to endorse or promote products derived from this software without specific prior
  * written permission.
- * <p>
+ * <br>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -39,18 +39,26 @@ class CharacterClass extends Term implements UnicodeConstants {
     private static final BlockSet DIGIT = new BlockSet();
     private static final BlockSet WORDCHAR = new BlockSet();
     private static final BlockSet SPACE = new BlockSet();
+    private static final BlockSet HSPACE = new BlockSet();
+    private static final BlockSet VSPACE = new BlockSet();
 
     private static final BlockSet UDIGIT = new BlockSet();
     private static final BlockSet UWORDCHAR = new BlockSet();
     private static final BlockSet USPACE = new BlockSet();
+    private static final BlockSet UHSPACE = new BlockSet();
+    private static final BlockSet UVSPACE = new BlockSet();
 
     private static final BlockSet NONDIGIT = new BlockSet();
     private static final BlockSet NONWORDCHAR = new BlockSet();
     private static final BlockSet NONSPACE = new BlockSet();
+    private static final BlockSet NONHSPACE = new BlockSet();
+    private static final BlockSet NONVSPACE = new BlockSet();
 
     private static final BlockSet UNONDIGIT = new BlockSet();
     private static final BlockSet UNONWORDCHAR = new BlockSet();
     private static final BlockSet UNONSPACE = new BlockSet();
+    private static final BlockSet UNONHSPACE = new BlockSet();
+    private static final BlockSet UNONVSPACE = new BlockSet();
 
     private static boolean namesInitialized = false;
 
@@ -99,10 +107,14 @@ class CharacterClass extends Term implements UnicodeConstants {
         DIGIT.setDigit(false);
         WORDCHAR.setWordChar(false);
         SPACE.setSpace(false);
+        HSPACE.setHorizontalSpace(false);
+        VSPACE.setVerticalSpace(false);
 
         UDIGIT.setDigit(true);
         UWORDCHAR.setWordChar(true);
         USPACE.setSpace(true);
+        UHSPACE.setHorizontalSpace(true);
+        UVSPACE.setVerticalSpace(true);
 
         NONDIGIT.setDigit(false);
         NONDIGIT.setPositive(false);
@@ -110,6 +122,10 @@ class CharacterClass extends Term implements UnicodeConstants {
         NONWORDCHAR.setPositive(false);
         NONSPACE.setSpace(false);
         NONSPACE.setPositive(false);
+        NONHSPACE.setHorizontalSpace(false);
+        NONHSPACE.setPositive(false);
+        NONVSPACE.setVerticalSpace(false);
+        NONVSPACE.setPositive(false);
 
         UNONDIGIT.setDigit(true);
         UNONDIGIT.setPositive(false);
@@ -117,6 +133,10 @@ class CharacterClass extends Term implements UnicodeConstants {
         UNONWORDCHAR.setPositive(false);
         UNONSPACE.setSpace(true);
         UNONSPACE.setPositive(false);
+        UNONHSPACE.setHorizontalSpace(true);
+        UNONHSPACE.setPositive(false);
+        UNONVSPACE.setVerticalSpace(true);
+        UNONVSPACE.setPositive(false);
 
         initPosixClasses();
     }
@@ -288,6 +308,17 @@ class CharacterClass extends Term implements UnicodeConstants {
     static void makeSpace(Term term, boolean inverse, boolean unicode) {
         BlockSet space = unicode ? inverse ? UNONSPACE : USPACE :
                 inverse ? NONSPACE : SPACE;
+        BlockSet.unify(space, term);
+    }
+
+    static void makeHSpace(Term term, boolean inverse, boolean unicode) {
+        BlockSet space = unicode ? inverse ? UNONHSPACE : UHSPACE :
+                inverse ? NONHSPACE : HSPACE;
+        BlockSet.unify(space, term);
+    }
+    static void makeVSpace(Term term, boolean inverse, boolean unicode) {
+        BlockSet space = unicode ? inverse ? UNONVSPACE : UVSPACE :
+                inverse ? NONVSPACE : VSPACE;
         BlockSet.unify(space, term);
     }
 

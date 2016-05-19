@@ -18,12 +18,10 @@ import java.util.Arrays;
 
 /**
  * A type-specific hash map with a fast, small-footprint implementation.
- * <p>
- * <P>Instances of this class use a hash table to represent a map. The table is filled up to a specified <em>load factor</em>, and then doubled in size to accommodate new entries. If the table is
+ * <br>Instances of this class use a hash table to represent a map. The table is filled up to a specified <em>load factor</em>, and then doubled in size to accommodate new entries. If the table is
  * emptied below <em>one fourth</em> of the load factor, it is halved in size. However, halving is not performed when deleting entries from an iterator, as it would interfere with the iteration
  * process.
- * <p>
- * <p>Note that {@link #clear()} does not modify the hash table size. Rather, a family of {@linkplain #trim() trimming methods} lets you control the size of the table; this is particularly useful if
+ * <br>Note that {@link #clear()} does not modify the hash table size. Rather, a family of {@linkplain #trim() trimming methods} lets you control the size of the table; this is particularly useful if
  * you reuse instances of this class.
  */
 public class CharCharMap implements java.io.Serializable, Cloneable {
@@ -82,8 +80,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
     /**
      * Creates a new hash map.
-     * <p>
-     * <p>The actual table size will be the least power of two greater than <code>expected</code>/<code>f</code>.
+     * <br>The actual table size will be the least power of two greater than <code>expected</code>/<code>f</code>.
      *
      * @param expected the expected number of elements in the hash set.
      * @param f        the load factor.
@@ -296,7 +293,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
     /* Removes all elements from this map.
      *
-     * <P>To increase object reuse, this method does not change the table size. If you want to reduce the table size, you must use {@link #trim()}. */
+     * <br>To increase object reuse, this method does not change the table size. If you want to reduce the table size, you must use {@link #trim()}. */
     public void clear() {
         if (size == 0) return;
         size = 0;
@@ -369,10 +366,8 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
     /**
      * Rehashes the map, making the table as small as possible.
-     * <p>
-     * <P>This method rehashes the table to the smallest size satisfying the load factor. It can be used when the set will not be changed anymore, so to optimize access speed and size.
-     * <p>
-     * <P>If the table size is already the minimum possible, this method does nothing.
+     * <br>This method rehashes the table to the smallest size satisfying the load factor. It can be used when the set will not be changed anymore, so to optimize access speed and size.
+     * <br>If the table size is already the minimum possible, this method does nothing.
      *
      * @return true if there was enough memory to trim the map.
      * @see #trim(int)
@@ -390,11 +385,9 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
     /**
      * Rehashes this map if the table is too large.
-     * <p>
-     * <P>Let <var>N</var> be the smallest table size that can hold <code>max(n,{@link #size()})</code> entries, still satisfying the load factor. If the current table size is smaller than or equal to
+     * <br>Let <var>N</var> be the smallest table size that can hold <code>max(n,{@link #size()})</code> entries, still satisfying the load factor. If the current table size is smaller than or equal to
      * <var>N</var>, this method does nothing. Otherwise, it rehashes this map in a table of size <var>N</var>.
-     * <p>
-     * <P>This method is useful when reusing maps. {@linkplain #clear() Clearing a map} leaves the table size untouched. If you are reusing a map many times, you can call this method with a typical
+     * <br>This method is useful when reusing maps. {@linkplain #clear() Clearing a map} leaves the table size untouched. If you are reusing a map many times, you can call this method with a typical
      * size to avoid keeping around a very large table just because of a few large transient maps.
      *
      * @param n the threshold for the trimming.
@@ -414,8 +407,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
     /**
      * Rehashes the map.
-     * <p>
-     * <P>This method implements the basic rehashing strategy, and may be overriden by subclasses implementing different rehashing strategies (e.g., disk-based rehashing). However, you should not
+     * <br>This method implements the basic rehashing strategy, and may be overriden by subclasses implementing different rehashing strategies (e.g., disk-based rehashing). However, you should not
      * override this method unless you understand the internal workings of this class.
      *
      * @param newN the new size
@@ -445,7 +437,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
     /**
      * Returns a deep copy of this map.
-     * <p>
+     * <br>
      * This method performs a deep copy of this hash map, but with primitive keys and values it doesn't matter much.
      * @return a deep copy of this map.
      */
@@ -459,7 +451,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
     /**
      * Returns a hash code for this map.
-     * <p>
+     * <br>
      * This method overrides the generic method provided by the superclass. Since <code>equals()</code> is not overriden, it is important that the value returned by this method is the same value as
      * the one returned by the overriden method.
      *
@@ -554,8 +546,8 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
         /**
          * Avalanches the bits of an integer by applying the finalisation step of MurmurHash3.
-         * <p>
-         * <p>This method implements the finalisation step of Austin Appleby's <a href="http://code.google.com/p/smhasher/">MurmurHash3</a>.
+         * <br>
+         * <br>This method implements the finalisation step of Austin Appleby's <a href="http://code.google.com/p/smhasher/">MurmurHash3</a>.
          * Its purpose is to avalanche the bits of the argument to within 0.25% bias.
          *
          * @param x an integer.
@@ -573,8 +565,8 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
         /**
          * Avalanches the bits of a long integer by applying the finalisation step of MurmurHash3.
-         * <p>
-         * <p>This method implements the finalisation step of Austin Appleby's <a href="http://code.google.com/p/smhasher/">MurmurHash3</a>.
+         * <br>
+         * <br>This method implements the finalisation step of Austin Appleby's <a href="http://code.google.com/p/smhasher/">MurmurHash3</a>.
          * Its purpose is to avalanche the bits of the argument to within 0.25% bias.
          *
          * @param x a long integer.
@@ -591,8 +583,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
         /**
          * Quickly mixes the bits of an integer.
-         * <p>
-         * <p>This method mixes the bits of the argument by multiplying by the golden ratio and
+         * <br>This method mixes the bits of the argument by multiplying by the golden ratio and
          * xorshifting the result. It is borrowed from <a href="https://github.com/OpenHFT/Koloboke">Koloboke</a>, and
          * it has slightly worse behaviour than {@link #murmurHash3(int)} (in open-addressing hash tables the average number of probes
          * is slightly larger), but it's much faster.
@@ -618,8 +609,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
         /**
          * Quickly mixes the bits of a long integer.
-         * <p>
-         * <p>This method mixes the bits of the argument by multiplying by the golden ratio and
+         * <br>This method mixes the bits of the argument by multiplying by the golden ratio and
          * xorshifting twice the result. It is borrowed from <a href="https://github.com/OpenHFT/Koloboke">Koloboke</a>, and
          * it has slightly worse behaviour than {@link #murmurHash3(long)} (in open-addressing hash tables the average number of probes
          * is slightly larger), but it's much faster.
@@ -681,8 +671,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
         /**
          * Return the least power of two greater than or equal to the specified value.
-         * <p>
-         * <p>Note that this function will return 1 when the argument is 0.
+         * <br>Note that this function will return 1 when the argument is 0.
          *
          * @param x an integer smaller than or equal to 2<sup>30</sup>.
          * @return the least power of two greater than or equal to the specified value.
@@ -699,8 +688,7 @@ public class CharCharMap implements java.io.Serializable, Cloneable {
 
         /**
          * Return the least power of two greater than or equal to the specified value.
-         * <p>
-         * <p>Note that this function will return 1 when the argument is 0.
+         * <br>Note that this function will return 1 when the argument is 0.
          *
          * @param x a long integer smaller than or equal to 2<sup>62</sup>.
          * @return the least power of two greater than or equal to the specified value.

@@ -91,7 +91,11 @@ public class BasicTest {
         System.out.println(Pattern.compile("\\((?:[\\s,]*(?:[^\\s,]+)|(?:\\((?:[\\s,]*[^\\s,]+)*\\)))*\\)").matches("(ciploû (+ 1 2))"));
         System.out.println(Pattern.compile("(z\\p{Ps}\\*)\\QABC\\E{\\:@/1}").matches("z(*ABC*)Z"));
         System.out.println(Pattern.compile("([\\(\\[\\{]){\\:/1}").matches("()"));
-
+        Matcher m = Pattern.compile("(({=NAME}a+) ?)+").matcher("aa a aaa aaa");
+        m.find();
+        System.out.println(m.group("NAME"));
+        System.out.println();
+        System.out.println(Category.Po.contents());
     }
     @Test
     public void testReplace()

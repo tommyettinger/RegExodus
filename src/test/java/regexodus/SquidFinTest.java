@@ -186,7 +186,7 @@ public class SquidFinTest {
                     new String[]{".", ".", ".", "!", "?"}, 0.12));
         }
         rng.setState(0xf00df00L);
-        flg = SquidFin.JAPANESE_ROMANIZED.addModifiers(SquidFin.Modifier.DOUBLE_CONSONANTS);
+        flg = SquidFin.JAPANESE_ROMANIZED.addModifiers(SquidFin.Modifier.DOUBLE_CONSONANTS, SquidFin.Modifier.LISP);
         for (int i = 0; i < 40; i++) {
             System.out.println(flg.sentence(rng, 5, 12, new String[]{",", ",", ";"},
                     new String[]{".", ".", "!", "?", "..."}, 0.18));

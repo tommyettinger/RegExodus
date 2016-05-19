@@ -1,10 +1,10 @@
 /**
  * Copyright (c) 2001, Sergey A. Samokhodkin
  * All rights reserved.
- * <p>
+ * <br>
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * <p>
+ * <br>
  * - Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
  * - Redistributions in binary form
@@ -13,7 +13,7 @@
  * - Neither the name of jregex nor the names of its contributors may be used
  * to endorse or promote products derived from this software without specific prior
  * written permission.
- * <p>
+ * <br>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -1089,7 +1089,7 @@ public class Term implements REFlags {
                         break;
                     }
                     case '0':
-                    case 'o':   // oct 2- or 3-digit number -> char
+                    case 'o':   // oct arbitrary-digit number -> char
                         int oct = 0;
                         for (; i < out; ) {
                             char d = data[i++];
@@ -1147,6 +1147,18 @@ public class Term implements REFlags {
                     case 'w':   // letter
                         CharacterClass.makeWordChar(term, inv, (flags & UNICODE) > 0);
                         return i;
+
+                    case 'H':
+                        inv = true;
+                    case 'h':
+                        CharacterClass.makeHSpace(term, inv, (flags & UNICODE) > 0);
+                        return  i;
+
+                    case 'V':
+                        inv = true;
+                    case 'v':
+                        CharacterClass.makeVSpace(term, inv, (flags & UNICODE) > 0);
+                        return  i;
 
                     case 'B':   // non-(word boundary)
                         inv = true;
