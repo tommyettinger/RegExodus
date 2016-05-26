@@ -127,6 +127,19 @@ public class BasicTest {
         Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
         */
     }
+
+    @Test
+    public void testReplacementTable()
+    {
+        String[] data = new String[]{"alpha", "beta", "gamma", "pi", "phi", "omega", "zed", "pillow", "cc", "dd", "pihigammaddic"};
+        Replacer rep = Replacer.makeTable("alpha", "A", "beta", "B", "gamma", "G", "pi", "P", "phi", "F", "omega", "O");
+        for(String datum : data)
+        {
+            System.out.println(rep.replace(datum));
+        }
+
+    }
+
     //@Test
     public void testMatcherProblems()
     {

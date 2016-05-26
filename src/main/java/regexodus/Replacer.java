@@ -33,12 +33,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * <b>The Replacer class</b> suggests some methods to replace occurrences of a pattern
  * either by a result of evaluation of a perl-like expression, or by a plain string,
  * or according to a custom substitution model, provided as a Substitution interface implementation.<br>
- * A Replacer instance may be obtained either using Pattern.replacer(...) method, or by constructor:<pre>
+ * A Replacer instance may be obtained either using Pattern.replacer(...) method, or by constructor:<code>
  * Pattern p=new Pattern("\\w+");
  * Replacer perlExpressionReplacer=p.replacer("[$&amp;]");
  * //or another way to do the same
@@ -50,7 +52,7 @@ import java.io.Writer;
  *    }
  * }
  * Replacer myVeryOwnReplacer=new Replacer(p,myOwnModel);
- * </pre>
+ * </code>
  * The second method is much more verbose, but gives more freedom.
  * To perform a replacement call replace(someInput):<pre>
  * System.out.print(perlExpressionReplacer.replace("All your base "));
@@ -70,7 +72,24 @@ public class Replacer implements Serializable {
     private Substitution substitution;
 
     /**
-     * Unlikely to be used directly.
+     * Constructs a Replacer from a Pattern and implementation of Substitution.
+     * Only meant to be used if you have complex substitution behavior. An example of how to make such an implementation
+     * that surrounds each match with an increasing number of square brackets could be:
+     * <br>
+     * <code>
+     * Substitution mySub=new Substitution(){
+     *    public int counter = 1;
+     *    public void appendSubstitution(MatchResult match,TextBuffer tb){
+     *       for(int i = 0; i < counter; i++)
+     *           tb.append('[');
+     *       //appends the full match into tb; 0 can be used in place of MatchResult.MATCH
+     *       match.getGroup(MatchResult.MATCH, tb);
+     *       for(int i = 0; i < counter; i++)
+     *           tb.append(']');
+     *       counter++;
+     *    }
+     * }
+     * </code>
      * @param pattern a regexodus.Pattern that determines what should be replaced
      * @param substitution an implementation of the Substitution interface, which allows custom replacement behavior
      */
@@ -337,6 +356,94 @@ public class Replacer implements Serializable {
         public void appendSubstitution(MatchResult match, TextBuffer res) {
             if (str != null) res.append(str);
         }
+    }
+    private static class TableSubstitution implements Substitution
+    {
+        final LinkedHashMap<String, String> dictionary;
+
+        TableSubstitution(LinkedHashMap<String, String> dict)
+        {
+            dictionary = dict;
+        }
+
+        TableSubstitution(String... dict)
+        {
+            dictionary = new LinkedHashMap<String, String>(dict.length / 2);
+            for (int i = 0; i < dict.length - 1; i+=2) {
+                dictionary.put(dict[i], dict[i+1]);
+            }
+        }
+        @Override
+        public void appendSubstitution(MatchResult match, TextBuffer dest) {
+            String m = match.group(0);
+            if(m == null)
+                return;
+            for (Map.Entry<String, String> kv : dictionary.entrySet()) {
+                if (kv.getKey().equals(m)) {
+                    dest.append(kv.getValue());
+                    return;
+                }
+            }
+            dest.append(m);
+        }
+    }
+
+    /**
+     * Makes a Replacer that replaces a literal String at index i in pairs with the String at index i+1. Doesn't need
+     * escapes in the Strings it searches for (at index 0, 2, 4, etc.), but cannot search for the exact two characters
+     * in immediate succession, backslash then capital E, because it finds literal Strings using {@code \\Q...\\E}.
+     * Uses only default modes (not case-insensitive, and most other flags don't have any effect since this doesn't care
+     * about "\\w" or other backslash-escaped special categories), but you can get the Pattern from this afterwards and
+     * set its flags with its setFlags() method. The Strings this replaces with are at index 1, 3, 5, etc. and
+     * correspond to the search String immediately before it; they are also literal.
+     * @param pairs alternating search String, then replacement String, then search, replacement, etc.
+     * @return a Replacer that will act as a replacement table for the given Strings
+     */
+    public static Replacer makeTable(String... pairs)
+    {
+        if(pairs == null || pairs.length < 2)
+            return new Replacer(Pattern.compile("(.+)"), new DummySubstitution("\\1"));
+        TableSubstitution tab = new TableSubstitution(pairs);
+        StringBuilder sb = new StringBuilder(128);
+        sb.append("(?>");
+        for(String s : tab.dictionary.keySet())
+        {
+            sb.append("\\Q");
+            sb.append(s);
+            sb.append("\\E|");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(')');
+        return new Replacer(Pattern.compile(sb.toString()), tab);
+    }
+
+    /**
+     * Makes a Replacer that replaces a literal String key in dict with the corresponding String value in dict. Doesn't
+     * need escapes in the Strings it searches for (at index 0, 2, 4, etc.), but cannot search for the exact two
+     * characters in immediate succession, backslash then capital E, because it finds literal Strings using
+     * {@code \\Q...\\E}. Uses only default modes (not case-insensitive, and most other flags don't have any effect
+     * since this doesn't care about "\\w" or other backslash-escaped special categories), but you can get the Pattern
+     * from this afterwards and set its flags with its setFlags() method. The Strings this replaces with are the values,
+     * and are also literal. If the Map this is given is a sorted Map of some kind or a (preferably) LinkedHashMap, then
+     * the order search strings will be tried will be stable; the same is not necessarily true for HashMap.
+     * @param dict a Map (hopefully with stable order) with search String keys and replacement String values
+     * @return a Replacer that will act as a replacement table for the given Strings
+     */
+    public static Replacer makeTable(Map<String, String> dict)
+    {
+        if(dict == null || dict.isEmpty())
+            return new Replacer(Pattern.compile("(.+)"), new DummySubstitution("\\1"));
+        TableSubstitution tab = new TableSubstitution(new LinkedHashMap<String, String>(dict));
+        StringBuilder sb = new StringBuilder(128);
+        sb.append("(?>");
+        for(String s : tab.dictionary.keySet())
+        {
+            sb.append("\\Q");
+            sb.append(s);
+            sb.append("\\E|");
+        }
+        sb.setCharAt(sb.length() - 1, ')');
+        return new Replacer(Pattern.compile(sb.toString()), tab);
     }
 
     public static StringBuilderBuffer wrap(final StringBuilder sb) {

@@ -308,6 +308,45 @@ public class Pattern implements Serializable, REFlags {
         internalCompile(regex, flags);
     }
 
+    /**
+     * Sets this Pattern's flags with the char-per-flag representation of regex flags. Removes flags set earlier.
+     * The flag string should consist of letters 'i','m','s','x','u','X'(the case is significant) and a hyphen or plus.
+     * The meaning of letters:
+     * <ul>
+     * <li><b>i</b> - case insensitivity, corresponds to REFlags.IGNORE_CASE;</li>
+     * <li><b>m</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to REFlags.MULTILINE flag;</li>
+     * <li><b>s</b> - single line treatment('.' matches \r's and \n's),corresponds to REFlags.DOTALL;</li>
+     * <li><b>x</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to REFlags.IGNORE_SPACES.</li>
+     * <li><b>u</b> - predefined classes are regarded as belonging to Unicode, corresponds to REFlags.UNICODE; this may yield some performance penalty.</li>
+     * <li><b>X</b> - compatibility with XML Schema, corresponds to REFlags.XML_SCHEMA.</li>
+     * <li><b>-</b> - turn off the specified flags; normally has no effect unless something adds the flags.</li>
+     * <li><b>+</b> - turn on the specified flags; normally is no different from just using the letters.</li>
+     * </ul>
+     * @param flags a String that stores various flags as chars
+     */
+    public void setFlags(String flags)
+    {
+        internalCompile(stringRepr, parseFlags(flags));
+    }
+
+    /**
+     * Sets this Pattern's flags with the bitmask-style int representation of regex flags. Removes flags set earlier.
+     * Flag constants can be found in REFlags; UNICODE is enabled normally but is not automatically turned on here.
+     * The <code>flags</code> parameter is a bitwise OR of the following values:
+     * <ul>
+     * <li><b>REFlags.IGNORE_CASE</b> - case insensitivity, corresponds to '<b>i</b>' letter;</li>
+     * <li><b>REFlags.MULTILINE</b> - multiline treatment(BOLs and EOLs affect the '^' and '$'), corresponds to '<b>m</b>';</li>
+     * <li><b>REFlags.DOTALL</b> - single line treatment('.' matches \r's and \n's),corresponds to '<b>s</b>';</li>
+     * <li><b>REFlags.IGNORE_SPACES</b> - extended whitespace comments (spaces and eols in the expression are ignored), corresponds to '<b>x</b>'.</li>
+     * <li><b>REFlags.UNICODE</b> - predefined classes are regarded as belonging to Unicode, corresponds to '<b>u</b>'; this may yield some performance penalty.</li>
+     * <li><b>REFlags.XML_SCHEMA</b> - compatibility with XML Schema, corresponds to '<b>X</b>'.</li>
+     * </ul>
+     * @param flags an int that stores various flags from REFlags bitwise-OR-ed with each other
+     */
+    public void setFlags(int flags)
+    {
+        internalCompile(stringRepr, flags);
+    }
 
     //java.util.regex.* compatibility
 
