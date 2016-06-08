@@ -1,6 +1,5 @@
 package regexodus.regex;
 
-import regexodus.Matcher;
 import regexodus.REFlags;
 
 import java.io.Serializable;
@@ -169,7 +168,7 @@ public class Pattern implements Serializable {
      * @return  A new matcher for this pattern
      */
     public Matcher matcher(CharSequence input) {
-        return new Matcher(internal, input);
+        return new Matcher(this, input);
     }
 
     /**
@@ -209,8 +208,7 @@ public class Pattern implements Serializable {
      */
     public static boolean matches(String regex, CharSequence input) {
         Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(input);
-        return m.matches();
+        return p.matcher(input).matches();
     }
 
     /**
