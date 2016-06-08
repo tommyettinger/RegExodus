@@ -98,11 +98,15 @@ public interface REFlags {
      * </ul>
      * Defaults to switched on, unlike the others. When specifying a flags with an int, however, UNICODE doesn't get
      * added automatically, so if you add a flag and want UNICODE on as well, you should specify it, too.
+     * <br>
+     * Corresponds to "u" in Perl notation.
      */
     int UNICODE = 1 << 4;
 
     /**
      * Turns on the compatibility with XML Schema regular expressions.
+     * <br>
+     * Corresponds to "X" in Perl notation.
      */
     int XML_SCHEMA = 1 << 5;
 

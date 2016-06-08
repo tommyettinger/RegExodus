@@ -33,6 +33,7 @@ import regexodus.ds.IntBitSet;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -68,35 +69,36 @@ import static regexodus.Replacer.wrap;
  * Matcher (and Pattern) objects are not thread-safe, so only one thread may use a matcher instance at a time.
  */
 
-public class Matcher implements MatchResult {
-  /* Matching options*/
+public class Matcher implements MatchResult, Serializable {
+    private static final long serialVersionUID = -3628346657932720807L;
+    /* Matching options*/
     /**
      * The same effect as "^" without REFlags.MULTILINE.
      *
      * @see Matcher#find(int)
      */
-    private static final int ANCHOR_START = 1;
+    public static final int ANCHOR_START = 1;
 
     /**
      * The same effect as "\\G".
      *
      * @see Matcher#find(int)
      */
-    private static final int ANCHOR_LASTMATCH = 2;
+    public static final int ANCHOR_LASTMATCH = 2;
 
     /**
      * The same effect as "$" without REFlags.MULTILINE.
      *
      * @see Matcher#find(int)
      */
-    private static final int ANCHOR_END = 4;
+    public static final int ANCHOR_END = 4;
 
     /**
      * Experimental option; if a text ends up before the end of a pattern,report a match.
      *
      * @see Matcher#find(int)
      */
-    private static final int ACCEPT_INCOMPLETE = 8;
+    public static final int ACCEPT_INCOMPLETE = 8;
 
     //see search(ANCHOR_START|...)
     private static Term startAnchor = new Term(Term.START);
@@ -133,17 +135,37 @@ public class Matcher implements MatchResult {
 
     private MemReg prefixBounds, suffixBounds, targetBounds;
 
+    public Matcher copy()
+    {
+        Matcher m = new Matcher(re, cache);
+        m.wEnd = this.wEnd;
+        m.wOffset = this.wOffset;
+        m.called = this.called;
+        m.offset = this.offset;
+        m.end = this.end;
+        return m;
+    }
+
+    private Matcher()
+    {
+
+    }
     public Matcher(Pattern regex) {
+        setPattern(regex);
+    }
+    public Matcher(Pattern regex, CharSequence target)
+    {
+        setPattern(regex);
+        setTarget(target);
+    }
+
+    /**
+     * Sets the regex Pattern this tries to match. Won't do anything until the target is set as well.
+     * @param regex the Pattern this should match
+     */
+    public void setPattern(Pattern regex)
+    {
         this.re = regex;
-        //int memregCount=(memregs=new MemReg[regex.memregs]).length;
-        //for(int i=0;i<memregCount;i++){
-        //   this.memregs[i]=new MemReg(-1); //unlikely to SearchEntry, in this case we know memreg indices by definition
-        //}
-        //counters=new int[regex.counters];
-        //int lookaheadCount=(lookaheads=new LAEntry[regex.lookaheads]).length;
-        //for(int i=0;i<lookaheadCount;i++){
-        //   this.lookaheads[i]=new LAEntry();
-        //}
 
         int memregCount, counterCount, lookaheadCount;
         if ((memregCount = regex.memregs) > 0) {
@@ -171,8 +193,8 @@ public class Matcher implements MatchResult {
         first = new SearchEntry();
         defaultEntry = new SearchEntry();
         minQueueLength = regex.stringRepr.length() / 2;  // just evaluation!!!
-    }
 
+    }
     /**
      * This method allows to efficiently pass data between matchers.
      * Note that a matcher may pass data to itself:<pre>
@@ -627,10 +649,11 @@ public class Matcher implements MatchResult {
             MemReg mr = memregs[i];
             mr.in = mr.out = -1;
         }
+        /*
         for (int i = memregs.length - 1; i > 0; i--) {
             MemReg mr = memregs[i];
             mr.in = mr.out = -1;
-        }
+        }*/
         called = false;
     }
 
@@ -704,12 +727,16 @@ public class Matcher implements MatchResult {
     }
 
     /**
+     * Returns the start index of the match.
+     * @return  The index of the first character matched
      */
     public final int start() {
         return wOffset - offset;
     }
 
     /**
+     * Returns the offset after the last character matched.
+     * @return  The offset after the last character matched
      */
     public final int end() {
         return wEnd - offset;
@@ -727,21 +754,87 @@ public class Matcher implements MatchResult {
         return getString(wEnd, end);
     }
 
+
     /**
+     * Returns the number of capturing groups in this match result's pattern.
+     *
+     * <p> Group zero denotes the entire pattern by convention. It is not
+     * included in this count.
+     *
+     * <p> Any non-negative integer smaller than or equal to the value
+     * returned by this method is guaranteed to be a valid group index for
+     * this matcher.  </p>
+     *
+     * @return The number of capturing groups in this matcher's pattern
      */
     public int groupCount() {
         return memregs.length;
     }
 
     /**
+     * Returns the input subsequence captured by the given group during the
+     * previous match operation.
+     *
+     * <p> For a matcher <i>m</i>, input sequence <i>s</i>, and group index
+     * <i>g</i>, the expressions <i>m.</i><tt>group(</tt><i>g</i><tt>)</tt> and
+     * <i>s.</i><tt>substring(</tt><i>m.</i><tt>start(</tt><i>g</i><tt>),</tt>&nbsp;<i>m.</i><tt>end(</tt><i>g</i><tt>))</tt>
+     * are equivalent.  </p>
+     *
+     * <p> <a href="Pattern.html#cg">Capturing groups</a> are indexed from left
+     * to right, starting at one.  Group zero denotes the entire pattern, so
+     * the expression <tt>m.group(0)</tt> is equivalent to <tt>m.group()</tt>.
+     * </p>
+     *
+     * <p> If the match was successful but the group specified failed to match
+     * any part of the input sequence, then <tt>null</tt> is returned. Note
+     * that some groups, for example <tt>(a*)</tt>, match the empty string.
+     * This method will return the empty string when such a group successfully
+     * matches the empty string in the input.  </p>
+     *
+     * @param  group
+     *         The index of a capturing group in this matcher's pattern
+     *
+     * @return  The (possibly empty) subsequence captured by the group
+     *          during the previous match, or <tt>null</tt> if the group
+     *          failed to match part of the input
      */
-    public String group(int n) {
-        MemReg mr = bounds(n);
+    public String group(int group) {
+        MemReg mr = bounds(group);
         if (mr == null) return null;
         return getString(mr.in, mr.out);
     }
 
     /**
+     * Returns the input subsequence matched by the previous match.
+     *
+     * <p> For a matcher <i>m</i> with input sequence <i>s</i>,
+     * the expressions <i>m.</i><tt>group()</tt> and
+     * <i>s.</i><tt>substring(</tt><i>m.</i><tt>start(),</tt>&nbsp;<i>m.</i><tt>end())</tt>
+     * are equivalent.  </p>
+     *
+     * <p> Note that some patterns, for example <tt>a*</tt>, match the empty
+     * string.  This method will return the empty string when the pattern
+     * successfully matches the empty string in the input.  </p>
+     *
+     * @return The (possibly empty) subsequence matched by the previous match,
+     *         in string form
+     */
+    public String group()
+    {
+        return group(0);
+    }
+
+    /**
+     * Returns the input subsequence captured by the given named group during the
+     * previous match operation.
+     * <br>
+     * Like {@link #group(int) group} but for named groups instead of numbered.
+     * @param  name
+     *         The name of a capturing group in this matcher's pattern
+     *
+     * @return  The (possibly empty) subsequence captured by the group
+     *          during the previous match, or <tt>null</tt> if the group
+     *          failed to match part of the input
      */
     public String group(String name) {
         Integer id = re.groupId(name);
@@ -749,11 +842,11 @@ public class Matcher implements MatchResult {
         return group(id);
     }
 
-    public boolean getGroup(int n, TextBuffer tb) {
-        return getGroup(n, tb, 0);
+    public boolean getGroup(int group, TextBuffer tb) {
+        return getGroup(group, tb, 0);
     }
-    public boolean getGroup(int n, TextBuffer tb, int modes) {
-        MemReg mr = bounds(n);
+    public boolean getGroup(int group, TextBuffer tb, int modes) {
+        MemReg mr = bounds(group);
         if (mr == null) return false;
         int in = mr.in;
         if(modes == 0)
@@ -800,11 +893,11 @@ public class Matcher implements MatchResult {
         return getGroup(id, tb);
     }
 
-    public boolean getGroup(int n, StringBuilder sb) {
-        return getGroup(n, sb, 0);
+    public boolean getGroup(int group, StringBuilder sb) {
+        return getGroup(group, sb, 0);
     }
-    public boolean getGroup(int n, StringBuilder sb, int modes) {
-        MemReg mr = bounds(n);
+    public boolean getGroup(int group, StringBuilder sb, int modes) {
+        MemReg mr = bounds(group);
         if (mr == null) return false;
         int in = mr.in;
         if(modes == 0)
@@ -947,15 +1040,47 @@ public class Matcher implements MatchResult {
     }
 
     /**
+     * Returns the start index of the subsequence captured by the given group
+     * during this match.
+     * <br>
+     * Capturing groups are indexed from left
+     * to right, starting at one.  Group zero denotes the entire pattern, so
+     * the expression <i>m.</i><tt>start(0)</tt> is equivalent to
+     * <i>m.</i><tt>start()</tt>.
+     * @param  id
+     *         The index of a capturing group in this matcher's pattern
+     * @return  The index of the first character captured by the group,
+     *          or <tt>-1</tt> if the match was successful but the group
+     *          itself did not match anything
      */
     public final int start(int id) {
-        return bounds(id).in - offset;
+        MemReg b = bounds(id);
+        if(b == null)
+            return -1;
+        return b.in - offset;
     }
 
     /**
+     * Returns the offset after the last character of the subsequence
+     * captured by the given group during this match.
+     * <br>
+     * Capturing groups are indexed from left
+     * to right, starting at one.  Group zero denotes the entire pattern, so
+     * the expression <i>m.</i><tt>end(0)</tt> is equivalent to
+     * <i>m.</i><tt>end()</tt>.
+     *
+     * @param  id
+     *         The index of a capturing group in this matcher's pattern
+     *
+     * @return  The offset after the last character captured by the group,
+     *          or <tt>-1</tt> if the match was successful
+     *          but the group itself did not match anything
      */
     public final int end(int id) {
-        return bounds(id).out - offset;
+        MemReg b = bounds(id);
+        if(b == null)
+            return -1;
+        return b.out - offset;
     }
 
     public boolean search(int anchors) {
@@ -2353,7 +2478,9 @@ public class Matcher implements MatchResult {
 
 }
 
-class SearchEntry {
+class SearchEntry implements Serializable {
+    private static final long serialVersionUID = -3628346657932720807L;
+
     Term term;
     int index;
     int cnt;
@@ -2492,7 +2619,9 @@ class SearchEntry {
     }
 }
 
-class MemReg {
+class MemReg implements Serializable {
+    private static final long serialVersionUID = -3628346657932720807L;
+
     private int index;
 
     int in = -1, out = -1;
@@ -2538,7 +2667,8 @@ class MemReg {
     }
 }
 
-class LAEntry {
+class LAEntry implements Serializable {
+    private static final long serialVersionUID = -3628346657932720807L;
     int index;
     SearchEntry top, actual;
 

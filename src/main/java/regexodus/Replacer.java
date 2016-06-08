@@ -132,8 +132,9 @@ public class Replacer implements Serializable {
     /**
      * Takes instances in text of the Pattern this was constructed with, up to count times, and replaces them with
      * substitution. If you want to change the position in a Matcher so you start the next replacement at a later point
-     * in text, you can use {@code replace(Matcher, Substitution, TextBuffer, int)}, which this uses internally, but
-     * with a temporary Matcher that doesn't store the change in position.
+     * in text, you can use {@code replace(Matcher, Substitution, TextBuffer, int)}, which this uses internally. The
+     * difference is that internally, this uses a temporary Matcher that doesn't store the change in position, and code
+     * that should track replacement points should use a longer-lived Matcher.
      * @param text a String, StringBuilder, or other CharSequence that may contain the text to replace
      * @param count the maximum number of replacements to perform; will make no changes if less than 1
      * @return the post-replacement text
@@ -479,6 +480,44 @@ public class Replacer implements Serializable {
         }
 
         public StringBuilder toStringBuilder()
+        {
+            return sb;
+        }
+    }
+
+    public static StringBufferBuffer wrap(final StringBuffer sb) {
+        return new StringBufferBuffer(sb);
+    }
+
+    public static class StringBufferBuffer implements TextBuffer, Serializable
+    {
+        private static final long serialVersionUID = 2589054766833218313L;
+
+        public StringBuffer sb;
+
+        public StringBufferBuffer() {
+            sb = new StringBuffer();
+        }
+        public StringBufferBuffer(final StringBuffer builder) {
+            sb = builder;
+        }
+        public void append(char c) {
+            sb.append(c);
+        }
+
+        public void append(char[] chars, int start, int len) {
+            sb.append(chars, start, len);
+        }
+
+        public void append(String s) {
+            sb.append(s);
+        }
+
+        public String toString() {
+            return sb.toString();
+        }
+
+        public StringBuffer toStringBuffer()
         {
             return sb;
         }
