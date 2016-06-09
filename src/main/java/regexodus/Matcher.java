@@ -768,7 +768,7 @@ public class Matcher implements MatchResult, Serializable {
      * @return The number of capturing groups in this matcher's pattern
      */
     public int groupCount() {
-        return memregs.length;
+        return memregs.length - 1;
     }
 
     /**
@@ -981,6 +981,8 @@ public class Matcher implements MatchResult, Serializable {
 
     private MemReg bounds(int id) {
         MemReg mr;
+        if(id >= memregs.length)
+            return null;
         if (id >= 0) {
             mr = memregs[id];
         } else switch (id) {
@@ -1240,7 +1242,12 @@ public class Matcher implements MatchResult, Serializable {
                      }
                      */
                             //5 aug 2001
-                            if ((c = data[i]) == '\r' || c == '\n') {
+                            if ((c = data[i]) == '\n' ||
+                                    c == '\u0085' ||
+                                    c == '\u2028' ||
+                                    c == '\u2029' ||
+                                    (i < data.length - 1 && data[i+1] == '\n' && c == '\r') ||
+                                    c == '\r') {
                                 term = term.next;
                                 continue matchHere;
                             }
@@ -1295,7 +1302,12 @@ public class Matcher implements MatchResult, Serializable {
                      */
                             //5 aug 2001
                             //if((c=data[i-1])=='\r' || c=='\n'){ ??
-                            if ((c = data[i - 1]) == '\n' || ((c == '\r') && (data[i] != '\n'))) {
+                            if ((c = data[i - 1]) == '\n' ||
+                                    c == '\u0085' ||
+                                    c == '\u2028' ||
+                                    c == '\u2029' ||
+                                    (data[i] == '\n' && c == '\r') ||
+                                    c == '\r') {
                                 term = term.next;
                                 continue matchHere;
                             }
@@ -1421,6 +1433,8 @@ public class Matcher implements MatchResult, Serializable {
                     }
                     case Term.REG:
                     case Term.REG_I: {
+                        if(term.memreg >= memregs.length)
+                            break;
                         MemReg mr = memregs[term.memreg];
                         int sampleOffset = mr.in;
                         int sampleOutside = mr.out;

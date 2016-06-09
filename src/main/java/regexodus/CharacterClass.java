@@ -395,7 +395,7 @@ class CharacterClass extends Term implements UnicodeConstants {
         StringBuilder sb = new StringBuilder();
         i = parseName(data, i, out, sb, skipspaces);
         BlockSet bs = getNamedClass(sb.toString());
-        if (bs == null) throw new PatternSyntaxException("unknow class: {" + sb + "}");
+        if (bs == null) throw new PatternSyntaxException("unknown class: {" + sb + "}");
         BlockSet.unify(bs, term);
         term.inverse = inverse;
         return i;
@@ -408,10 +408,11 @@ class CharacterClass extends Term implements UnicodeConstants {
                                   boolean icase, boolean skipspaces,
                                   boolean unicode, boolean xml) throws PatternSyntaxException {
         char c;
-        int prev = -1;
+        int prev = -1, oct = 0;
         boolean isFirst = true, setFirst = false, inRange = false;
         BlockSet bs1 = null;
         StringBuilder sb = null;
+
         for (; i < out; isFirst = setFirst, setFirst = false) {
             handle_special:
             switch (c = data[i++]) {
@@ -522,7 +523,7 @@ class CharacterClass extends Term implements UnicodeConstants {
                             break handle_special;
                         }
                         case 'o':   // oct 2- or 3-digit number
-                            int oct = 0;
+                            oct = 0;
                             for (; ; ) {
                                 char d = data[i++];
                                 if (d >= '0' && d <= '7') {
@@ -534,6 +535,33 @@ class CharacterClass extends Term implements UnicodeConstants {
                                         break;
                                     }
                                 } else break;
+                            }
+                            c = (char) oct;
+                            break handle_special;
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                            oct = 0;
+                            for (; ; ) {
+                                char d = data[i - 1];
+                                if (d >= '0' && d <= '7') {
+                                    i++;
+                                    oct *= 8;
+                                    oct += d - '0';
+                                    if (oct > 0xffff){
+                                        oct -= d - '0';
+                                        oct /= 8;
+                                        break;
+                                    }
+                                } else {
+                                    i--;
+                                    break;
+                                }
                             }
                             c = (char) oct;
                             break handle_special;
@@ -623,7 +651,8 @@ class CharacterClass extends Term implements UnicodeConstants {
                     bs.add(negativeClass);
                     continue;
 
-                case '{':   //
+                    /*
+                case '{':
                     if (inRange) throw new PatternSyntaxException("illegal range: [..." + prev + "-\\w...]");
                     if (sb == null) sb = new StringBuilder();
                     else sb.setLength(0);
@@ -632,7 +661,7 @@ class CharacterClass extends Term implements UnicodeConstants {
                     if (nc == null) throw new PatternSyntaxException("unknown named class: {" + sb + "}");
                     bs.add(nc, false);
                     continue;
-
+                    */
                 default:
             }
             //c is a normal char
@@ -653,7 +682,8 @@ class CharacterClass extends Term implements UnicodeConstants {
                 } else bs.setChar(c1);
                 prev = c;
             } else {
-                if (prev > c) throw new PatternSyntaxException("illegal range: " + prev + ">" + c);
+                if (prev > c)
+                    throw new PatternSyntaxException("illegal range: " + prev + ">" + c);
                 char c0 = (char) prev;
                 inRange = false;
                 prev = -1;
@@ -690,6 +720,16 @@ class CharacterClass extends Term implements UnicodeConstants {
                 case '\f':
                     if (skipspaces) continue;
                     //else pass on
+
+                case 'I':
+                    if(start > 0 && start + 1 == i) {
+                        if (data[i] == 's') {
+                            i++;
+                            continue;
+                        }
+                    }
+                    else if(start < 0)
+                        throw new PatternSyntaxException("Is or In named class doesn't start with '{'");
                 case 'C':
                 case 'L':
                 case 'M':
