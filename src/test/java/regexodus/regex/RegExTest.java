@@ -971,6 +971,7 @@ public class RegExTest {
         String input = "abcdefgh;";
 
         String[] patterns = new String[] {
+            "(?:\\w{4}?)+;",     // lazy repetition - OK
             "(?:\\w{4})+;",
             "(?:\\w{8})*;",
             "(?:\\w{2}){2,4};",
@@ -978,7 +979,7 @@ public class RegExTest {
             ".*?(?:\\w{5})+;",   //     specified minimum
             ".*?(?:\\w{9})*;",   //     number of reps - OK
             "(?:\\w{4})+?;",     // lazy repetition - OK
-            //"(?:\\w{4})++;",     // possessive repetition - OK
+            //"(?:\\w{4})++;",     // possessive repetition - NOT OK
             "(?:\\w{2,}?)+;",    // non-deterministic - OK
             "(\\w{4})+;",        // capturing group - OK
         };

@@ -2,6 +2,7 @@ package regexodus;
 
 import org.junit.Assert;
 import org.junit.Test;
+import regexodus.ds.IntBitSet;
 
 import java.util.Random;
 
@@ -207,5 +208,11 @@ public class BasicTest {
         Assert.assertTrue(p.matches("1337ca7CAFE"));
         Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
         */
+    }
+    @Test
+    public void testToStringIssues()
+    {
+        System.out.println(CharacterClass.stringValue0(
+                new IntBitSet(new int[]{0, 67043328, -2013265922, 134217726, 0, 0, 0, 0})));
     }
 }
