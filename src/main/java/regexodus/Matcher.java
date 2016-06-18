@@ -390,10 +390,11 @@ public class Matcher implements MatchResult, Serializable {
         char[] data = this.data;
         if ((end - start) >= (tLen / 3)) {
             //it makes sense to make a cache
-            cache = src = new String(data, tOffset, tLen);
+            cache = new String(data);
+            src = new String(data, tOffset, tLen);
             cacheOffset = tOffset;
             cacheLength = tLen;
-            return src.toString().substring(start - tOffset, end - tOffset);
+            return src.toString(); //.toString().substring(start - tOffset, end - tOffset);
         }
         return new String(data, start, end - start);
     }
@@ -707,6 +708,18 @@ public class Matcher implements MatchResult, Serializable {
         return end;
     }
 
+    /**
+     */
+    public int dataStart() {
+        return 0;
+    }
+
+    /**
+     */
+    public int dataEnd() {
+        return data.length;
+    }
+
     public char charAt(int i) {
         int in = this.wOffset;
         int out = this.wEnd;
@@ -795,12 +808,12 @@ public class Matcher implements MatchResult, Serializable {
      *         The index of a capturing group in this matcher's pattern
      *
      * @return  The (possibly empty) subsequence captured by the group
-     *          during the previous match, or <tt>null</tt> if the group
+     *          during the previous match, or <tt>""</tt> if the group
      *          failed to match part of the input
      */
     public String group(int group) {
         MemReg mr = bounds(group);
-        if (mr == null) return null;
+        if (mr == null) return "";
         return getString(mr.in, mr.out);
     }
 
@@ -1141,6 +1154,7 @@ public class Matcher implements MatchResult, Serializable {
             for (; ; ) {
                 int memreg, cntreg;
                 char c;
+                if(term != null)
                 switch (term.type) {
                     case Term.FIND: {
                         int jump = find(data, i + term.distance, end, term.target); //don't eat the last match

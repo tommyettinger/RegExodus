@@ -378,7 +378,10 @@ public class Pattern implements Serializable {
         fm |= (flags & COMMENTS) != 0 ? REFlags.IGNORE_SPACES : 0;
         fm |= (flags & MULTILINE) != 0 ? REFlags.MULTILINE : 0;
         fm |= (flags & UNICODE_CHARACTER_CLASS) != 0 ? REFlags.UNICODE : 0;
-        internal = regexodus.Pattern.compile(p, fm);
+        if((flags & LITERAL) != 0)
+            internal = regexodus.Pattern.compile(quote(p), fm);
+        else
+            internal = regexodus.Pattern.compile(p, fm);
     }
 
 }

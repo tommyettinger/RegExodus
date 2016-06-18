@@ -552,13 +552,13 @@ public class Matcher implements MatchResult {
      * @since 1.5
      */
     public Matcher region(int start, int end) {
-        if ((start < 0) || (start > matcher.targetEnd()))
+        if ((start < 0) || (start < 0))
             throw new IndexOutOfBoundsException("start");
-        if ((end < 0) || (end > matcher.targetEnd()))
+        if ((end < 0) || (end > matcher.dataEnd()))
             throw new IndexOutOfBoundsException("end");
         if (start > end)
             throw new IndexOutOfBoundsException("start > end");
-        matcher.setTarget(matcher.target(), start, end - start);
+        matcher.setTarget(matcher.targetChars(), start, end - start);
         return this;
     }
 

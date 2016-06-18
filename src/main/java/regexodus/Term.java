@@ -244,15 +244,15 @@ public class Term implements REFlags, Serializable {
         Term first = term.next;
 
         // Optimisation:
-        //Term optimized = first;
-        //Optimizer opt = Optimizer.find(first);
-        //if (opt != null) optimized = opt.makeFirst(first);
+        Term optimized = first;
+        Optimizer opt = Optimizer.find(first);
+        if (opt != null) optimized = opt.makeFirst(first);
 
         for (TermIterator i : iterators) {
             i.optimize();
         }
 
-        //re.root = optimized;
+        re.root = optimized;
         re.root = first;
         re.root0 = first;
         re.memregs = vars[MEMREG_COUNT];
@@ -1821,6 +1821,7 @@ class Pretokenizer implements Serializable {
         int end = this.end;
         char[] data = this.data;
         boolean esc = false;
+        char ender = '}';
         for (int i = tOffset; i < end; i++) {
             char c = data[i];
             if (esc) {
@@ -1881,7 +1882,26 @@ class Pretokenizer implements Serializable {
                                         skip = 4; // "(?<!"
                                         break;
                                     default:
-                                        throw new PatternSyntaxException("invalid character after '(?<' : " + c1);
+                                        int p = i + 3;
+                                        skip = 4; //'(?<' + '>'
+                                        int nstart, nend;
+                                        nstart = p;
+                                        if(Category.N.contains(c1))
+                                            throw new PatternSyntaxException("number at the start of a named group");
+                                        while (Category.IdentifierPart.contains(c1)) {
+                                            c1 = data[++p];
+                                            skip++;
+                                            if (p == end) throw new PatternSyntaxException("malformed named group");
+                                        }
+                                        nend = p;
+                                        if (c1 != '>')
+                                            throw new PatternSyntaxException("'>' expected at " + (p - i) + " in " + new String(data, i, end - i));
+
+                                        this.groupName = new String(data, nstart, nend - nstart);
+                                        this.groupDeclared = true;
+                                        ttype = NAMED_GROUP;
+                                        break;
+                                        //throw new PatternSyntaxException("invalid character after '(?<' : " + c1);
                                 }
                                 break;
                             case '>':
