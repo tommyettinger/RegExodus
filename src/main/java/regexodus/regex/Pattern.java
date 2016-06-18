@@ -55,7 +55,12 @@ public class Pattern implements Serializable {
     public static final int MULTILINE = 0x08;
 
     /**
-     * Not used; present for compatibility.
+     * Enables literal mode.
+     * <br>
+     * In literal mode, metacharacters are not interpreted at all, and they
+     * match the exact, literal string used for the Pattern. This is done
+     * by running {@link Pattern#quote(String)} on the regexp string when
+     * this flag is specified.
      */
     public static final int LITERAL = 0x10;
 
@@ -97,7 +102,6 @@ public class Pattern implements Serializable {
      * flag expression&nbsp;<tt>(?u)</tt>.
      * <br>
      * Specifying this flag may impose a performance penalty.
-     * @since 1.7
      */
     public static final int UNICODE_CHARACTER_CLASS = 0x100;
 

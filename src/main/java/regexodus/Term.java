@@ -484,19 +484,21 @@ public class Term implements REFlags, Serializable {
                                 while (Category.Z.contains(cp) || Category.Po.contains(cp)) {
                                     p++;
                                     if (p == end) throw new PatternSyntaxException("'group_id' expected");
-                                    switch (cp)
-                                    {
-                                        case '@': mi = !mi;
+                                    switch (cp) {
+                                        case '@':
+                                            mi = !mi;
                                             break;
-                                        case '/': mr = !mr;
+                                        case '/':
+                                            mr = !mr;
                                             break;
-                                        case ':': mb = !mb;
+                                        case ':':
+                                            mb = !mb;
                                             break;
                                     }
                                     cp = data[p];
                                 }
                                 BackReference br = new BackReference(-1, mi || (flags[0] & IGNORE_CASE) > 0, mr, mb);
-                                i = parseGroupId(data, p, end, br, gmap);
+                                i = parseGroupId(data, p, end, br, gmap, '}');
                                 current = append(br);
                                 continue;
                             } else {
@@ -506,7 +508,33 @@ public class Term implements REFlags, Serializable {
                                 continue;
                             }
                         }
-
+                    case '\\':
+                        if (i + 4 < end && data[i + 1] == 'k' && data[i + 2] == '<') { //'\k<name>' - backreference
+                            int p = i + 3;
+                            if (p == end) throw new PatternSyntaxException("'group_id' expected");
+                            char cp = data[p];
+                            boolean mi = false, mb = false, mr = false;
+                            while (Category.Z.contains(cp) || Category.Po.contains(cp)) {
+                                p++;
+                                if (p == end) throw new PatternSyntaxException("'group_id' expected");
+                                switch (cp) {
+                                    case '@':
+                                        mi = !mi;
+                                        break;
+                                    case '/':
+                                        mr = !mr;
+                                        break;
+                                    case ':':
+                                        mb = !mb;
+                                        break;
+                                }
+                                cp = data[p];
+                            }
+                            BackReference br = new BackReference(-1, mi || (flags[0] & IGNORE_CASE) > 0, mr, mb);
+                            i = parseGroupId(data, p, end, br, gmap, '>');
+                            current = append(br);
+                            continue;
+                        }
                     case ' ':
                     case '\t':
                     case '\r':
@@ -570,7 +598,7 @@ public class Term implements REFlags, Serializable {
     }*/
 
 
-    private static int parseGroupId(char[] data, int i, int end, Term term, HashMap<String, Integer> gmap) throws PatternSyntaxException {
+    private static int parseGroupId(char[] data, int i, int end, Term term, HashMap<String, Integer> gmap, char closer) throws PatternSyntaxException {
         int id;
         int nstart = i;
         if (Character.isDigit(data[i])) {
@@ -591,16 +619,17 @@ public class Term implements REFlags, Serializable {
         }
         while (Category.Z.contains(data[i])) {
             i++;
-            if (i == end) throw new PatternSyntaxException("'}' expected");
+            if (i == end) throw new PatternSyntaxException("'" + closer + "' expected");
         }
 
         int c = data[i++];
 
-        if (c != '}') throw new PatternSyntaxException("'}' expected");
+        if (c != closer) throw new PatternSyntaxException("'" + closer + "' expected");
 
         term.memreg = id;
         return i;
     }
+
 
     Term append(Term term) throws PatternSyntaxException {
         //Term prev=this.prev;
