@@ -167,7 +167,7 @@ public class BasicTest {
         if(p2.matcher("1a2a3a3").find()) System.out.println("1a2a3a3");
 
         Pattern swear0 = Pattern.compile("[AaаαАΑΛ][NnийИЙΝ]..?[SsξlιζzΖ]");
-        java.util.regex.Pattern swear1 = java.util.regex.Pattern.compile("[AaаαАΑΛ][NnийИЙΝ]..?[SsξlιζzΖ]");
+        java.util.regex.Pattern swear1 = java.util.regex.Pattern.compile("[AaаαАΑΛ][NnийИЙΝ]..?[SsξLlιζzΖ]");
         System.out.println(swear0.matcher("Annals").find());
         System.out.println(swear1.matcher("Annals").find());
 
@@ -214,5 +214,11 @@ public class BasicTest {
     {
         System.out.println(CharacterClass.stringValue0(
                 new IntBitSet(new int[]{0, 67043328, -2013265922, 134217726, 0, 0, 0, 0})));
+    }
+    @Test
+    public void testBrackets()
+    {
+        Matcher m = Pattern.compile("({=bracket}[\\(\\[]).+?(?:{\\:/bracket})").matcher("(+ [1 2 3] 10)");
+        System.out.println(m.find());
     }
 }

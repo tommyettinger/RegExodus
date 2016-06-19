@@ -1076,6 +1076,38 @@ public class Matcher implements MatchResult, Serializable {
     }
 
     /**
+     * Returns the start index of the subsequence captured by the given
+     * named-capturing group during the previous match operation.
+     *
+     * @param name The name of a named capturing group in this matcher's pattern
+     * @return The index of the first character captured by the group,
+     * or <tt>-1</tt> if the match was successful but the group
+     * itself did not match anything
+     */
+    @Override
+    public int start(String name) {
+        Integer id = re.groupId(name);
+        if (id == null) throw new IllegalArgumentException("<" + name + "> isn't defined");
+        return start(id);
+    }
+
+    /**
+     * Returns the offset after the last character of the subsequence captured
+     * by the given named-capturing group during the previous match operation.
+     *
+     * @param name The name of a named capturing group in this matcher's pattern
+     * @return The offset after the last character captured by the group,
+     * or <tt>-1</tt> if the match was successful
+     * but the group itself did not match anything
+     */
+    @Override
+    public int end(String name) {
+        Integer id = re.groupId(name);
+        if (id == null) throw new IllegalArgumentException("<" + name + "> isn't defined");
+        return end(id);
+    }
+
+    /**
      * Returns the offset after the last character of the subsequence
      * captured by the given group during this match.
      * <br>

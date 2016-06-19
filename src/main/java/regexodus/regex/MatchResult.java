@@ -28,6 +28,18 @@ public interface MatchResult {
     int start(int group);
 
     /**
+     * Returns the start index of the subsequence captured by the given
+     * named-capturing group during the previous match operation.
+     *
+     * @param  name
+     *         The name of a named capturing group in this matcher's pattern
+     * @return  The index of the first character captured by the group,
+     *          or <tt>-1</tt> if the match was successful but the group
+     *          itself did not match anything
+     */
+    int start(String name);
+
+    /**
      * Returns the offset after the last character matched.
      * @return  The offset after the last character matched
      */
@@ -50,6 +62,19 @@ public interface MatchResult {
      *          but the group itself did not match anything
      */
     int end(int group);
+
+    /**
+     * Returns the offset after the last character of the subsequence captured
+     * by the given named-capturing group during the previous match operation.
+     *
+     * @param  name
+     *         The name of a named capturing group in this matcher's pattern
+     *
+     * @return  The offset after the last character captured by the group,
+     *          or <tt>-1</tt> if the match was successful
+     *          but the group itself did not match anything
+     */
+    int end(String name);
 
     /**
      * Returns the input subsequence matched by the previous match.
