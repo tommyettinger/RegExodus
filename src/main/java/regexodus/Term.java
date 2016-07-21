@@ -774,7 +774,6 @@ public class Term implements REFlags, Serializable {
     private static Term makeGreedyPlus(int[] vars, Term term, ArrayList<TermIterator> iterators) throws PatternSyntaxException {
         //vars[STACK_SIZE]++;
         switch (term.type) {
-            case INDEPENDENT_IN://?
             case GROUP_IN: {
                 Term b = new Branch();
                 b.next = term.in;
@@ -1850,7 +1849,6 @@ class Pretokenizer implements Serializable {
         int end = this.end;
         char[] data = this.data;
         boolean esc = false;
-        char ender = '}';
         for (int i = tOffset; i < end; i++) {
             char c = data[i];
             if (esc) {

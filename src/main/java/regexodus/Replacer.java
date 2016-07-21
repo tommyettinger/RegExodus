@@ -403,7 +403,7 @@ public class Replacer implements Serializable {
     public static Replacer makeTable(String... pairs)
     {
         if(pairs == null || pairs.length < 2)
-            return new Replacer(Pattern.compile("(.+)"), new DummySubstitution("\\1"));
+            return new Replacer(Pattern.compile("$"), new DummySubstitution(""));
         TableSubstitution tab = new TableSubstitution(pairs);
         StringBuilder sb = new StringBuilder(128);
         sb.append("(?>");
@@ -413,8 +413,8 @@ public class Replacer implements Serializable {
             sb.append(s);
             sb.append("\\E|");
         }
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append(')');
+        if(sb.length() > 3) sb.setCharAt(sb.length() - 1, ')');
+        else sb.append(')');
         return new Replacer(Pattern.compile(sb.toString()), tab);
     }
 
@@ -433,7 +433,7 @@ public class Replacer implements Serializable {
     public static Replacer makeTable(Map<String, String> dict)
     {
         if(dict == null || dict.isEmpty())
-            return new Replacer(Pattern.compile("(.+)"), new DummySubstitution("\\1"));
+            return new Replacer(Pattern.compile("$"), new DummySubstitution(""));
         TableSubstitution tab = new TableSubstitution(new LinkedHashMap<String, String>(dict));
         StringBuilder sb = new StringBuilder(128);
         sb.append("(?>");
@@ -443,7 +443,8 @@ public class Replacer implements Serializable {
             sb.append(s);
             sb.append("\\E|");
         }
-        sb.setCharAt(sb.length() - 1, ')');
+        if(sb.length() > 3) sb.setCharAt(sb.length() - 1, ')');
+        else sb.append(')');
         return new Replacer(Pattern.compile(sb.toString()), tab);
     }
 

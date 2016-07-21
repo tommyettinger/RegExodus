@@ -27,7 +27,7 @@ public class BasicTest {
     private static String exampleASCII()
     {
         for (int i = 0; i < STR_LEN; i++) {
-            tmp[i] = (char) (33 + r.nextInt(94));
+            tmp[i] = (char) (65 + r.nextInt(26));
         }
         return new String(tmp);
     }
@@ -220,5 +220,36 @@ public class BasicTest {
     {
         Matcher m = Pattern.compile("({=bracket}[\\(\\[]).+?(?:{\\:/bracket})").matcher("(+ [1 2 3] 10)");
         System.out.println(m.find());
+        // "^(\\((?>[^\\(\\)]+|(?1))*\\))+$"
+    }
+
+
+    @Test
+    public void testChanceReplace()
+    {
+        String[] strings = new String[10000];
+
+        for (int i = 0; i < 10000; i++) {
+            strings[i] = exampleASCII();
+        }
+        Replacer r1 = new Pattern("\\w").replacer(new ChanceSubstitution("!", 0.25, 0)),
+                r2 = new Pattern("\\w", "i").replacer(new ChanceSubstitution("!", 0.25, 0));
+        StringBuilder sb = new StringBuilder(5000), sb2 = new StringBuilder(5000);
+        boolean found;
+        for (int i = 0; i < 10000; i++) {
+            r1.replace(strings[i], sb);
+            r2.replace(strings[i], sb2);
+            Assert.assertEquals(sb.toString(), sb2.toString());
+        }
+        //System.out.println(sb.toString());
+        //System.out.println(sb2.toString());
+        System.out.println(sb);
+
+        /*
+        Assert.assertEquals(p, p2);
+        Assert.assertNotEquals(p2, p3);
+        Assert.assertTrue(p.matches("1337ca7CAFE"));
+        Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
+        */
     }
 }

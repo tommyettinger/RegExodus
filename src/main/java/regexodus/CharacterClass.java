@@ -723,7 +723,7 @@ class CharacterClass extends Term implements UnicodeConstants {
 
                 case 'I':
                     if(start > 0 && start + 1 == i) {
-                        if (data[i] == 's') {
+                        if (data[i] == 's' || data[i] == 'n') {
                             i++;
                             continue;
                         }
