@@ -76,7 +76,7 @@ public class PerlSubstitution implements Substitution, Serializable {
     //private static int FN_ARGS_ID;
     //private static int ARG_NAME_ID;
 
-    private static final String groupRef = "\\$(?:\\{({=mode}\\p{Po}+)?({=name}\\w+)\\})|({=name}\\d+|\\&)|\\\\({esc}.)";
+    private static final String groupRef = "\\$(?:(?:\\{({=mode}\\p{Po}+)?({=name}\\w+)\\})|({=name}\\d+|\\&)|\\\\({esc}.))";
     //private static final String fnRef="\\&({fn_name}\\w+)\\(({fn_args}"+groupRef+"(?:,"+groupRef+")*)*\\)";
 
     static {
@@ -149,7 +149,8 @@ public class PerlSubstitution implements Substitution, Serializable {
             refMatcher.setTarget(refMatcher, MatchResult.SUFFIX);
             element.next = makeQueue(refMatcher);
             return element;
-        } else return new PlainElement(refMatcher.target());
+        } else
+            return new PlainElement(refMatcher.target());
     }
 
     public void appendSubstitution(MatchResult match, TextBuffer dest) {

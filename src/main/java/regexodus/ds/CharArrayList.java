@@ -31,7 +31,8 @@ import java.util.RandomAccess;
  * possible. The backing array is exposed by the {@link #elements()} method.
  * <br>This class implements the bulk methods <code>removeElements()</code>, <code>addElements()</code> and <code>getElements()</code> using high-performance system calls (e.g.,
  * {@link System#arraycopy(Object, int, Object, int, int) System.arraycopy()} instead of expensive loops.
- *
+ * <br>
+ * Adapted from Sebastiano Vigna's FastUtil code, https://github.com/vigna/fastutil
  * @see java.util.ArrayList
  */
 public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializable, List<Character>, Comparable<List<? extends Character>> {
@@ -43,7 +44,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
     /**
      * The backing array.
      */
-    private transient char[] a;
+    private char[] a;
     /**
      * The current actual size of the list (never greater than the backing-array length).
      */
@@ -962,27 +963,6 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
     private static class CharArrays    /** A static, final, empty array. */
     {
         public static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
-        public final static char[] EMPTY_ARRAY = {};
-
-
-        /**
-         * Ensures that an array can contain the given number of entries.
-         * <br>If you cannot foresee whether this array will need again to be enlarged, you should probably use <code>grow()</code> instead.
-         *
-         * @param array  an array.
-         * @param length the new minimum length for this array.
-         * @return <code>array</code>, if it contains <code>length</code> entries or more; otherwise, an array with <code>length</code> entries whose first <code>array.length</code> entries are the same
-         * as those of <code>array</code>.
-         */
-        public static char[] ensureCapacity(final char[] array, final int length) {
-            if (length > array.length) {
-                final char t[] =
-                        new char[length];
-                System.arraycopy(array, 0, t, 0, array.length);
-                return t;
-            }
-            return array;
-        }
 
         /**
          * Ensures that an array can contain the given number of entries, preserving just a part of the array.
@@ -998,26 +978,6 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
                 final char t[] =
                         new char[length];
                 System.arraycopy(array, 0, t, 0, preserve);
-                return t;
-            }
-            return array;
-        }
-
-        /**
-         * Grows the given array to the maximum between the given length and the current length multiplied by two, provided that the given length is larger than the current length.
-         * <br>If you want complete control on the array growth, you should probably use <code>ensureCapacity()</code> instead.
-         *
-         * @param array  an array.
-         * @param length the new minimum length for this array.
-         * @return <code>array</code>, if it can contain <code>length</code> entries; otherwise, an array with max(<code>length</code>,<code>array.length</code>/&phi;) entries whose first
-         * <code>array.length</code> entries are the same as those of <code>array</code>.
-         */
-        public static char[] grow(final char[] array, final int length) {
-            if (length > array.length) {
-                final int newLength = (int) Math.max(Math.min(2L * array.length, MAX_ARRAY_SIZE), length);
-                final char t[] =
-                        new char[newLength];
-                System.arraycopy(array, 0, t, 0, array.length);
                 return t;
             }
             return array;
@@ -1046,128 +1006,6 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         }
 
         /**
-         * Trims the given array to the given length.
-         *
-         * @param array  an array.
-         * @param length the new maximum length for the array.
-         * @return <code>array</code>, if it contains <code>length</code> entries or less; otherwise, an array with <code>length</code> entries whose entries are the same as the first <code>length</code>
-         * entries of <code>array</code>.
-         */
-        public static char[] trim(final char[] array, final int length) {
-            if (length >= array.length) return array;
-            final char t[] =
-                    length == 0 ? EMPTY_ARRAY : new char[length];
-            System.arraycopy(array, 0, t, 0, length);
-            return t;
-        }
-
-        /**
-         * Sets the length of the given array.
-         *
-         * @param array  an array.
-         * @param length the new length for the array.
-         * @return <code>array</code>, if it contains exactly <code>length</code> entries; otherwise, if it contains <em>more</em> than <code>length</code> entries, an array with <code>length</code>
-         * entries whose entries are the same as the first <code>length</code> entries of <code>array</code>; otherwise, an array with <code>length</code> entries whose first <code>array.length</code>
-         * entries are the same as those of <code>array</code>.
-         */
-        public static char[] setLength(final char[] array, final int length) {
-            if (length == array.length) return array;
-            if (length < array.length) return trim(array, length);
-            return ensureCapacity(array, length);
-        }
-
-        /**
-         * Returns a copy of a portion of an array.
-         *
-         * @param array  an array.
-         * @param offset the first element to copy.
-         * @param length the number of elements to copy.
-         * @return a new array containing <code>length</code> elements of <code>array</code> starting at <code>offset</code>.
-         */
-        public static char[] copy(final char[] array, final int offset, final int length) {
-            ensureOffsetLength(array, offset, length);
-            final char[] a =
-                    length == 0 ? EMPTY_ARRAY : new char[length];
-            System.arraycopy(array, offset, a, 0, length);
-            return a;
-        }
-
-        /**
-         * Returns a copy of an array.
-         *
-         * @param array an array.
-         * @return a copy of <code>array</code>.
-         */
-        public static char[] copy(final char[] array) {
-            char[] next = new char[array.length];
-            System.arraycopy(array, 0, next, 0, array.length);
-            return next;
-        }
-
-        /**
-         * Fills the given array with the given value.
-         *
-         * @param array an array.
-         * @param value the new value for all elements of the array.
-         * @deprecated Please use the corresponding {@link java.util.Arrays} method.
-         */
-        @Deprecated
-        public static void fill(final char[] array, final char value) {
-            int i = array.length;
-            while (i-- != 0)
-                array[i] = value;
-        }
-
-        /**
-         * Fills a portion of the given array with the given value.
-         *
-         * @param array an array.
-         * @param from  the starting index of the portion to fill (inclusive).
-         * @param to    the end index of the portion to fill (exclusive).
-         * @param value the new value for all elements of the specified portion of the array.
-         * @deprecated Please use the corresponding {@link java.util.Arrays} method.
-         */
-        @Deprecated
-        public static void fill(final char[] array, final int from, int to, final char value) {
-            ensureFromTo(array, from, to);
-            if (from == 0) while (to-- != 0)
-                array[to] = value;
-            else for (int i = from; i < to; i++)
-                array[i] = value;
-        }
-
-        /**
-         * Returns true if the two arrays are element-wise equal.
-         *
-         * @param a1 an array.
-         * @param a2 another array.
-         * @return true if the two arrays are of the same length, and their elements are equal.
-         * @deprecated Please use the corresponding {@link java.util.Arrays} method, which is intrinsic in recent JVMs.
-         */
-        @Deprecated
-        public static boolean equals(final char[] a1, final char a2[]) {
-            int i = a1.length;
-            if (i != a2.length) return false;
-            while (i-- != 0)
-                if (!((a1[i]) == (a2[i]))) return false;
-            return true;
-        }
-
-        /**
-         * Ensures that a range given by its first (inclusive) and last (exclusive) elements fits an array.
-         * <br>This method may be used whenever an array range check is needed.
-         *
-         * @param a    an array.
-         * @param from a start index (inclusive).
-         * @param to   an end index (exclusive).
-         * @throws IllegalArgumentException       if <code>from</code> is greater than <code>to</code>.
-         * @throws ArrayIndexOutOfBoundsException if <code>from</code> or <code>to</code> are greater than the array length or negative.
-         */
-        public static void ensureFromTo(final char[] a, final int from, final int to) {
-            ensureFromTo(a.length, from, to);
-        }
-
-        /**
          * Ensures that a range given by an offset and a length fits an array.
          * <br>This method may be used whenever an array range check is needed.
          *
@@ -1179,18 +1017,6 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
          */
         public static void ensureOffsetLength(final char[] a, final int offset, final int length) {
             ensureOffsetLength(a.length, offset, length);
-        }
-
-        /**
-         * Ensures that two arrays are of the same length.
-         *
-         * @param a an array.
-         * @param b another array.
-         * @throws IllegalArgumentException if the two argument arrays are not of the same length.
-         */
-        public static void ensureSameLength(final char[] a, final char[] b) {
-            if (a.length != b.length)
-                throw new IllegalArgumentException("Array size mismatch: " + a.length + " != " + b.length);
         }
 
         /**

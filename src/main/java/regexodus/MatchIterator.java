@@ -29,10 +29,10 @@
 
 package regexodus;
 
-public interface MatchIterator {
-    boolean hasMore();
+import java.util.ArrayList;
+import java.util.Iterator;
 
-    MatchResult nextMatch();
-
+public interface MatchIterator extends Iterator<MatchResult> {
     int count();
+    ArrayList<String> asList();
 }

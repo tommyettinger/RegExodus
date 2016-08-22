@@ -221,6 +221,8 @@ class CharacterClass extends Term implements UnicodeConstants {
         initNamedCategory("Zs");
         initNamedCategory("Zl");
         initNamedCategory("Zp");
+        initNamedCategory("Zh");
+        initNamedCategory("Zv");
 
         initNamedCategory("P");
         initNamedCategory("Pd");
@@ -236,6 +238,9 @@ class CharacterClass extends Term implements UnicodeConstants {
         initNamedCategory("Sc");
         initNamedCategory("Sk");
         initNamedCategory("So");
+
+        initNamedCategory("Js");
+        initNamedCategory("Jp");
 
         BlockSet bs = new BlockSet();
         bs.setCategory("Cn");

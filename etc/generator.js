@@ -93,17 +93,26 @@ var word = function (){
     require("unicode-8.0.0/categories/Mc/code-points"),
     ["_".charCodeAt(0)]).sort(function(a,b){return a - b;});
     */
+
+    //Identifier Start
+    var cps = require("unicode-8.0.0/categories/L/code-points").concat(
+    require("unicode-8.0.0/categories/Nl/code-points"),
+    require("unicode-8.0.0/categories/Pc/code-points"),
+    require("unicode-8.0.0/categories/Sc/code-points")
+    ).sort(function(a,b){return a - b;});
+
+    //Identifier Part
     /*
-    //Identifier
     var cps = require("unicode-8.0.0/categories/L/code-points").concat(
     require("unicode-8.0.0/categories/N/code-points"),
     require("unicode-8.0.0/categories/Mn/code-points"),
     require("unicode-8.0.0/categories/Mc/code-points"),
     require("unicode-8.0.0/categories/Pc/code-points"),
-    require("unicode-8.0.0/categories/Sc/code-points")
-    ).sort(function(a,b){return a - b;});
+    require("unicode-8.0.0/categories/Sc/code-points"),
+    _.range(0, 9),_.range(0xE, 0x1C),_.range(0x07F, 0xA0)).sort(function(a,b){return a - b;});
     */
-    var cps = [10, 11, 12, 13, 133, 8232, 8233];
+    //Vertical Space
+    //var cps = [10, 11, 12, 13, 133, 8232, 8233];
     //var cps = require("unicode-8.0.0/categories/Zs/code-points").concat(
     //["\t".charCodeAt(0)]).sort(function(a,b){return a - b;});
 
@@ -159,7 +168,7 @@ var word = function (){
         //console.log(bytes);
         strSrc = bytes.map(
             b => b === 0x22 ? '\\"' : b === 0x5c ? '\\\\' : b < 0x7f ?
-                String.fromCharCode(b) : "\\x" + b.toString(16)
+                String.fromCharCode(b) : "\\" + _.padStart(b.toString(8), 3, '0')
         ).join("");
         //strSrc = strSrc.replace(/.{70,73}[^\\]{3}/g, '$&"+\n"');
         strSrc = '"' + strSrc + '"';
@@ -191,9 +200,9 @@ var word = function (){
     //    ')(' + dictSrc + ',' + strSrc + ');';
     //console.log(res);
 
-    console.log("public static final Category Vertical=new Category(new int[]" + dictSrc + strSrc + ");\n");
+    console.log("public static final Category IdentifierStart=new Category(new int[]" + dictSrc + strSrc + ");\n");
 }
-//word();
+word();
 var cases = function()
 {
     var cps = _.merge(
@@ -216,4 +225,4 @@ var brackets = function()
     console.log(startStr);
     console.log(endStr);
 }
-brackets();
+//brackets();

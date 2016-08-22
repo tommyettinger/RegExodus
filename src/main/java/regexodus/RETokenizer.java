@@ -46,7 +46,7 @@ import java.util.NoSuchElementException;
  * RETokenizer tok2=new RETokenizer(p,text);
  * </pre>
  * Now the one way is to use the tokenizer as a token enumeration/iterator:<pre>
- * while(tok1.hasMore()) System.out.println(tok1.nextToken());
+ * while(tok1.hasNext()) System.out.println(tok1.nextToken());
  * </pre>
  * and another way is to split it into a String array:
  * {@code

@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import regexodus.ds.IntBitSet;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -92,11 +93,24 @@ public class BasicTest {
         System.out.println(Pattern.compile("\\((?:[\\s,]*(?:[^\\s,]+)|(?:\\((?:[\\s,]*[^\\s,]+)*\\)))*\\)").matches("(ciploû (+ 1 2))"));
         System.out.println(Pattern.compile("(z\\p{Ps}\\*)\\QABC\\E{\\:@/1}").matches("z(*ABC*)Z"));
         System.out.println(Pattern.compile("([\\(\\[\\{]){\\:/1}").matches("()"));
-        Matcher m = Pattern.compile("(({=NAME}a+) ?)+").matcher("aa a aaa aaa");
+        Matcher m = Pattern.compile("({=NAME}a+)").matcher("aa a aaa aaa");
         m.find();
         System.out.println(m.group("NAME"));
         System.out.println();
-        System.out.println(Category.Po.contents());
+        m.flush();
+        for (String s : m.foundStrings())
+        {
+            System.out.println(s);
+        }
+        m = Pattern.compile("\\p{Js}\\p{Jp}*").matcher("... uh, $1 please? That's 1 dollar.");
+        for (String s : m.foundStrings())
+        {
+            System.out.println(s);
+        }
+        System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new PerlSubstitution("'$1'")).replace("abc 123 def"));
+        System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("OOBAWOOBA", 0.5, 10)).replace("12 34 56 78"));
+        System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("'$1'", 0.5, 10)).replace("12 34 56 78"));
+        System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("$1$1$1", 0.5, 10)).replace("12 34 56 78"));
     }
     @Test
     public void testReplace()
@@ -179,12 +193,12 @@ public class BasicTest {
         //Matcher p = new Pattern("[0-9a-fA-F]+").matcher();
         Pattern p = new Pattern("\\p{Lu}\\p{Ll}\\PP\\p{P}"); //"(.)\\1+"
         //Matcher p = new Pattern("000").matcher();
-        long time = System.currentTimeMillis(), ctr = 0;
+        long time = System.nanoTime(), ctr = 0;
         for (int i = 0; i < STRING_COUNT; i++) {
             if(p.matcher(chars[i], 0, STR_LEN).find())
                 ctr++;
         }
-        System.out.println(System.currentTimeMillis() - time);
+        System.out.println(System.nanoTime() - time);
         System.out.println(ctr);
     }
 
@@ -194,13 +208,13 @@ public class BasicTest {
         //java.util.regex.Pattern jup = java.util.regex.Pattern.compile("[0-9a-fA-F]+");
         java.util.regex.Pattern jup = java.util.regex.Pattern.compile("\\p{Lu}\\p{Ll}\\PP\\p{P}"); //"(.)\\1+"
         //java.util.regex.Pattern jup = java.util.regex.Pattern.compile("000");
-        long time = System.currentTimeMillis(), ctr = 0;
+        long time = System.nanoTime(), ctr = 0;
 
         for (int i = 0; i < STRING_COUNT; i++) {
             if(jup.matcher(strings[i]).find())
                 ctr++;
         }
-        System.out.println(System.currentTimeMillis() - time);
+        System.out.println(System.nanoTime() - time);
         System.out.println(ctr);
         /*
         Assert.assertEquals(p, p2);
@@ -218,9 +232,17 @@ public class BasicTest {
     @Test
     public void testBrackets()
     {
-        Matcher m = Pattern.compile("({=bracket}[\\(\\[]).+?(?:{\\:/bracket})").matcher("(+ [1 2 3] 10)");
+        Matcher m = Pattern.compile("({=bracket}\\p{Ps}).+?{\\:/bracket}").matcher("(+ [1 2 3] 10)");
         System.out.println(m.find());
+        m = Pattern.compile("^((?:L(?=[^M]*((?(2)\\2)M)[^R]*(R(?(3)\\3))))+)").matcher("LLLMMMRRR"); //\d*{\mm}\d*{\rr}$
+        System.out.println(m.find());
+        System.out.println(Arrays.toString(m.groups()));
+        m = Pattern.compile("^((?:L(?=([^M]*)({mm}M(?(3)\\3))([^R]*)({rr}R(?(5)\\5))(.*)))+)").matcher("LLLLLMMMMMRRRRR"); //\d*{\mm}\d*{\rr}$
+        System.out.println(m.find());
+        System.out.println(Arrays.toString(m.groups()));
         // "^(\\((?>[^\\(\\)]+|(?1))*\\))+$"
+        // ^((?:L(?=[^M]*(\2?+M)[^R]*(\3?+R)))+)\d+\2\d+\3$
+
     }
 
 

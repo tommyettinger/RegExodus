@@ -87,6 +87,33 @@ both `"A"` and `"a"` if given either `Pattern.compile("A", "i")` or
 `Pattern.compile("a", "i")`. This was thought to have been tested, but the test
 wasn't very good and this behavior may have persisted through several releases.
 
+0.1.4 fixes a nasty bug that broke many long ranges in a character class
+(spanning between Unicode blocks) where character ranges weren't always what
+they claimed to be. If you use earlier than 0.1.4, updating is strongly
+recommended to this or any more recent version.
+
+0.1.5 adds additional features to backreferences and replacement, making certain
+replacement-based operations much more convenient, like iterative replacement
+that only replaces one match at a time. It also enhances backreferences so you
+could require that an already-captured group be followed by that same group in
+reverse character order ("cat" could be required to be followed by "tac"), among
+other features like locally-case-insensitive backreferences, or even mirrored
+brackets (if one of "(" or "{" was captured, you could require the backreference
+to be the correctly matching ")" or "}") for most of the Unicode brackets.
+
+0.1.6 adds an additional compatibility mode for Java regex compatibility, with
+the new regexodus.regex package that can be swapped in as a mostly-complete
+replacement for java.util.regex on platforms that don't have it. It also adds
+some additional pseudo-Unicode categories for matching the tricky rules that
+govern valid Java identifiers:  Js for the *s*tart of a Java identifier, and Jp
+for any subsequent *p*art of a Java identifier. These can be used to match a
+complete Java identifier with `Pattern.compile("\\p{Js}\\p{Jp}*")`. A convenience
+class, ChanceSubstitution, allows an easier way to randomize the times when
+a replacement is actually performed, leaving the match unchanged otherwise.
+Matcher.foundStrings is a simple wrapper around the new MatchIterator.asList,
+which both allow you to get all matching portions of a String as a List of
+Strings, even if there are no groups in the Matcher's Pattern.
+
 ## Credit
 
 This is a modified fork of JRegex, by Sergey A. Samokhodkin, meant to improve

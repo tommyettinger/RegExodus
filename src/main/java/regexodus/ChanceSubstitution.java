@@ -82,7 +82,7 @@ public class ChanceSubstitution implements Substitution, Serializable {
     //private static int FN_ARGS_ID;
     //private static int ARG_NAME_ID;
 
-    private static final String groupRef = "\\$(?:\\{({=mode}\\p{Po}+)?({=name}\\w+)\\})|({=name}\\d+|\\&)|\\\\({esc}.)";
+    private static final String groupRef = "\\$(?:(?:\\{({=mode}\\p{Po}+)?({=name}\\w+)\\})|({=name}\\d+|\\&)|\\\\({esc}.))";
     //private static final String fnRef="\\&({fn_name}\\w+)\\(({fn_args}"+groupRef+"(?:,"+groupRef+")*)*\\)";
 
     static {
@@ -181,12 +181,14 @@ public class ChanceSubstitution implements Substitution, Serializable {
             refMatcher.setTarget(refMatcher, MatchResult.SUFFIX);
             element.next = makeQueue(refMatcher);
             return element;
-        } else return new PlainElement(refMatcher.target());
+        } else
+            return new PlainElement(refMatcher.target());
     }
 
     public void appendSubstitution(MatchResult match, TextBuffer dest) {
+        boolean pass = chance < nextDouble();
         for (Element element = this.queueEntry; element != null; element = element.next) {
-            element.append(match, dest, chance < nextDouble());
+            element.append(match, dest, pass);
         }
     }
 
@@ -234,10 +236,15 @@ public class ChanceSubstitution implements Substitution, Serializable {
         }
 
         void append(MatchResult match, TextBuffer dest, boolean pass) {
-            if (prefix != null) dest.append(prefix);
-            if(pass)
-                dest.append(match.group());
-            else if (str != null) dest.append(str);
+            if (!pass) {
+                if (prefix != null)
+                    dest.append(prefix);
+                if (str != null)
+                    dest.append(str);
+            }
+            else
+                match.getGroup(0, dest);
+
         }
 
         @Override
@@ -268,10 +275,8 @@ public class ChanceSubstitution implements Substitution, Serializable {
         }
 
         void append(MatchResult match, TextBuffer dest, boolean pass) {
-            if (prefix != null) dest.append(prefix);
-            if (pass)
-                dest.append(match.group());
-            else {
+            if (!pass) {
+                if (prefix != null) dest.append(prefix);
                 if (index == null) return;
                 int i = index;
                 if (i >= match.pattern().groupCount()) return;
@@ -309,10 +314,8 @@ public class ChanceSubstitution implements Substitution, Serializable {
         }
 
         void append(MatchResult match, TextBuffer dest, boolean pass) {
-            if (prefix != null) dest.append(prefix);
-            if (pass)
-                dest.append(match.group());
-            else {
+            if (!pass) {
+                if (prefix != null) dest.append(prefix);
                 if (index == null) return;
                 int i = match.pattern().groupId(index);
                 if (match.isCaptured(i)) match.getGroup(i, dest, modes);

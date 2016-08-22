@@ -525,16 +525,22 @@ public class Matcher implements MatchResult, Serializable {
             private boolean checked = false;
             private boolean hasMore = false;
 
-            public boolean hasMore() {
+            @Override
+            public boolean hasNext() {
                 if (!checked) check();
                 return hasMore;
             }
 
-            public MatchResult nextMatch() {
+            @Override
+            public MatchResult next() {
                 if (!checked) check();
                 if (!hasMore) throw new NoSuchElementException();
                 checked = false;
                 return Matcher.this;
+            }
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("remove() not supported on MatchIterator");
             }
 
             private void check() {
@@ -542,6 +548,7 @@ public class Matcher implements MatchResult, Serializable {
                 checked = true;
             }
 
+            @Override
             public int count() {
                 if (!checked) check();
                 if (!hasMore) return 0;
@@ -550,7 +557,23 @@ public class Matcher implements MatchResult, Serializable {
                 checked = false;
                 return c;
             }
+
+            @Override
+            public ArrayList<String> asList() {
+                if (!checked) check();
+                ArrayList<String> found = new ArrayList<String>(16);
+                if (!hasMore) return found;
+                found.add(Matcher.this.group());
+                while (find(options)) found.add(Matcher.this.group());
+                checked = false;
+                return found;
+            }
         };
+    }
+
+    public ArrayList<String> foundStrings()
+    {
+        return findAll().asList();
     }
 
     /**
