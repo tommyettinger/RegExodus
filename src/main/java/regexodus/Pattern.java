@@ -244,6 +244,8 @@ public class Pattern implements Serializable, REFlags {
     // number of lookahead groups
     int lookaheads;
 
+    private int flags;
+
     HashMap<String, Integer> namedGroupMap;
 
     boolean caseless = false;
@@ -304,7 +306,7 @@ public class Pattern implements Serializable, REFlags {
      * @throws PatternSyntaxException if the argument doesn't correspond to perl5 regex syntax.
      *                                see REFlags
      */
-    private Pattern(String regex, int flags) throws PatternSyntaxException {
+    public Pattern(String regex, int flags) throws PatternSyntaxException {
         internalCompile(regex, flags);
     }
 
@@ -348,6 +350,11 @@ public class Pattern implements Serializable, REFlags {
         internalCompile(stringRepr, flags);
     }
 
+    public int getFlags()
+    {
+        return flags;
+    }
+
     //java.util.regex.* compatibility
 
     /**
@@ -356,7 +363,7 @@ public class Pattern implements Serializable, REFlags {
      * escaped twice to "\\d" (so the double-quoted String itself doesn't try to interpret the backslash).
      * @param regex a String in normal Java regular expression format
      * @return a newly constructed Pattern object that can be used to match text that fits the given regular expression
-     * @throws PatternSyntaxException
+     * @throws PatternSyntaxException when there is a syntax error in the Pattern
      */
     public static Pattern compile(String regex) throws PatternSyntaxException{
         return new Pattern(regex, DEFAULT);
@@ -373,7 +380,7 @@ public class Pattern implements Serializable, REFlags {
      * @param regex a String in normal Java regular expression format
      * @param flags integer flags that are constructed via bitwise OR from the flag constants in REFlags.
      * @return a newly constructed Pattern object that can be used to match text that fits the given regular expression
-     * @throws PatternSyntaxException
+     * @throws PatternSyntaxException when there is a syntax error in the Pattern
      */
     public static Pattern compile(String regex,int flags) throws PatternSyntaxException{
         return new Pattern(regex, flags);
@@ -401,7 +408,7 @@ public class Pattern implements Serializable, REFlags {
      * @param regex a String in normal Java regular expression format
      * @param flags integer flags that are constructed via bitwise OR from the flag constants in REFlags.
      * @return a newly constructed Pattern object that can be used to match text that fits the given regular expression
-     * @throws PatternSyntaxException
+     * @throws PatternSyntaxException when there is a syntax error in the Pattern
      */
     public static Pattern compile(String regex,String flags) throws PatternSyntaxException{
         return new Pattern(regex, flags);
@@ -410,6 +417,7 @@ public class Pattern implements Serializable, REFlags {
 
     private void internalCompile(String regex, int flags) throws PatternSyntaxException {
         stringRepr = regex;
+        this.flags = flags;
         caseless = (flags & IGNORE_CASE) == IGNORE_CASE;
         Term.makeTree(regex, new int[]{flags}, this);
     }
@@ -668,6 +676,23 @@ public class Pattern implements Serializable, REFlags {
         throw new PatternSyntaxException("unknown flag: " + c);
     }
 
+    public String flagsAsString() {
+        StringBuilder sb = new StringBuilder(12);
+        if((flags & UNICODE) != 0)
+            sb.append('u');
+        if((flags & IGNORE_CASE) != 0)
+            sb.append('i');
+        if((flags & MULTILINE) != 0)
+            sb.append('m');
+        if((flags & IGNORE_SPACES) != 0)
+            sb.append('x');
+        if((flags & DOTALL) != 0)
+            sb.append('s');
+        if((flags & XML_SCHEMA) != 0)
+            sb.append('X');
+        return sb.toString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -693,5 +718,16 @@ public class Pattern implements Serializable, REFlags {
         result = 31 * result + lookaheads;
         result = 31 * result + (namedGroupMap != null ? namedGroupMap.hashCode() : 0);
         return result;
+    }
+
+    public String serializeToString()
+    {
+        return stringRepr + (char)(flags << 1 | 1);
+    }
+
+    public static Pattern deserializeFromString(String ser)
+    {
+        return new Pattern(ser.substring(0, ser.length() - 1), ser.charAt(ser.length() - 1) >>> 1);
+
     }
 }

@@ -274,4 +274,18 @@ public class BasicTest {
         Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
         */
     }
+    @Test
+    public void testSerialize()
+    {
+        Pattern p = new Pattern("[a-z]", "iu"), p2;
+        String ser = p.serializeToString();
+        p2 = Pattern.deserializeFromString(ser);
+        Assert.assertTrue(p.equals(p2));
+        Matcher m = p.matcher("A");
+        System.out.println(m);
+        Assert.assertTrue(m.matches());
+        Replacer r = p.replacer("!");
+        System.out.println(r);
+        System.out.println(r.replace("hey"));
+    }
 }

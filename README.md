@@ -46,7 +46,7 @@ code is not in the distributed jar of source, but is in etc/generator.js , and t
 result is distributed in src/main/java/regexodus/Category.java (which also has case
 folding information, and uses primitive equivalents to `List<char>` and `Map<char, char>`
 (sic) from [FastUtil](https://github.com/vigna/fastutil)). Now RegExodus acts like an
-updated version of JRegex that carries much of Unicode with it, in a jar no more than 1/7
+updated version of JRegex that carries much of Unicode with it, in a jar no more than 1/6
 of a megabyte in size (currently). Though testing so far has been light, it seems to be
 fully compatible with GWT, in development or production mode.
 
@@ -58,11 +58,12 @@ when I was thinking of names for the project.
 
 Code-wise, usage should be transparent or require minimal changes if porting from
 java.util.regex code like Pattern and Matcher; just change the package from
-java.util.regex.Pattern to regexodus.Pattern. It is possible that GWT's option for
-"super-sourced" packages to replace unimplemented parts of the JRE may work here
+java.util.regex.Pattern to regexodus.Pattern, or use the new-in-0.1.6 regexodus.regex
+package that copies java.util.regex's API more closely. It is possible that GWT's option
+for "super-sourced" packages to replace unimplemented parts of the JRE may work here
 to imitate an implementation of java.util.regex with a close approximation, but it
-hasn't been attempted. Super-sourcing may require a fork/branch to change some
-compatibility traits and also possibly change the package name.
+hasn't been attempted. Super-sourcing won't be completely compatible at the moment,
+but is likely to work at least reasonably well with regexodus.regex .
 
 Installation should be simple if you use a build tool like Maven, Gradle, or the like.
 For version or snapshot releases you can use JitPack (this repository is recommended
@@ -70,8 +71,8 @@ if you want snapshots) and Maven Central is an easy alternative for
 version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.3%7Cjar);
-the 0.1.3 release is preferred for now, based on the 1.2 line of JRegex. You can
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.7%7Cjar);
+the 0.1.7 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -113,6 +114,12 @@ a replacement is actually performed, leaving the match unchanged otherwise.
 Matcher.foundStrings is a simple wrapper around the new MatchIterator.asList,
 which both allow you to get all matching portions of a String as a List of
 Strings, even if there are no groups in the Matcher's Pattern.
+
+0.1.7 fixes a bug when getting a String from a Pattern that could (and often did,
+when debugging or serializing to text) overflow the stack. It also adds two new
+methods to make serializing Patterns easier, and allows you to retrieve the flags
+from a Pattern. The bug fixed was relatively severe under some circumstances, so
+updating is recommended.
 
 ## Credit
 

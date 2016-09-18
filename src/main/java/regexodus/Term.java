@@ -1645,8 +1645,7 @@ public class Term implements REFlags, Serializable {
                 b.append(", ");
                 break;
             case SUCCESS:
-                b.append("END");
-                break;
+                return b.append("END").toString();
             case BRANCH_STORE_CNT_AUX1:
                 b.append("(aux1)");
             case BRANCH_STORE_CNT:
