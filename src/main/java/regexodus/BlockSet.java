@@ -134,9 +134,8 @@ class BlockSet implements UnicodeConstants {
 
     final void setSpace(boolean unicode) {
         if (unicode) {
-            setCategory("Zs");
-            setCategory("Zp");
-            setCategory("Zl");
+            setCategory("Zh");
+            setCategory("Zv");
         } else {
             setChar(' ');
             setChar('\r');

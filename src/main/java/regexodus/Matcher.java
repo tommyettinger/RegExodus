@@ -517,7 +517,8 @@ public class Matcher implements MatchResult, Serializable {
     }
 
     /**
-     * Returns an iterator over the matches found by subsequently calling find(options), the search starts from the zero position.
+     * Returns an iterator over the matches found by subsequently calling find(options), the search starts from the
+     * zero position.
      */
     public MatchIterator findAll(final int options) {
         //setPosition(0);

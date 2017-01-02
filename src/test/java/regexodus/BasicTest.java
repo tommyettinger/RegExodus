@@ -234,14 +234,45 @@ public class BasicTest {
     {
         Matcher m = Pattern.compile("({=bracket}\\p{Ps}).+?{\\:/bracket}").matcher("(+ [1 2 3] 10)");
         System.out.println(m.find());
+        System.out.println(Arrays.toString(m.groups()));
         m = Pattern.compile("^((?:L(?=[^M]*((?(2)\\2)M)[^R]*(R(?(3)\\3))))+)").matcher("LLLMMMRRR"); //\d*{\mm}\d*{\rr}$
         System.out.println(m.find());
         System.out.println(Arrays.toString(m.groups()));
         m = Pattern.compile("^((?:L(?=([^M]*)({mm}M(?(3)\\3))([^R]*)({rr}R(?(5)\\5))(.*)))+)").matcher("LLLLLMMMMMRRRRR"); //\d*{\mm}\d*{\rr}$
         System.out.println(m.find());
+        System.out.println(m.group("mm"));
+        System.out.println(m.group(3));
         System.out.println(Arrays.toString(m.groups()));
         // "^(\\((?>[^\\(\\)]+|(?1))*\\))+$"
         // ^((?:L(?=[^M]*(\2?+M)[^R]*(\3?+R)))+)\d+\2\d+\3$
+        Pattern tok = Pattern.compile("({=remove};(\\P{Zv}*))" +
+                "|({=match}(?:#({=remove}~)?({=custom}[^\\s\\(\\)\\[\\]\\{\\}\"';#~]+)?)?({=quote}[\"'])({=string}[\\s\\S]*?)(?<!\\\\){\\quote})" +
+                "|({=match}(?:#({=remove}~)?({=custom}[^\\s\\(\\)\\[\\]\\{\\}\"';#~]+)?)?[\\(\\[\\{])" +
+                "|({=match}[\\)\\]\\}](?:#({=custom}[^\\s\\(\\)\\[\\]\\{\\}\"';#~]+))?)" +
+                "|({=match}[^\\s\\(\\)\\[\\]\\{\\}\"';#~]+)"
+        );
+        MatchIterator mi;
+        MatchResult mr;
+        m = tok.matcher("(+\n1 2; whee! \r\n3)");
+        mi = m.findAll();
+        while (mi.hasNext())
+        {
+            mr = mi.next();
+            System.out.println(mr.group("match"));
+            System.out.println(mr.group("custom"));
+            System.out.println(mr.group("remove"));
+        }
+        m = tok.matcher("(=\n  (count 'hey \\@ buddy')\n  9)\n\n#~'this should be ignored' #yes'but this is real'");
+        mi = m.findAll();
+        while (mi.hasNext())
+        {
+            mr = mi.next();
+            if(mr.isCaptured("remove"))
+                continue;
+            System.out.println(mr.group("match"));
+            System.out.println(mr.group("custom"));
+            System.out.println(mr.group("string"));
+        }
 
     }
 
