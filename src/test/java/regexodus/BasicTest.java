@@ -111,6 +111,15 @@ public class BasicTest {
         System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("OOBAWOOBA", 0.5, 10)).replace("12 34 56 78"));
         System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("'$1'", 0.5, 10)).replace("12 34 56 78"));
         System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("$1$1$1", 0.5, 10)).replace("12 34 56 78"));
+
+        Pattern classGroup = Pattern.compile("(?[[\\pJ]-[\\pS]])");
+        System.out.println(classGroup.matches("$"));
+        System.out.println(classGroup.matches("a"));
+        System.out.println(classGroup.matches("2"));
+
+        System.out.println(Category.Nl.contents());
+        System.out.println(Category.IdentifierStart.contains('Ⅹ'));
+        System.out.println(Category.IdentifierPart.contains('Ⅹ'));
     }
     @Test
     public void testReplace()
@@ -246,23 +255,16 @@ public class BasicTest {
         // "^(\\((?>[^\\(\\)]+|(?1))*\\))+$"
         // ^((?:L(?=[^M]*(\2?+M)[^R]*(\3?+R)))+)\d+\2\d+\3$
         Pattern tok = Pattern.compile("({=remove};(\\P{Zv}*))" +
-                "|({=match}(?:#({=remove}~)?({=custom}[^\\s\\(\\)\\[\\]\\{\\}\"';#~]+)?)?({=quote}[\"'])({=string}[\\s\\S]*?)(?<!\\\\){\\quote})" +
-                "|({=match}(?:#({=remove}~)?({=custom}[^\\s\\(\\)\\[\\]\\{\\}\"';#~]+)?)?[\\(\\[\\{])" +
-                "|({=match}[\\)\\]\\}](?:#({=custom}[^\\s\\(\\)\\[\\]\\{\\}\"';#~]+))?)" +
-                "|({=match}[^\\s\\(\\)\\[\\]\\{\\}\"';#~]+)"
+                "|({=match}(?:#({=remove}~)?({=custom}[^\\p{Zh}\\p{Zv}\\(\\)\\[\\]\\{\\}\"';#~]+)?)?({=bracket}[\"'])({=string}[\\d\\D]*?)(?<!\\\\){\\bracket})" +
+                "|({=remove}({=bracket}(?:~+)/)(?:[\\d\\D]*?){\\/bracket})" +
+                "|({=match}(?:#({=remove}~)?({=custom}[^\\p{Zh}\\p{Zv}\\(\\)\\[\\]\\{\\}\"';#~]+)?)?({=bracket}[\\(\\[\\{]))" +
+                "|({=match}({=bracket}[\\)\\]\\}])(?:#({=custom}[^\\p{Zh}\\p{Zv}\\(\\)\\[\\]\\{\\}\"';#~]+))?)" +
+                "|({=match}\\.+)" +
+                "|({=match}[^\\p{Zh}\\p{Zv},.\\(\\)\\[\\]\\{\\}\"';#~]+)"
         );
         MatchIterator mi;
         MatchResult mr;
         m = tok.matcher("(+\n1 2; whee! \r\n3)");
-        mi = m.findAll();
-        while (mi.hasNext())
-        {
-            mr = mi.next();
-            System.out.println(mr.group("match"));
-            System.out.println(mr.group("custom"));
-            System.out.println(mr.group("remove"));
-        }
-        m = tok.matcher("(=\n  (count 'hey \\@ buddy')\n  9)\n\n#~'this should be ignored' #yes'but this is real'");
         mi = m.findAll();
         while (mi.hasNext())
         {
@@ -272,6 +274,34 @@ public class BasicTest {
             System.out.println(mr.group("match"));
             System.out.println(mr.group("custom"));
             System.out.println(mr.group("string"));
+            System.out.println(mr.group("bracket"));
+        }
+        System.out.println("\n");
+        m = tok.matcher("(=\n  (count 'hey \\@ buddy')\n  9)\n\n#~'this should be ignored' #yes'but this is real'" +
+                "\n 'is there anything here?' ~~/ ; woo ; /~~ 'no? ok then... ~/ ohoho /~'");
+        mi = m.findAll();
+        while (mi.hasNext())
+        {
+            mr = mi.next();
+            if(mr.isCaptured("remove"))
+                continue;
+            System.out.println(mr.group("match"));
+            System.out.println(mr.group("custom"));
+            System.out.println(mr.group("string"));
+            System.out.println(mr.group("bracket"));
+        }
+        System.out.println("\n");
+        m = tok.matcher("#infix('hey \\@ buddy'.length() == 9)");
+        mi = m.findAll();
+        while (mi.hasNext())
+        {
+            mr = mi.next();
+            if(mr.isCaptured("remove"))
+                continue;
+            System.out.println(mr.group("match"));
+            System.out.println(mr.group("custom"));
+            System.out.println(mr.group("string"));
+            System.out.println(mr.group("bracket"));
         }
 
     }
