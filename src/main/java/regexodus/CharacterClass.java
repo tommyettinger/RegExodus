@@ -239,6 +239,7 @@ class CharacterClass extends Term implements UnicodeConstants {
         initNamedCategory("Sk");
         initNamedCategory("So");
 
+        initNamedCategory("J");
         initNamedCategory("Js");
         initNamedCategory("Jp");
 
@@ -742,6 +743,7 @@ class CharacterClass extends Term implements UnicodeConstants {
                 case 'Z':
                 case 'P':
                 case 'S':
+                case 'J':
                     if(start < 0)
                     {
                             sb.append(c);

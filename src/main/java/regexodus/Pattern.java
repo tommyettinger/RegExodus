@@ -36,18 +36,15 @@ import java.util.HashMap;
 
 /**
  * A handle for a precompiled regular expression; core operations should be identical to java.util.regex.Pattern .
- * Pattern should be no different.
+ * For closer compatibility with less-core features, see the regexodus.regex package.
  * <br>
  * To match a regular expression <code>myExpr</code> against a text <code>myString</code> one should first
  * create a Pattern object:<pre>
- * Pattern p = new Pattern(myExpr);
- * </pre>
+ * Pattern p = new Pattern(myExpr);</pre>
  * or <pre>
- * Pattern p = Pattern.compile(myExpr);
- * </pre>
+ * Pattern p = Pattern.compile(myExpr);</pre>
  * then obtain a Matcher object:<pre>
- * Matcher matcher=p.matcher(myText);
- * </pre>
+ * Matcher matcher=p.matcher(myText);</pre>
  * The latter is an automaton that actually performs a search. It provides the following methods:
  * <ul>
  * <li> search for matching substrings : matcher.find() or matcher.findAll();</li>
@@ -61,7 +58,7 @@ import java.util.HashMap;
  * <b>Flags</b>
  * <br>
  * Flags (see REFlags interface) change the meaning of some regular expression elements at compile-time. Only Unicode
- * matching (for predefined char classes like <pre>\\w</pre>; doesn't affect user-defined Unicode character classes) is
+ * matching (for predefined char classes like {@code \\w}; doesn't affect user-defined Unicode character classes) is
  * enabled by default, but specifying the flags manually disregards the defaults.
  * These flags may be passed both as string(see Pattern(String,String)) and as bitwise OR of:
  * <ul>
@@ -79,7 +76,7 @@ import java.util.HashMap;
  * <b>Special Syntax</b>
  * <br>
  * RegExodus adds some features to Java's standard regexes and may not implement some rarely-used features, e.g.
- * character class intersections. Syntax is mostly similar to PCRE's regexes, which Java's are also based on.
+ * possessive quantifiers. Syntax is mostly similar to PCRE's regexes, which Java's are also based on.
  * <br>
  * Here's all of it, as best as I can supply at 3 in the morning:
  * <ul>
@@ -109,7 +106,10 @@ import java.util.HashMap;
  *         brackets, but you could add additional parts to that, such as "[\\p&#123;Lu&#125;_]+" to match strings like
  *         "ABACUS_ÆTHỲŔ" (the '+' allows matching the whole string, and the extra '_' in the character class allows the
  *         whole thing to match). If a character class starts with '^', it negates the character class, matching any
- *         char that <b>isn't</b> one of the characters in the character class. If you need to match a </li>
+ *         char that <b>isn't</b> one of the characters in the character class. If you need to match a literal '^', it
+ *         can be at any point after the first character, or escaped with a backslash (which must be escaped in a String
+ *         literal in source). If you neeed to match a literal '-', it can be the last item in the character class, or
+ *         can be escaped similarly to the caret.</li>
  *         <li>'\\' (the single backslash, which usually needs to be escaped in source) can be used as an escape for
  *         other regex-specific terms, or to match a backreference to an earlier group. Backreferences are augmented in
  *         RegExodus, and you can do some useful and uncommon things with them. They are documented later, with groups.
@@ -125,19 +125,25 @@ import java.util.HashMap;
  *         than 4 digits. In addition to the predefined character classes like \\w, there are Unicode categories,
  *         accessible with \\p? or \\p&#123;??&#125; , where the single ? is a group of categories like L for letters,
  *         P for punctuation, or N for numbers, and an upper-case-then-lower-case pair of ? in curly braces is an
- *         individual category like Ll for lower-case letters, Nd for decimal numbers, or Sc for currency symbols.
- *         There's a good list here, http://www.regular-expressions.info/unicode.html ; only Cased_Letter is not
- *         supported of the list of categories. RegExodus also supports Zh and Zv for horizontal and vertical spacing
- *         characters, respectively. Some other \\p... features may be supported, but not necessarily for the same
- *         version of Unicode that the categories support (Unicode 8.0.0 for categories here, in standard Java it isn't
- *         expected until Java 9). \\&lt; and \\&gt; can be used to match the start or end of a word (similar to \\b
- *         but only for one side). \\Q starts a literal escape in which metacharacters lose their special treatment and
- *         are matched like normal characters; this escape ends when the sequence \\E is reached. \\h, \\H, \\v, and \\V
- *         match horizontal whitespace, non-(horizontal whitespace), vertical whitespace, and non-(vertical whitespace),
- *         respectively; they behave like Java 8's handling of these escapes and not earlier versions (which matched a
- *         specific vertical tab character with \\v instead of all vertical whitespace). Java 8's \\R escape, which
+ *         individual category like Ll for lower-case letters, Nd for decimal numbers, or Sc for currency symbols. Using
+ *         \\p? will match any character in that category (), while \\P? will match any character not in that category.
+ *         There's a good list here, http://www.fileformat.info/info/unicode/category/index.htm , including lists of
+ *         which characters are in each category. RegExodus also supports Zh and Zv for horizontal and vertical spacing
+ *         characters, respectively, as well as Js for Java identifier start (valid characters that can start a variable
+ *         or class name in Java, including all letters, all underscore-like characters in Unicode category Pc, all
+ *         currency characters in Unicode category Sc, and for some reason "letter numbers" like Roman numerals, but not
+ *         any other numbers), Jp for Java identifier part (including everything in Js but also decimal digits in
+ *         Unicode category Nd), and J as shorthand for Jp. Some other \\p... features may be supported, but not
+ *         necessarily for the same version of Unicode that the categories support (Unicode 8.0.0 for categories here,
+ *         in standard Java it isn't expected until Java 9). \\&lt; and \\&gt; can be used to match the start or end of
+ *         a word (similar to \\b but only for one side). \\Q starts a literal escape in which metacharacters lose their
+ *         special treatment and are matched like normal characters; this escape ends when the sequence \\E is reached.
+ *         \\h, \\H, \\v, and \\V match horizontal whitespace, non-(horizontal whitespace), vertical whitespace, and
+ *         non-(vertical whitespace), respectively; they behave like Java 8's handling of these escapes and not earlier
+ *         versions (which matched a specific vertical tab character with \\v instead of all vertical whitespace). You
+ *         can also use Zh and Zv for for horizontal and vertical categories Java 8's \\R escape, which
  *         matches all line separators known in use, is not supported yet, but you can copy its behavior with
- *         "<tt>(?&gt;\\r\\n|[\\n\\cK\\f\\r\\u0085\\u2028\\u2029])</tt>" .
+ *         "<code>(?&gt;\\r\\n|[\\n\\x0C\\f\\r\\u0085\\u2028\\u2029])</code>" .
  *         </li>
  *     </ul>
  *     </li>
@@ -174,10 +180,18 @@ import java.util.HashMap;
  *         legibility sometimes. "X" (capitalized) makes XML Schema terms allowed in "\\p" categories; "X" might not
  *         currently be working. You can add a ":" (and some text to match) after the letters to make a plain group that
  *         matches that text with the specified modes enabled, only for that group.</li>
- *         <li>"?(...)" means a "conditional group"; I actually don't know what this does since it was present in JRegex
- *         before I forked it to make RegExodus. It seems to be a non-standard extension.</li>
- *         <li>"?[...]" means a "class group"; I actually don't know what this does since it was present in JRegex
- *         before I forked it to make RegExodus. It seems to be a non-standard extension.</li>
+ *         <li>"?(...)" means a "conditional group"; I'm not entirely sure what this does since it was present in JRegex
+ *         before I forked it to make RegExodus. It seems to be related to PCRE's implementation of this feature, and
+ *         works by checking if a group was matched earlier, and requiring an additional piece of text to be matched if
+ *         an earlier group had successfully matched. I don't know all of its features.</li>
+ *         <li>"?[...]" means a "class group"; this feature was present in JRegex before I forked it to make RegExodus,
+ *         but from what I can tell it allows you to intersect, add to, and remove from character classes within the
+ *         context of that group. For example, {@code Pattern.compile("(?[[\\pJ]-[\\pS]])")} will make a Pattern that
+ *         starts with all characters that can appear in a Java identifier, marked by the category J, removes from what
+ *         that matches all the symbol characters in Unicode category S (such as currency, which is valid in Java
+ *         identifiers), and so yields all characters that can be in a Java identifier except for symbols. The '-' in
+ *         the middle is what removes the second character class; it could be '+' to add another character class in, or
+ *         '&' to get the intersection of two character classes.</li>
  *     </ul>
  *     </li>
  *     <li>If a group matched some text, you may want to refer to that match later in the regex, or use it during a
