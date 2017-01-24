@@ -163,13 +163,13 @@ import java.util.HashMap;
  *         of repetition and other things like it, but doesn't remember the matched text for backreferences.</li>
  *         <li>"?=" means "positive lookahead"; it doesn't consume the text it matches but does require that text to be
  *         ahead for the regex to succeed.</li>
- *         <li>"?<=" means "positive lookbehind"; it doesn't consume the text it matches but does require that text to be
+ *         <li>"?&le;" means "positive lookbehind"; it doesn't consume the text it matches but does require that text to be
  *         before the next part of the regex for the regex to succeed.</li>
  *         <li>"?!" means "negative lookahead"; it doesn't consume the text it matches but does require that text to NOT
  *         be ahead for the regex to succeed.</li>
- *         <li>"?<!" means "positive lookbehind"; it doesn't consume the text it matches but does require that text to
+ *         <li>"?&lt;!" means "positive lookbehind"; it doesn't consume the text it matches but does require that text to
  *         NOT be before the next part of the regex for the regex to succeed.</li>
- *         <li>"?>" means an "atomic group"; it acts like a plain group in that it doesn't remember the matched text for
+ *         <li>"?&gt;" means an "atomic group"; it acts like a plain group in that it doesn't remember the matched text for
  *         backreferences, but it also tracks backreferences independently in itself, temporarily forgetting whatever is
  *         outside the independent, atomic group.</li>
  *         <li>"?#" means a comment in the regex; anything up until the closing parenthesis is ignored.</li>

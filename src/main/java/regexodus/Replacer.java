@@ -80,11 +80,11 @@ public class Replacer implements Serializable {
      * Substitution mySub=new Substitution(){
      *    public int counter = 1;
      *    public void appendSubstitution(MatchResult match,TextBuffer tb){
-     *       for(int i = 0; i < counter; i++)
+     *       for(int i = 0; i &lt; counter; i++)
      *           tb.append('[');
      *       //appends the full match into tb; 0 can be used in place of MatchResult.MATCH
      *       match.getGroup(MatchResult.MATCH, tb);
-     *       for(int i = 0; i < counter; i++)
+     *       for(int i = 0; i &lt; counter; i++)
      *           tb.append(']');
      *       counter++;
      *    }

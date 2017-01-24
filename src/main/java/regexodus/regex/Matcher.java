@@ -403,7 +403,7 @@ public class Matcher implements MatchResult {
      * captured during the previous match: Each occurrence of
      * <tt>${</tt><i>name</i><tt>}</tt> or <tt>$</tt><i>g</i>
      * will be replaced by the result of evaluating the corresponding
-     * {@link #group(String) group(name)} or {@link #group(int) group(g)</tt>}
+     * {@link #group(String) group(name)} or {@link #group(int) group(g)}
      * respectively. For  <tt>$</tt><i>g</i><tt></tt>,
      * the first number after the <tt>$</tt> is always treated as part of
      * the group reference. Subsequent numbers are incorporated into g if
