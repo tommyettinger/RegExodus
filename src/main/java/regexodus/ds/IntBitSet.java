@@ -13,11 +13,6 @@ public class IntBitSet {
         data = new int[8];
     }
 
-    public IntBitSet(int disregard)
-    {
-        this();
-    }
-
     /**
      * Constructs a CharBitSet that includes all bits between start and end, inclusive.
      * @param start inclusive

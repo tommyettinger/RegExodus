@@ -873,6 +873,7 @@ public class Matcher implements MatchResult, Serializable {
      *          during the previous match, or <tt>null</tt> if the group
      *          failed to match part of the input
      */
+    @Override
     public String group(String name) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("<" + name + "> isn't defined");

@@ -1,4 +1,4 @@
-package regexodus.regex;
+package regexodus.emu.java.util.regex;
 
 import regexodus.PerlSubstitution;
 import regexodus.Replacer;
@@ -33,6 +33,64 @@ public class Matcher implements MatchResult {
         return pattern;
     }
 
+    private static class MR implements MatchResult
+    {
+        regexodus.Matcher m;
+        MR(regexodus.Matcher rm)
+        {
+            m = rm;
+        }
+
+        @Override
+        public int start() {
+            return m.start();
+        }
+
+        @Override
+        public int start(int group) {
+            return m.start(group);
+        }
+
+        @Override
+        public int start(String name) {
+            return m.start(name);
+        }
+
+        @Override
+        public int end() {
+            return m.end();
+        }
+
+        @Override
+        public int end(int group) {
+            return m.end(group);
+        }
+
+        @Override
+        public int end(String name) {
+            return m.end(name);
+        }
+
+        @Override
+        public String group() {
+            return m.group();
+        }
+
+        @Override
+        public String group(int group) {
+            return m.group(group);
+        }
+
+        @Override
+        public String group(String name) {
+            return m.group(name);
+        }
+
+        @Override
+        public int groupCount() {
+            return m.groupCount();
+        }
+    }
     /**
      * Returns the match state of this matcher as a {@link MatchResult}.
      * The result is unaffected by subsequent operations performed upon this
@@ -42,7 +100,7 @@ public class Matcher implements MatchResult {
      * @since 1.5
      */
     public MatchResult toMatchResult() {
-        return matcher.copy();
+        return new MR(matcher.copy());
     }
 
     /**
@@ -249,6 +307,7 @@ public class Matcher implements MatchResult {
      *          during the previous match, or <tt>null</tt> if the group
      *          failed to match part of the input
      */
+    @Override
     public String group(String name)
     {
         return matcher.group(name);
@@ -458,7 +517,7 @@ public class Matcher implements MatchResult {
      *          that does not exist in the pattern
      */
     public Matcher appendReplacement(StringBuffer sb, String replacement) {
-        Replacer rep = pattern.internal.replacer(replacement);
+        //Replacer rep = pattern.internal.replacer(replacement);
         Replacer.replaceStep(matcher, new PerlSubstitution(replacement), Replacer.wrap(sb));
         return this;
     }

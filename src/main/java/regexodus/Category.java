@@ -221,7 +221,8 @@ public class Category {
     /**
      * Some whitespace characters; Unicode category Z. This has some notable missing characters, like newline, tab (both
      * horizontal and vertical), and carriage return; you may want {@link #Horizontal} and/or {@link #Vertical}, which
-     * don't line up to Unicode categories but do match the correct sets of horizontal and vertical whitespace.
+     * don't line up to Unicode categories but do match the correct sets of horizontal and vertical whitespace. There is
+     * also the option of {@link #Space} as the fusion of both {@link #Horizontal} and {@link #Vertical}.
      */
     public static final Category Z = new Category(new int[]{0,1,6,10,30,32,48,128,2432,4001,5600},"% ' * (#$!\" & ) ");
 
@@ -309,35 +310,57 @@ public class Category {
      * All "programming word" characters, a weird group that includes all letters, all numbers, and the underscore '_'.
      * You may want {@link #Identifier}, {@link #IdentifierPart}, and/or {@link #IdentifierStart} for Java identifier
      * characters, which are a larger group and allow matching the initial character differently from the rest.
+     * <br>
+     * Accessible in regexes via "<code>\w</code>" when Unicode mode hasn't been explicitly disabled.
      */
     public static final Category Word = new Category(new int[]{2,3,0,4,5,1,6,9,7,8,10,11,12,15,13,14,19,25,18,21,48,17,22,30,40,35,37,16,20,23,26,27,33,34,38,42,45,28,31,39,43,46,47,52,53,54,55,57,58,64,68,69,73,75,83,85,116,24,29,32,41,44,51,56,59,62,63,65,66,67,72,74,77,79,82,87,88,89,93,100,101,102,105,107,114,115,122,128,132,134,138,165,245,268,281,321,332,362,365,457,470,619,631,727,1133,1164,6581,8453,11171,20949},"4')1$\" 14\")% \"#%   6 7 \203$+-#)\" \"2X %!! \"(\"   \" 0 j z #!{ :!\")B*] \" % % \"'>& 7*&T$p (!' 2!\"5P!o-L$\"&D0?S<Jw!' 2 (!%!3 & \"#!!)!%!!'\"$% #!+!$)  $$%!3 & % % %!\" #$%! #\")! \")-,  )   3 & % #!'    !\";!!'*\")  (!%!3 & % #!)!%! '%$% #!' &+% $#  !#% \" %#%# #+$##  !!\"(\"-,/! (   6 -#(   !)%  &!!''&!  (   6 ' #!)   !)%)\" !!' %-  (   8!(   #'\")#!-$$!% 5#= ) \"!&#\"$$ \" (('!%/O&/ '8% \"!% \"!\"(! &   \" \"!% ,  !# \" $!'!!@\"Y%(0 \" \" \"$' 9$0 5 9*\"PT(h!: \"&\"!C \200 !!& \" !!8 !![ !!& \" !!/ _ !!d! *0#-5W!$#\205!; 1&g#*), &,<,0.,   %.V#\"$%!'('2 !'(k'C&S+7 +$++G!#,H$1(*B?$a E!*('/\"'.eU$'2).u.N''#4V  A %(|(~!$!:!$!( \" \" \" 7!K & \"#  &#!!$$,&  &X%!$&*(,K,$\"#+2\"$\"!' \"##(\" \" \" ! *!!&#$\" O\207`i3\206Z\210I I x()*\"!: \"&\"!N)\";=*& & & & & & & & F4\"\204 >/ #!#$W!%!  m !&8#n#!+>M-@'F( /@'8/\177\212U\215H\211RD!}#?3J$' tB)!q!A!(Q4'$+^.R,'(=#\" \"!D!9.E#Q-*(7 M*.!'(6#f1 !-!#+$!$!$*& & C '+v %!'(\214.6$4\213\202!rG&.#&+ , # \" % % sA\2010b!L\\+$-5-c# y<')1(1,l#$!$!$! 9");
 
     /**
      * All valid characters that can be used in a Java identifier.
+     * <br>
+     * Accessible in regexes via "<code>\pJ</code>" or "<code>\p{J}</code>" (J for Java).
      */
     public static final Category Identifier = new Category(new int[]{2,3,0,4,5,1,6,9,7,8,12,15,10,11,13,25,19,18,14,21,40,17,22,30,26,37,48,16,20,23,27,28,33,34,35,38,42,45,31,39,43,46,47,53,54,55,57,58,64,67,68,69,73,75,83,85,24,29,32,36,41,44,51,52,56,59,62,63,66,72,74,77,79,82,87,88,89,93,100,101,102,105,107,114,115,116,122,128,132,134,138,165,245,268,281,321,332,362,365,457,470,619,631,727,1133,1164,6581,8453,11171,20949},"[\"*')/$\" /4!$\")% \"#%   6 7 \203$-+#)\" \"1u %!! \"(\"   \" 0 i z #!{ 9!\")C)\" ] \" % % \"'8& /\"$,&T$o (!' 1!\"5O!n+K$\"&E0>S<Jw!' 1 (!%!3 & \"#!!)!%!!'\"$% #!0 \"&  $$%!3 & % % %!\" #$%! #\")! \")+*  )   3 & % #!'    !\";!!' \")\")  (!%!3 & % #!)!%! '%$% #!' &-% $#  !#% \" %#%# #-$##  !!\"(\"+*(\"(! (   6 +#(   !)%  &!!''&!  (   6 ' #!)   !)%)\" !!' %+  (   4!(   #'\")#!+$$!% 5#= ) \"!&#\"$$ \" (('!%2N$+ '4% \"!% \"!\"(! &   \" \"!% *  !# \" $!'!!@\"X%(0 \" \" \"$' B$0 5 B,\"OT(g!9 \"&\"!D \200 !!& \" !!4 !!Z !!& \" !!2 ` !!d! ,0#+5W!$#\205!; /&f#,)* &*<*0.*   %.V#\"# !'('1 !'(j'D&S-7 -$--G!#*H$/(,C>$b ?!,('2\"'.QU$'1).t.M''#:V  A %(|(~!$!9!$!( \" \" \" 7!_ & \"#  &#!!$$*&  &Q%<\"?%!$&,(*#71*$\"#-1\"$\"!' \"##(\" \" \" ! ,!!&#$\" N\207ah3\206Y\210I I x(),\"!9 \"&\"!M)\";=,& & & & & & & & F:\"\204 82 #!#$W!%!  l !&4#m#!-8L+@'F( 2@'42\177\212U\215H\211RE!}#>3J$' sC)!p!A!(P:'$!\")^.R*'(=#\" \"!E!B.?#P+,(7 L,.!'(6#e/ !+!#-$!$!$,& & D '-v %!'(\214.6$:\213\202!qG&.#&- * # \" % % rA\2010c!K\\*#+5+#%/ 8\"(# y)\"*')/$\" /*k#$!$!$! #%#%/");
 
     /**
      * All valid characters that can be used as the first character in a Java identifier (more than you might think).
+     * <br>
+     * Accessible in regexes via "<code>\p{Js}</code>" or "<code>\p{Js}</code>" .
      */
     public static final Category IdentifierStart = new Category(new int[]{2,0,3,4,1,6,5,8,7,17,12,10,25,11,15,22,21,9,16,40,29,30,13,18,19,26,42,46,14,36,37,20,24,27,32,35,43,55,68,23,28,33,34,38,41,49,51,52,53,56,59,63,64,65,85,88,31,39,45,47,48,50,54,66,67,69,72,74,75,79,80,81,82,83,87,89,93,94,98,102,105,107,108,114,116,130,132,134,138,165,191,268,277,332,362,365,457,470,513,619,1164,2680,6581,8453,11171,20949},"=!4,&! ,3\"&!-!&!%/ 5 \200&-.#'! !u# $\"\" !(!   ! 8 h x1y >\"!'K'!U9% ,!0:=$ n !2$'$- \"!)! 45W*!,B+$&!%0&!+!#!@@b?fP#!8!'12.&(\"$\"0 % !#\"#!)!<$  .\"'!+&&$\"0 % $ $ $B\" !? )'   0 % $ ##!8!2$2!'!*(\"$\"0 % $ ##!X$  2!7! &#  \"#$ ! $#$# #-G!L!*(   / .#!A %$=(   / 1 ##!I! $2$8(   3\"!)!) ,&%)#G ' !\"%R[ $*(R$ !\"$ !\"!(\" %   ! !\"$ \" $+!\"# !/\"I!T( CH#t:0!)&&\"#!#$' &*6!7> !%!\": } \"\"% ! \"\"3 \"\"B \"\"% ! \"\"< Q \"\"_K.)V\"&#\203\"2 ,%c#+'* \".).).*  2N=!#$Fj13 !%a-5]4\"#*D&,E/+Oi!m;7%Q4<$-DAC: -Cr\" \"#$+zU|\"&\">\"&\"( ! ! ! 5\"O % !#  %#\"\"&&*%  %`$?!4!<!)*#5F!&!\"1 !##(! ! ! \" +\"\"%#&!73\205; ; v(\"#$6> !%!\"E'!)/+% % % % % % % %g!\201 9''#\"#&V(  k \"%3#l79^.\202\206d\211D\204FZ\"{#.-$0;)5\"e3'\"o\"J\"(T+   \" //!'N.MS&#! !6A-/9H';4!)# 1-# 3@  (0/#!#M !#$\"#\"! !, \"+' 6&\"&\"&+% % : 1-s5\2106/&\\\207\177\"pY%6#%! 1 * # ! $ $ qJ~8S\"PL*E$, 9!(# w'!4,&! ,*W#&\"&\"&\" #$#$,");
 
     /**
      * All valid characters that can be used as the second or later character in a Java identifier.
+     * <br>
+     * Accessible in regexes via "<code>\p{Jp}</code>" or "<code>\p{Jp}</code>" .
      */
     public static final Category IdentifierPart = new Category(new int[]{2,3,0,4,5,1,6,9,7,8,12,15,10,11,13,25,19,18,14,21,17,22,30,40,26,37,48,16,20,23,27,28,33,34,35,38,42,45,31,32,39,43,46,47,53,54,55,57,58,64,67,68,69,73,75,83,85,24,29,41,44,51,52,56,59,62,63,66,72,74,77,79,82,87,88,89,93,100,101,102,105,107,114,115,116,122,128,132,134,138,165,245,268,281,321,332,362,365,457,470,619,631,727,1133,1164,6581,8453,11171,20949},"\")&.'\"*')/$\" /$G!!$\")% \"#%   5 6 \202$-+#)\" \"1t %!! \"(\"   \" 0 h y #!z 9!\")C)\" \\ \" % % \"'8& /\"$,&U$n (!' 1!\"4P!m+L$\"&E0>T<Kv!' 1 (!%!3 & \"#!!)!%!!'\"$% #!0 \"&  $$%!3 & % % %!\" #$%! #\")! \")+*  )   3 & % #!'    !\";!!' \")\")  (!%!3 & % #!)!%! '%$% #!' &-% $#  !#% \" %#%# #-$##  !!\"(\"+*(\"(! (   5 +#(   !)%  &!!''&!  (   5 ' #!)   !)%)\" !!' %+  (   7!(   #'\")#!+$$!% 4#= ) \"!&#\"$$ \" (('!%2O$+ '7% \"!% \"!\"(! &   \" \"!% *  !# \" $!'!!@\"Y%(0 \" \" \"$' B$0 4 B,\"PU(f!9 \"&\"!D \177 !!& \" !!7 !!G !!& \" !!2 _ !!c! ,0#+4X!$#\204!; /&e#,)* &*<*0.*   %.W#\"# !'('1 !'(i'D&T-6 -$--H!#*I$/(,C>$a ?!,('2\"'.RV$'1).s.N''#:W  A %({(}!$!9!$!( \" \" \" 6!^ & \"#  &#!!$$*&  &R%<\"?%!$&,(*#61*$\"#-1\"$\"!' \"##(\" \" \" ! ,!!&#$\" O\206`g3\205Z\207J J w(),\"!9 \"&\"!N)\";=,& & & & & & & & F:\"\203 82 #!#$X!%!  k !&7#l#!-8M+@'F( 2@'72~\211V\214I\210SE!|#>3K$' rC)!o!A!(Q:'$!\")].S*'(=#\" \"!E!B.?#Q+,(6 M,.!'(5#d/ !+!#-$!$!$,& & D '-u %!'(\213.5$:\212\201!pH&.#&- * # \" % % qA\2000b!L[*#+4+#%/ 8\"(# x)\"*')/$\" /*j#$!$!$! #%#%/");
 
     /**
      * Horizontal whitespace characters; not an actual Unicode category but probably more useful because it contains
      * the horizontal tab character while Unicode's {@link #Z} category does not.
+     * <br>
+     * Accessible in regexes via "<code>\p{Zh}</code>" or "<code>\p{Gh}</code>" .
      */
     public static final Category Horizontal = new Category(new int[]{0,9,10,23,37,48,128,2432,4001,5600},"! # & ) '\"$ % ( ");
 
     /**
      * Vertical whitespace characters; not an actual Unicode category but probably more useful because it contains the
      * newline and carriage return characters while Unicode's {@link #Z} category does not.
+     * <br>
+     * Accessible in regexes via "<code>\p{Zv}</code>" or "<code>\p{Gv}</code>" .
      */
     public static final Category Vertical = new Category(new int[]{0,1,3,10,120,8099},"#\"$ %!");
+
+    /**
+     * Whitespace characters, both horizontal and vertical; not an actual Unicode category but acts like the combination
+     * of {@link #Horizontal} (Zh in regexes) and {@link #Vertical} (Zv in regexes) in that it includes both the obscure
+     * Unicode characters that are in the Unicode Z category but also the practical characters such as carriage return,
+     * newline, and horizontal tab that are not classified as whitespace by Unicode but are by everyone else.
+     * <br>
+     * Accessible in regexes via "<code>\pG</code>" or "<code>\p{G}</code>" (G for Gap).
+     */
+    public static final Category Space=new Category(new int[]{0,1,4,6,9,10,19,27,30,48,101,2432,4001,5600},"$\"& * ' - +%(!# ) , ");
 
     public static final CharCharMap cases = new CharCharMap(
             ("ABCDEFGHIJKLMNOPQRSTUVWXYZµÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮ"+
@@ -421,13 +444,42 @@ public class Category {
         return c;
     }
 
+    public static String reverseWithBrackets(CharSequence s)
+    {
+        char[] c = new char[s.length()];
+        for (int i = c.length - 1, r = 0; i >= 0; i--, r++) {
+            c[r] = matchBracket(s.charAt(i));
+        }
+        return String.valueOf(c);
+    }
 
+    public boolean reverseEqual(String left, String right)
+    {
+        if(left == null) return right == null;
+        if(right == null) return false;
+        if(left.length() != right.length()) return false;
+        for (int l = 0, r = right.length() - 1; r >= 0; r--, l++) {
+            if(left.charAt(l) != right.charAt(r)) return false;
+        }
+        return true;
+    }
+
+    public boolean reverseBracketEqual(String left, String right)
+    {
+        if(left == null) return right == null;
+        if(right == null) return false;
+        if(left.length() != right.length()) return false;
+        for (int l = 0, r = right.length() - 1; r >= 0; r--, l++) {
+            if(left.charAt(l) != matchBracket(right.charAt(r))) return false;
+        }
+        return true;
+    }
 
     public static final LinkedHashMap<String, Category> categories;
     public static final LinkedHashMap<String, Category> superCategories;
     static {
 
-        superCategories = new LinkedHashMap<String, Category>(8);
+        superCategories = new LinkedHashMap<String, Category>(16);
         superCategories.put("C", C);
         superCategories.put("L", L);
         superCategories.put("M", M);
@@ -436,6 +488,7 @@ public class Category {
         superCategories.put("P", P);
         superCategories.put("S", S);
         superCategories.put("J", Identifier);
+        superCategories.put("G", Space);
 
         categories = new LinkedHashMap<String, Category>(64);
         categories.put("C", C);
@@ -446,6 +499,7 @@ public class Category {
         categories.put("P", P);
         categories.put("S", S);
         categories.put("J", Identifier);
+        categories.put("G", Space);
         categories.put("Cc", Cc);
         categories.put("Cf", Cf);
         categories.put("Co", Co);
@@ -478,6 +532,8 @@ public class Category {
         categories.put("So", So);
         categories.put("Zh", Horizontal);
         categories.put("Zv", Vertical);
+        categories.put("Gh", Horizontal);
+        categories.put("Gv", Vertical);
         categories.put("Js", IdentifierStart);
         categories.put("Jp", IdentifierPart);
     }

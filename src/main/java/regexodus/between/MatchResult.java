@@ -1,4 +1,4 @@
-package regexodus.regex;
+package regexodus.between;
 
 /**
  * Created by Tommy Ettinger on 6/7/2016.
@@ -120,6 +120,24 @@ public interface MatchResult {
      *          failed to match part of the input
      */
     String group(int group);
+
+    /**
+     * Returns the input subsequence captured by the given named capturing group
+     * during the previous match operation.
+     * <br>
+     * If the match was successful but the group specified failed to match
+     * any part of the input sequence, then <tt>null</tt> is returned. Note
+     * that some groups, for example <tt>(a*)</tt>, match the empty string.
+     * This method will return the empty string when such a group successfully
+     * matches the empty string in the input.
+     *
+     * @param  name
+     *         The name of a named capturing group in this matcher's pattern
+     * @return  The (possibly empty) subsequence captured by the group
+     *          during the previous match, or <tt>null</tt> if the group
+     *          failed to match part of the input
+     */
+    String group(String name);
 
     /**
      * Returns the number of capturing groups in this match result's pattern.

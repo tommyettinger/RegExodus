@@ -29,7 +29,7 @@
 
 package regexodus;
 
-public interface MatchResult extends regexodus.regex.MatchResult{
+public interface MatchResult extends regexodus.between.MatchResult {
     int MATCH = 0;
     int PREFIX = -1;
     int SUFFIX = -2;
@@ -49,6 +49,8 @@ public interface MatchResult extends regexodus.regex.MatchResult{
 
     String group(int group);
 
+    String group(String name);
+
     boolean getGroup(int group, StringBuilder sb, int modes);
 
     boolean getGroup(int group, TextBuffer tb, int modes);
@@ -56,8 +58,6 @@ public interface MatchResult extends regexodus.regex.MatchResult{
     boolean getGroup(int group, StringBuilder sb);
 
     boolean getGroup(int group, TextBuffer tb);
-
-    String group(String name);
 
     boolean getGroup(String name, StringBuilder sb, int modes);
 

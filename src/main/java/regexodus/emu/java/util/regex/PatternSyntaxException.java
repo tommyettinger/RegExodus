@@ -27,7 +27,7 @@
  * @version 1.2_01
  */
 
-package regexodus.regex;
+package regexodus.emu.java.util.regex;
 
 /**
  * Is thrown when Pattern constructor's argument doesn't conform the regular expression syntax.

@@ -243,6 +243,10 @@ class CharacterClass extends Term implements UnicodeConstants {
         initNamedCategory("Js");
         initNamedCategory("Jp");
 
+        initNamedCategory("G");
+        initNamedCategory("Gh");
+        initNamedCategory("Gv");
+
         BlockSet bs = new BlockSet();
         bs.setCategory("Cn");
         registerClass("UNASSIGNED", bs, unicodeCategories);

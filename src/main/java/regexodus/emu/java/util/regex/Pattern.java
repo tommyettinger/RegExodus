@@ -1,4 +1,4 @@
-package regexodus.regex;
+package regexodus.emu.java.util.regex;
 
 import regexodus.REFlags;
 

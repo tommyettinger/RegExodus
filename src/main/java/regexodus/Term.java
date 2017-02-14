@@ -481,7 +481,7 @@ public class Term implements REFlags, Serializable {
                                 if (p == end) throw new PatternSyntaxException("'group_id' expected");
                                 char cp = data[p];
                                 boolean mi = false, mb = false, mr = false;
-                                while (Category.Z.contains(cp) || Category.Po.contains(cp)) {
+                                while (Category.Space.contains(cp) || Category.Po.contains(cp)) {
                                     p++;
                                     if (p == end) throw new PatternSyntaxException("'group_id' expected");
                                     switch (cp) {
@@ -514,7 +514,7 @@ public class Term implements REFlags, Serializable {
                             if (p == end) throw new PatternSyntaxException("'group_id' expected");
                             char cp = data[p];
                             boolean mi = false, mb = false, mr = false;
-                            while (Category.Z.contains(cp) || Category.Po.contains(cp)) {
+                            while (Category.Space.contains(cp) || Category.Po.contains(cp)) {
                                 p++;
                                 if (p == end) throw new PatternSyntaxException("'group_id' expected");
                                 switch (cp) {
@@ -617,7 +617,7 @@ public class Term implements REFlags, Serializable {
             if (no == null) throw new PatternSyntaxException("backreference to unknown group: " + s);
             id = no;
         }
-        while (Category.Z.contains(data[i])) {
+        while (Category.Space.contains(data[i])) {
             i++;
             if (i == end) throw new PatternSyntaxException("'" + closer + "' expected");
         }
@@ -1989,7 +1989,7 @@ class Pretokenizer implements Serializable {
                         int nstart, nend;
                         boolean isDecl;
                         c = data[p];
-                        while (Category.Z.contains(c)) {
+                        while (Category.Space.contains(c)) {
                             c = data[++p];
                             skip++;
                             if (p == end) throw new PatternSyntaxException("malformed named group");
@@ -2009,7 +2009,7 @@ class Pretokenizer implements Serializable {
                             if (p == end) throw new PatternSyntaxException("malformed named group");
                         }
                         nend = p;
-                        while (Category.Z.contains(c)) {
+                        while (Category.Space.contains(c)) {
                             c = data[++p];
                             skip++;
                             if (p == end) throw new PatternSyntaxException("malformed named group");

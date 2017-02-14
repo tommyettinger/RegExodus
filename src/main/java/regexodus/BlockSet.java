@@ -134,8 +134,7 @@ class BlockSet implements UnicodeConstants {
 
     final void setSpace(boolean unicode) {
         if (unicode) {
-            setCategory("Zh");
-            setCategory("Zv");
+            setCategory("G");
         } else {
             setChar(' ');
             setChar('\r');
@@ -147,7 +146,7 @@ class BlockSet implements UnicodeConstants {
 
     final void setHorizontalSpace(boolean unicode) {
         if (unicode) {
-            setCategory("Zh");
+            setCategory("Gh");
         } else {
             setChar(' ');
             setChar('\t');
@@ -155,7 +154,7 @@ class BlockSet implements UnicodeConstants {
     }
     final void setVerticalSpace(boolean unicode) {
         if (unicode) {
-            setCategory("Zv");
+            setCategory("Gv");
         } else {
             setChar('\n');
             setChar('\r');
@@ -202,7 +201,7 @@ class BlockSet implements UnicodeConstants {
         } else {
             IntBitSet block0 = this.block0;
             if (block0 == null) {
-                this.block0 = block0 = new IntBitSet(BLOCK_SIZE);
+                this.block0 = block0 = new IntBitSet();
             }
             weight += set(block0, c1, c2);
         }
@@ -221,7 +220,7 @@ class BlockSet implements UnicodeConstants {
         if (!bs1.isLarge && !bs2.isLarge && !inv) {
             if (bs2.block0 != null) {
                 IntBitSet bits = bs1.block0;
-                if (bits == null) bs1.block0 = bits = new IntBitSet(BLOCK_SIZE);
+                if (bits == null) bs1.block0 = bits = new IntBitSet();
                 s += add(bits, bs2.block0, 0, BLOCK_SIZE - 1, false);
             }
         } else {
@@ -387,7 +386,7 @@ class Block implements UnicodeConstants {
         if (isFull) return false;
         IntBitSet bits = this.bits;
         if (bits == null) {
-            this.bits = bits = new IntBitSet(BLOCK_SIZE);
+            this.bits = bits = new IntBitSet();
             shared = false;
             bits.set(c);
             return true;
@@ -550,13 +549,13 @@ class Block implements UnicodeConstants {
     }
 
     private static IntBitSet fullBits(IntBitSet bits) {
-        if (bits == null) bits = new IntBitSet(BLOCK_SIZE);
+        if (bits == null) bits = new IntBitSet();
         bits.set(0, BLOCK_SIZE);
         return bits;
     }
 
     private static IntBitSet emptyBits(IntBitSet bits) {
-        if (bits == null) bits = new IntBitSet(BLOCK_SIZE);
+        if (bits == null) bits = new IntBitSet();
         else bits.clear();
         return bits;
     }
@@ -582,8 +581,8 @@ class Block implements UnicodeConstants {
         return result;
     }
 
-    private final static IntBitSet EMPTY_BITS = new IntBitSet(BLOCK_SIZE);
-    private final static IntBitSet FULL_BITS = new IntBitSet(BLOCK_SIZE);
+    private final static IntBitSet EMPTY_BITS = new IntBitSet();
+    private final static IntBitSet FULL_BITS = new IntBitSet();
 
     @Override
     public boolean equals(Object o) {

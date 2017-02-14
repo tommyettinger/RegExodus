@@ -36,6 +36,11 @@ package regexodus.regex;
  * 6350801 6676425 6878475 6919132 6931676 6948903 7014645 7039066
  */
 
+import regexodus.between.MatchResult;
+import regexodus.emu.java.util.regex.Matcher;
+import regexodus.emu.java.util.regex.Pattern;
+import regexodus.emu.java.util.regex.PatternSyntaxException;
+
 import java.io.*;
 import java.nio.CharBuffer;
 import java.util.ArrayList;

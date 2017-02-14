@@ -72,7 +72,7 @@ version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
 here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.7%7Cjar);
-the 0.1.7 release is preferred for now, based on the 1.2 line of JRegex. You can
+the 0.1.8 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -120,6 +120,21 @@ when debugging or serializing to text) overflow the stack. It also adds two new
 methods to make serializing Patterns easier, and allows you to retrieve the flags
 from a Pattern. The bug fixed was relatively severe under some circumstances, so
 updating is recommended.
+
+0.1.8 improves GWT compatibility and adds the Unicode-like categories for
+horizontal, vertical, and all whitespace as `Gh`, `Gv`, and `G`, respectively
+(think G for Gap). These whitespace Category values include characters that are
+conspicuously absent from the Unicode Z categories, such as tabs and all newline
+characters in current use (\t, \r and \n are all in control categories instead of
+whitespace under Z). The GWT compatibility changes entailed a package change,
+taking `regexodus.regex` and moving it to `emu.java.util.regex`, but this allows
+third-party libraries to use the normal Java regex API via GWT's super-source
+mechanism and have it call RegExodus' shim layer instead, transparently. There
+are possible issues if other libraries also super-source to implement
+`java.util.regex`; libGDX does this and there are probably others out there.
+I'm not sure what takes precedence in that case.
+
+
 
 ## Credit
 

@@ -254,13 +254,13 @@ public class BasicTest {
         System.out.println(Arrays.toString(m.groups()));
         // "^(\\((?>[^\\(\\)]+|(?1))*\\))+$"
         // ^((?:L(?=[^M]*(\2?+M)[^R]*(\3?+R)))+)\d+\2\d+\3$
-        Pattern tok = Pattern.compile("({=remove};(\\P{Zv}*))" +
-                "|({=match}(?:#({=remove}~)?({=custom}[^\\p{Zh}\\p{Zv}\\(\\)\\[\\]\\{\\}\"';#~]+)?)?({=bracket}[\"'])({=string}[\\d\\D]*?)(?<!\\\\){\\bracket})" +
+        Pattern tok = Pattern.compile("({=remove};(\\V*))" +
+                "|({=code}(?:#({=remove}~)?({=mode}[^\\h\\v\\(\\)\\[\\]\\{\\}\"';#~]+)?)?({=bracket}[\"'])({=contents}[\\d\\D]*?)(?<!\\\\){\\bracket})" +
                 "|({=remove}({=bracket}(?:~+)/)(?:[\\d\\D]*?){\\/bracket})" +
-                "|({=match}(?:#({=remove}~)?({=custom}[^\\p{Zh}\\p{Zv}\\(\\)\\[\\]\\{\\}\"';#~]+)?)?({=bracket}[\\(\\[\\{]))" +
-                "|({=match}({=bracket}[\\)\\]\\}])(?:#({=custom}[^\\p{Zh}\\p{Zv}\\(\\)\\[\\]\\{\\}\"';#~]+))?)" +
-                "|({=match}\\.+)" +
-                "|({=match}[^\\p{Zh}\\p{Zv},.\\(\\)\\[\\]\\{\\}\"';#~]+)"
+                "|({=open}(?:#({=remove}~)?({=mode}[^\\h\\v\\(\\)\\[\\]\\{\\}\"';#~]+)?)?({=bracket}[\\(\\[\\{]))" +
+                "|({=close}({=bracket}[\\)\\]\\}]))" +
+                "|({=contents}\\.+)" +
+                "|({=contents}[^\\h\\v,.\\(\\)\\[\\]\\{\\}\"';#~]+)"
         );
         MatchIterator mi;
         MatchResult mr;
@@ -271,9 +271,8 @@ public class BasicTest {
             mr = mi.next();
             if(mr.isCaptured("remove"))
                 continue;
-            System.out.println(mr.group("match"));
-            System.out.println(mr.group("custom"));
-            System.out.println(mr.group("string"));
+            System.out.println(mr.group("contents"));
+            System.out.println(mr.group("mode"));
             System.out.println(mr.group("bracket"));
         }
         System.out.println("\n");
@@ -285,9 +284,8 @@ public class BasicTest {
             mr = mi.next();
             if(mr.isCaptured("remove"))
                 continue;
-            System.out.println(mr.group("match"));
-            System.out.println(mr.group("custom"));
-            System.out.println(mr.group("string"));
+            System.out.println(mr.group("contents"));
+            System.out.println(mr.group("mode"));
             System.out.println(mr.group("bracket"));
         }
         System.out.println("\n");
@@ -298,9 +296,8 @@ public class BasicTest {
             mr = mi.next();
             if(mr.isCaptured("remove"))
                 continue;
-            System.out.println(mr.group("match"));
-            System.out.println(mr.group("custom"));
-            System.out.println(mr.group("string"));
+            System.out.println(mr.group("contents"));
+            System.out.println(mr.group("mode"));
             System.out.println(mr.group("bracket"));
         }
 

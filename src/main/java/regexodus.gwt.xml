@@ -5,5 +5,6 @@
      <inherits name='regexodus' />
   -->
 <module>
+	<super-source path="regexodus/emu" />
 	<source path="regexodus" />
 </module>

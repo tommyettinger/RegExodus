@@ -141,7 +141,7 @@ import java.util.HashMap;
  *         \\h, \\H, \\v, and \\V match horizontal whitespace, non-(horizontal whitespace), vertical whitespace, and
  *         non-(vertical whitespace), respectively; they behave like Java 8's handling of these escapes and not earlier
  *         versions (which matched a specific vertical tab character with \\v instead of all vertical whitespace). You
- *         can also use Zh and Zv for for horizontal and vertical categories Java 8's \\R escape, which
+ *         can also use Zh and Zv for for horizontal and vertical categories. Java 8's \\R escape, which
  *         matches all line separators known in use, is not supported yet, but you can copy its behavior with
  *         "<code>(?&gt;\\r\\n|[\\n\\x0C\\f\\r\\u0085\\u2028\\u2029])</code>" .
  *         </li>
