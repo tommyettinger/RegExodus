@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.tommyettinger</groupId>
     <artifactId>regexodus</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
     <packaging>jar</packaging>
 
     <name>RegExodus</name>
@@ -134,7 +134,6 @@
     </dependencies>
 
     <build>
-
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <testResources>
             <testResource>
@@ -150,6 +149,9 @@
                 <configuration>
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
+                    <excludes>
+                        <exclude>**/emu/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

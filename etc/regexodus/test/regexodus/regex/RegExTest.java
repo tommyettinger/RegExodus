@@ -37,9 +37,9 @@ package regexodus.regex;
  */
 
 import regexodus.between.MatchResult;
-import regexodus.emu.java.util.regex.Matcher;
-import regexodus.emu.java.util.regex.Pattern;
-import regexodus.emu.java.util.regex.PatternSyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import java.io.*;
 import java.nio.CharBuffer;

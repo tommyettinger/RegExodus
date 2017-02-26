@@ -1,4 +1,4 @@
-package regexodus.emu.java.util.regex;
+package java.util.regex;
 
 /**
  * Created by Tommy Ettinger on 2/13/2017.

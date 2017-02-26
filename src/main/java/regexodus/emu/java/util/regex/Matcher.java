@@ -1,4 +1,4 @@
-package regexodus.emu.java.util.regex;
+package java.util.regex;
 
 import regexodus.PerlSubstitution;
 import regexodus.Replacer;
