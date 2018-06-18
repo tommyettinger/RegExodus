@@ -22,11 +22,11 @@ var categories = [
 "S","Sm","Sc","Sk","So"
 */
 ];
-/*
+var cats = function() {
 var ct = "C";
 for (ct of categories)
 {
-    var cps = require("unicode-8.0.0/General_Category/"+ ct + "/code-points");
+    var cps = require("unicode-11.0.0/General_Category/"+ ct + "/code-points");
 
     var dict, str;
     var dictSrc, strSrc;
@@ -82,7 +82,7 @@ for (ct of categories)
     }
 
     compress();
-    var cps2 = decompress(dict, str);
+    //var cps2 = decompress(dict, str);
     //console.log(ct + " official length = " + cps.length);
     //console.log(ct + " our length = " + cps2.length);
     //if (cps.join() !== cps2.join())
@@ -95,41 +95,55 @@ for (ct of categories)
 
     console.log("public static final Category " + ct + "=new Category(new int[]" + dictSrc + strSrc + ");\n");
 }
-*/
-var word = function (){
+}
+//cats();
+var cpses = [["IdentifierStart", require("unicode-11.0.0/General_Category/Letter/code-points").concat(
+                                     require("unicode-11.0.0/General_Category/Letter_Number/code-points"),
+                                     require("unicode-11.0.0/General_Category/Connector_Punctuation/code-points"),
+                                     require("unicode-11.0.0/General_Category/Currency_Symbol/code-points")
+                                     ).sort(function(a,b){return a - b;})],
+             ["IdentifierPart", require("unicode-11.0.0/General_Category/Letter/code-points").concat(
+                                    require("unicode-11.0.0/General_Category/Number/code-points"),
+                                    require("unicode-11.0.0/General_Category/Nonspacing_Mark/code-points"),
+                                    require("unicode-11.0.0/General_Category/Spacing_Mark/code-points"),
+                                    require("unicode-11.0.0/General_Category/Connector_Punctuation/code-points"),
+                                    require("unicode-11.0.0/General_Category/Currency_Symbol/code-points"),
+                                    _.range(0, 9),_.range(0xE, 0x1C),_.range(0x7F, 0xA0)).sort(function(a,b){return a - b;})]];
+var word = function (cpsGroup){
     /*
-    var cps = require("unicode-8.0.0/General_Category/Number/code-points").concat(
-    require("unicode-8.0.0/General_Category/Letter/code-points"),
-    require("unicode-8.0.0/General_Category/Nonspacing_Mark/code-points"),
-    require("unicode-8.0.0/General_Category/Spacing_Mark/code-points"),
+    var cps = require("unicode-11.0.0/General_Category/Number/code-points").concat(
+    require("unicode-11.0.0/General_Category/Letter/code-points"),
+    require("unicode-11.0.0/General_Category/Nonspacing_Mark/code-points"),
+    require("unicode-11.0.0/General_Category/Spacing_Mark/code-points"),
     ["_".charCodeAt(0)]).sort(function(a,b){return a - b;});
     */
 
     //Identifier Start
     /*
-    var cps = require("unicode-8.0.0/General_Category/Letter/code-points").concat(
-    require("unicode-8.0.0/General_Category/Letter_Number/code-points"),
-    require("unicode-8.0.0/General_Category/Connector_Punctuation/code-points"),
-    require("unicode-8.0.0/General_Category/Currency_Symbol/code-points")
+    var cps = require("unicode-11.0.0/General_Category/Letter/code-points").concat(
+    require("unicode-11.0.0/General_Category/Letter_Number/code-points"),
+    require("unicode-11.0.0/General_Category/Connector_Punctuation/code-points"),
+    require("unicode-11.0.0/General_Category/Currency_Symbol/code-points")
     ).sort(function(a,b){return a - b;});
     */
     //Identifier Part
     /*
-    var cps = require("unicode-8.0.0/General_Category/Letter/code-points").concat(
-    require("unicode-8.0.0/General_Category/Number/code-points"),
-    require("unicode-8.0.0/General_Category/Nonspacing_Mark/code-points"),
-    require("unicode-8.0.0/General_Category/Spacing_Mark/code-points"),
-    require("unicode-8.0.0/General_Category/Connector_Punctuation/code-points"),
-    require("unicode-8.0.0/General_Category/Currency_Symbol/code-points"),
-    _.range(0, 9),_.range(0xE, 0x1C),_.range(0x07F, 0xA0)).sort(function(a,b){return a - b;});
+    var cps = require("unicode-11.0.0/General_Category/Letter/code-points").concat(
+    require("unicode-11.0.0/General_Category/Number/code-points"),
+    require("unicode-11.0.0/General_Category/Nonspacing_Mark/code-points"),
+    require("unicode-11.0.0/General_Category/Spacing_Mark/code-points"),
+    require("unicode-11.0.0/General_Category/Connector_Punctuation/code-points"),
+    require("unicode-11.0.0/General_Category/Currency_Symbol/code-points"),
+    _.range(0, 9),_.range(0xE, 0x1C),_.range(0x7F, 0xA0)).sort(function(a,b){return a - b;});
     */
     //Vertical Space
     //var cps = [10, 11, 12, 13, 133, 8232, 8233];
-    //var cps = require("unicode-8.0.0/General_Category/Space_Separator/code-points").concat(
+    //var cps = require("unicode-11.0.0/General_Category/Space_Separator/code-points").concat(
           //["\t".charCodeAt(0)]).sort(function(a,b){return a - b;});
-    var cps = require("unicode-8.0.0/General_Category/Space_Separator/code-points").concat(
-       ["\t".charCodeAt(0), 10, 11, 12, 13, 133, 8232, 8233]).sort(function(a,b){return a - b;});
-
+    //var cps = require("unicode-11.0.0/General_Category/Space_Separator/code-points").concat(
+    //   ["\t".charCodeAt(0), 10, 11, 12, 13, 133, 8232, 8233]).sort(function(a,b){return a - b;});
+    
+    var cps = cpsGroup[1];
     var dict, str;
     var dictSrc, strSrc;
 
@@ -214,25 +228,39 @@ var word = function (){
     //    ')(' + dictSrc + ',' + strSrc + ');';
     //console.log(res);
 
-    console.log("public static final Category Space=new Category(new int[]" + dictSrc + strSrc + ");\n");
+    //console.log("public static final Category IdentifierStart=new Category(new int[]" + dictSrc + strSrc + ");\n");
+    console.log("public static final Category "+cpsGroup[0]+"=new Category(new int[]" + dictSrc + strSrc + ");\n");
+    //console.log("public static final Category Space=new Category(new int[]" + dictSrc + strSrc + ");\n");
+    //console.log("public static final Category Space=new Category(new int[]" + dictSrc + strSrc + ");\n");
 }
-word();
+word(["Word", require("unicode-11.0.0/General_Category/Number/code-points").concat(
+                  require("unicode-11.0.0/General_Category/Letter/code-points"),
+                  require("unicode-11.0.0/General_Category/Nonspacing_Mark/code-points"),
+                  require("unicode-11.0.0/General_Category/Spacing_Mark/code-points"),
+                  ["_".charCodeAt(0)]).sort(function(a,b){return a - b;})])
+for(cps of cpses)
+{
+//    word(cps);
+}
 var cases = function()
 {
-    var cps = _.merge(
-    require('unicode-8.0.0/Case_Folding/C/symbols'),
-    require('unicode-8.0.0/Case_Folding/S/symbols'));
-    var keySrc = JSON.stringify(_.keys(cps)).replace(/["]/g, "'").replace(/\]/, '},').replace(/\[/, '{');
-    var valSrc = JSON.stringify(_.values(cps)).replace(/["]/g, "'").replace(/\]/, '}').replace(/\[/, '{');
+    //console.log(cps);
+    //console.log(typeof cps);
+    var keySrc = JSON.stringify(_.union(Array.from(require('unicode-11.0.0/Case_Folding/C/symbols.js').keys()), Array.from(require('unicode-11.0.0/Case_Folding/S/symbols.js').keys())));
+    //console.log(_.keys(cps));
+    keySrc = keySrc.replace(/["]/g, "'").replace(/\]/, '},').replace(/\[/, '{');
+    var valSrc = JSON.stringify(Array.from(require('unicode-11.0.0/Case_Folding/C/symbols.js').values()).concat(Array.from(require('unicode-11.0.0/Case_Folding/S/symbols.js').values())));
+    //console.log(valSrc.length);
+    valSrc = valSrc.replace(/["]/g, "'").replace(/\]/, '}').replace(/\[/, '{');
 
-    console.log('static final CharCharMap cases=newCharCharMap(new int[]'+keySrc+'new int[]'+valSrc+');\n');
+    console.log('static final CharCharMap cases = new CharCharMap(new int[]'+keySrc+'new int[]'+valSrc+');\n');
 }
 //cases();
 
 var brackets = function()
 {
-    var starts = require('unicode-8.0.0/General_Category/Open_Punctuation/symbols');
-    var ends   = require('unicode-8.0.0/General_Category/Close_Punctuation/symbols');
+    var starts = require('unicode-11.0.0/General_Category/Open_Punctuation/symbols');
+    var ends   = require('unicode-11.0.0/General_Category/Close_Punctuation/symbols');
     var startStr = JSON.stringify(starts).replace(/["]/g, "'").replace(/[\r\n]+/g, '');
     var endStr   = JSON.stringify(ends).replace(/["]/g, "'").replace(/[\r\n]+/g, '');
 

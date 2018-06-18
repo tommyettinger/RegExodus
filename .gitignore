@@ -75,3 +75,5 @@ gradle-app.setting
 
 ## OS Specific
 .DS_Store
+
+etc/node_modules/
