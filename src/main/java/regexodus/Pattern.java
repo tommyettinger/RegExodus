@@ -143,7 +143,7 @@ import java.util.HashMap;
  *         versions (which matched a specific vertical tab character with \\v instead of all vertical whitespace). You
  *         can also use Zh and Zv for for horizontal and vertical categories. Java 8's \\R escape, which
  *         matches all line separators known in use, is not supported yet, but you can copy its behavior with
- *         "<code>(?&gt;\\r\\n|[\\n\\x0C\\f\\r\\u0085\\u2028\\u2029])</code>" .
+ *         "<code>(?:\\r\\n|[\\n\\x0C\\f\\r\\u0085\\u2028\\u2029])</code>" .
  *         </li>
  *     </ul>
  *     </li>
@@ -191,7 +191,7 @@ import java.util.HashMap;
  *         that matches all the symbol characters in Unicode category S (such as currency, which is valid in Java
  *         identifiers), and so yields all characters that can be in a Java identifier except for symbols. The '-' in
  *         the middle is what removes the second character class; it could be '+' to add another character class in, or
- *         '&' to get the intersection of two character classes.</li>
+ *         '&amp;' to get the intersection of two character classes.</li>
  *     </ul>
  *     </li>
  *     <li>If a group matched some text, you may want to refer to that match later in the regex, or use it during a
