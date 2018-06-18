@@ -120,6 +120,8 @@ public class BasicTest {
         System.out.println(Category.Nl.contents());
         System.out.println(Category.IdentifierStart.contains('Ⅹ'));
         System.out.println(Category.IdentifierPart.contains('Ⅹ'));
+
+        System.out.println(Pattern.compile("\\pL\\p{InBasicLatin}\\P{BasicLatin}\\p{Greek}").matches("buζζ"));
     }
     @Test
     public void testReplace()

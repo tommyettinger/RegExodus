@@ -64,10 +64,6 @@ import java.io.Serializable;
 public class ChanceSubstitution implements Substitution, Serializable {
     //private static Pattern refPtn,argsPtn;
     private static final long serialVersionUID = -1537346657932720807L;
-    /** 2 raised to the 53, - 1. */
-    private static final long DOUBLE_MASK = ( 1L << 53 ) - 1;
-    /** 2 raised to the -53. */
-    private static final double NORM_53 = 1. / ( 1L << 53 );
 
     private static Pattern refPtn;
     private static int MODE_ID;
@@ -117,7 +113,7 @@ public class ChanceSubstitution implements Substitution, Serializable {
         long z = ( state += 0x9E3779B97F4A7C15L );
         z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
         z = (z ^ (z >>> 27)) * 0x94D049BB133111EBL;
-        return ((z ^ (z >>> 31)) & DOUBLE_MASK) * NORM_53;
+        return ((z ^ (z >>> 31)) & 0x001FFFFFFFFFFFFFL) * 0x1p-53;
     }
 
     //It seems we should somehow throw an IllegalArgumentException if an expression

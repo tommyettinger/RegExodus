@@ -33,7 +33,6 @@ import regexodus.ds.IntBitSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 class CharacterClass extends Term implements UnicodeConstants {
     private static final BlockSet DIGIT = new BlockSet();
@@ -71,36 +70,10 @@ class CharacterClass extends Term implements UnicodeConstants {
     private final static int ADD = 1;
     private final static int SUBTRACT = 2;
     private final static int INTERSECT = 3;
-
-    private static final String blockData =
-            "0000..007F:InBasicLatin;0080..00FF:InLatin-1Supplement;0100..017F:InLatinExtended-A;"
-                    + "0180..024F:InLatinExtended-B;0250..02AF:InIPAExtensions;02B0..02FF:InSpacingModifierLetters;"
-                    + "0300..036F:InCombiningDiacriticalMarks;0370..03FF:InGreek;0400..04FF:InCyrillic;0530..058F:InArmenian;"
-                    + "0590..05FF:InHebrew;0600..06FF:InArabic;0700..074F:InSyriac;0780..07BF:InThaana;0900..097F:InDevanagari;"
-                    + "0980..09FF:InBengali;0A00..0A7F:InGurmukhi;0A80..0AFF:InGujarati;0B00..0B7F:InOriya;0B80..0BFF:InTamil;"
-                    + "0C00..0C7F:InTelugu;0C80..0CFF:InKannada;0D00..0D7F:InMalayalam;0D80..0DFF:InSinhala;0E00..0E7F:InThai;"
-                    + "0E80..0EFF:InLao;0F00..0FFF:InTibetan;1000..109F:InMyanmar;10A0..10FF:InGeorgian;1100..11FF:InHangulJamo;"
-                    + "1200..137F:InEthiopic;13A0..13FF:InCherokee;1400..167F:InUnifiedCanadianAboriginalSyllabics;"
-                    + "1680..169F:InOgham;16A0..16FF:InRunic;1780..17FF:InKhmer;1800..18AF:InMongolian;"
-                    + "1E00..1EFF:InLatinExtendedAdditional;1F00..1FFF:InGreekExtended;2000..206F:InGeneralPunctuation;"
-                    + "2070..209F:InSuperscriptsAndSubscripts;20A0..20CF:InCurrencySymbols;"
-                    + "20D0..20FF:InCombiningMarksForSymbols;2100..214F:InLetterLikeSymbols;2150..218F:InNumberForms;"
-                    + "2190..21FF:InArrows;2200..22FF:InMathematicalOperators;2300..23FF:InMiscellaneousTechnical;"
-                    + "2400..243F:InControlPictures;2440..245F:InOpticalCharacterRecognition;"
-                    + "2460..24FF:InEnclosedAlphanumerics;2500..257F:InBoxDrawing;2580..259F:InBlockElements;"
-                    + "25A0..25FF:InGeometricShapes;2600..26FF:InMiscellaneousSymbols;2700..27BF:InDingbats;"
-                    + "2800..28FF:InBraillePatterns;2E80..2EFF:InCJKRadicalsSupplement;2F00..2FDF:InKangxiRadicals;"
-                    + "2FF0..2FFF:InIdeographicDescriptionCharacters;3000..303F:InCJKSymbolsAndPunctuation;"
-                    + "3040..309F:InHiragana;30A0..30FF:InKatakana;3100..312F:InBopomofo;3130..318F:InHangulCompatibilityJamo;"
-                    + "3190..319F:InKanbun;31A0..31BF:InBopomofoExtended;3200..32FF:InEnclosedCJKLettersAndMonths;"
-                    + "3300..33FF:InCJKCompatibility;3400..4DB5:InCJKUnifiedIdeographsExtensionA;"
-                    + "4E00..9FFF:InCJKUnifiedIdeographs;A000..A48F:InYiSyllables;A490..A4CF:InYiRadicals;"
-                    + "AC00..D7A3:InHangulSyllables;D800..DB7F:InHighSurrogates;DB80..DBFF:InHighPrivateUseSurrogates;"
-                    + "DC00..DFFF:InLowSurrogates;E000..F8FF:InPrivateUse;F900..FAFF:InCJKCompatibilityIdeographs;"
-                    + "FB00..FB4F:InAlphabeticPresentationForms;FB50..FDFF:InArabicPresentationForms-A;"
-                    + "FE20..FE2F:InCombiningHalfMarks;FE30..FE4F:InCJKCompatibilityForms;FE50..FE6F:InSmallFormVariants;"
-                    + "FE70..FEFE:InArabicPresentationForms-B;FEFF..FEFF:InSpecials;FF00..FFEF:InHalfWidthAndFullWidthForms;"
-                    + "FFF0..FFFD:InSpecials";
+    
+    private static final int[] blockDataStarts = {0x0000, 0x0080, 0x0100, 0x0180, 0x0250, 0x02B0, 0x0300, 0x0370, 0x0400, 0x0500, 0x0530, 0x0590, 0x0600, 0x0700, 0x0750, 0x0780, 0x07C0, 0x0800, 0x0840, 0x0860, 0x08A0, 0x0900, 0x0980, 0x0A00, 0x0A80, 0x0B00, 0x0B80, 0x0C00, 0x0C80, 0x0D00, 0x0D80, 0x0E00, 0x0E80, 0x0F00, 0x1000, 0x10A0, 0x1100, 0x1200, 0x1380, 0x13A0, 0x1400, 0x1680, 0x16A0, 0x1700, 0x1720, 0x1740, 0x1760, 0x1780, 0x1800, 0x18B0, 0x1900, 0x1950, 0x1980, 0x19E0, 0x1A00, 0x1A20, 0x1AB0, 0x1B00, 0x1B80, 0x1BC0, 0x1C00, 0x1C50, 0x1C80, 0x1CC0, 0x1CD0, 0x1D00, 0x1D80, 0x1DC0, 0x1E00, 0x1F00, 0x2000, 0x2070, 0x20A0, 0x20D0, 0x2100, 0x2150, 0x2190, 0x2200, 0x2300, 0x2400, 0x2440, 0x2460, 0x2500, 0x2580, 0x25A0, 0x2600, 0x2700, 0x27C0, 0x27F0, 0x2800, 0x2900, 0x2980, 0x2A00, 0x2B00, 0x2C00, 0x2C60, 0x2C80, 0x2D00, 0x2D30, 0x2D80, 0x2DE0, 0x2E00, 0x2E80, 0x2F00, 0x2FF0, 0x3000, 0x3040, 0x30A0, 0x3100, 0x3130, 0x3190, 0x31A0, 0x31C0, 0x31F0, 0x3200, 0x3300, 0x3400, 0x4DC0, 0x4E00, 0xA000, 0xA490, 0xA4D0, 0xA500, 0xA640, 0xA6A0, 0xA700, 0xA720, 0xA800, 0xA830, 0xA840, 0xA880, 0xA8E0, 0xA900, 0xA930, 0xA960, 0xA980, 0xA9E0, 0xAA00, 0xAA60, 0xAA80, 0xAAE0, 0xAB00, 0xAB30, 0xAB70, 0xABC0, 0xAC00, 0xD7B0, 0xD800, 0xDB80, 0xDC00, 0xE000, 0xF900, 0xFB00, 0xFB50, 0xFE00, 0xFE10, 0xFE20, 0xFE30, 0xFE50, 0xFE70, 0xFF00, 0xFFF0}, 
+                               blockDataEnds   = {0x007F, 0x00FF, 0x017F, 0x024F, 0x02AF, 0x02FF, 0x036F, 0x03FF, 0x04FF, 0x052F, 0x058F, 0x05FF, 0x06FF, 0x074F, 0x077F, 0x07BF, 0x07FF, 0x083F, 0x085F, 0x086F, 0x08FF, 0x097F, 0x09FF, 0x0A7F, 0x0AFF, 0x0B7F, 0x0BFF, 0x0C7F, 0x0CFF, 0x0D7F, 0x0DFF, 0x0E7F, 0x0EFF, 0x0FFF, 0x109F, 0x10FF, 0x11FF, 0x137F, 0x139F, 0x13FF, 0x167F, 0x169F, 0x16FF, 0x171F, 0x173F, 0x175F, 0x177F, 0x17FF, 0x18AF, 0x18FF, 0x194F, 0x197F, 0x19DF, 0x19FF, 0x1A1F, 0x1AAF, 0x1AFF, 0x1B7F, 0x1BBF, 0x1BFF, 0x1C4F, 0x1C7F, 0x1C8F, 0x1CCF, 0x1CFF, 0x1D7F, 0x1DBF, 0x1DFF, 0x1EFF, 0x1FFF, 0x206F, 0x209F, 0x20CF, 0x20FF, 0x214F, 0x218F, 0x21FF, 0x22FF, 0x23FF, 0x243F, 0x245F, 0x24FF, 0x257F, 0x259F, 0x25FF, 0x26FF, 0x27BF, 0x27EF, 0x27FF, 0x28FF, 0x297F, 0x29FF, 0x2AFF, 0x2BFF, 0x2C5F, 0x2C7F, 0x2CFF, 0x2D2F, 0x2D7F, 0x2DDF, 0x2DFF, 0x2E7F, 0x2EFF, 0x2FDF, 0x2FFF, 0x303F, 0x309F, 0x30FF, 0x312F, 0x318F, 0x319F, 0x31BF, 0x31EF, 0x31FF, 0x32FF, 0x33FF, 0x4DBF, 0x4DFF, 0x9FFF, 0xA48F, 0xA4CF, 0xA4FF, 0xA63F, 0xA69F, 0xA6FF, 0xA71F, 0xA7FF, 0xA82F, 0xA83F, 0xA87F, 0xA8DF, 0xA8FF, 0xA92F, 0xA95F, 0xA97F, 0xA9DF, 0xA9FF, 0xAA5F, 0xAA7F, 0xAADF, 0xAAFF, 0xAB2F, 0xAB6F, 0xABBF, 0xABFF, 0xD7AF, 0xD7FF, 0xDB7F, 0xDBFF, 0xDFFF, 0xF8FF, 0xFAFF, 0xFB4F, 0xFDFF, 0xFE0F, 0xFE1F, 0xFE2F, 0xFE4F, 0xFE6F, 0xFEFF, 0xFFEF, 0xFFFD};
+    private static final String[] blockDataNames = {"BasicLatin","Latin-1Supplement","LatinExtended-A","LatinExtended-B","IPAExtensions","SpacingModifierLetters","CombiningDiacriticalMarks","Greek","Cyrillic","CyrillicSupplement","Armenian","Hebrew","Arabic","Syriac","ArabicSupplement","Thaana","NKo","Samaritan","Mandaic","SyriacSupplement","ArabicExtended-A","Devanagari","Bengali","Gurmukhi","Gujarati","Oriya","Tamil","Telugu","Kannada","Malayalam","Sinhala","Thai","Lao","Tibetan","Myanmar","Georgian","HangulJamo","Ethiopic","EthiopicSupplement","Cherokee","UnifiedCanadianAboriginalSyllabics","Ogham","Runic","Tagalog","Hanunoo","Buhid","Tagbanwa","Khmer","Mongolian","UnifiedCanadianAboriginalSyllabicsExtended","Limbu","TaiLe","NewTaiLue","KhmerSymbols","Buginese","TaiTham","CombiningDiacriticalMarksExtended","Balinese","Sundanese","Batak","Lepcha","OlChiki","CyrillicExtended-C","SundaneseSupplement","VedicExtensions","PhoneticExtensions","PhoneticExtensionsSupplement","CombiningDiacriticalMarksSupplement","LatinExtendedAdditional","GreekExtended","GeneralPunctuation","SuperscriptsAndSubscripts","CurrencySymbols","CombiningDiacriticalMarksForSymbols","LetterlikeSymbols","NumberForms","Arrows","MathematicalOperators","MiscellaneousTechnical","ControlPictures","OpticalCharacterRecognition","EnclosedAlphanumerics","BoxDrawing","BlockElements","GeometricShapes","MiscellaneousSymbols","Dingbats","MiscellaneousMathematicalSymbols-A","SupplementalArrows-A","BraillePatterns","SupplementalArrows-B","MiscellaneousMathematicalSymbols-B","SupplementalMathematicalOperators","MiscellaneousSymbolsAndArrows","Glagolitic","LatinExtended-C","Coptic","GeorgianSupplement","Tifinagh","EthiopicExtended","CyrillicExtended-A","SupplementalPunctuation","CJKRadicalsSupplement","KangxiRadicals","IdeographicDescriptionCharacters","CJKSymbolsAndPunctuation","Hiragana","Katakana","Bopomofo","HangulCompatibilityJamo","Kanbun","BopomofoExtended","CJKStrokes","KatakanaPhoneticExtensions","EnclosedCJKLettersAndMonths","CJKCompatibility","CJKUnifiedIdeographsExtensionA","YijingHexagramSymbols","CJKUnifiedIdeographs","YiSyllables","YiRadicals","Lisu","Vai","CyrillicExtended-B","Bamum","ModifierToneLetters","LatinExtended-D","SylotiNagri","CommonIndicNumberForms","Phags-pa","Saurashtra","DevanagariExtended","KayahLi","Rejang","HangulJamoExtended-A","Javanese","MyanmarExtended-B","Cham","MyanmarExtended-A","TaiViet","MeeteiMayekExtensions","EthiopicExtended-A","LatinExtended-E","CherokeeSupplement","MeeteiMayek","HangulSyllables","HangulJamoExtended-B","HighSurrogates","HighPrivateUseSurrogates","LowSurrogates","PrivateUseArea","CJKCompatibilityIdeographs","AlphabeticPresentationForms","ArabicPresentationForms-A","VariationSelectors","VerticalForms","CombiningHalfMarks","CJKCompatibilityForms","SmallFormVariants","ArabicPresentationForms-B","HalfwidthAndFullwidthForms","Specials"};
 
     static {
         //*
@@ -255,13 +228,9 @@ class CharacterClass extends Term implements UnicodeConstants {
         bs.setPositive(false);
         registerClass("ASSIGNED", bs, unicodeCategories);
 
-        StringTokenizer st = new StringTokenizer(blockData, ".,:;");
-        while (st.hasMoreTokens()) {
+        for (int i = 0; i < blockDataStarts.length; i++) {
             try {
-                int first = Integer.parseInt(st.nextToken(), 16);
-                int last = Integer.parseInt(st.nextToken(), 16);
-                String name = st.nextToken();
-                initNamedBlock(name, first, last);
+                initNamedBlock(blockDataNames[i], blockDataStarts[i], blockDataEnds[i]);
             } catch (Exception e) {
                 e.printStackTrace();
             }
