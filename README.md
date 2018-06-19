@@ -40,7 +40,7 @@ it originally used the Unicode character database that ships with Java... except
 With some tricky code to minimize file sizes that encodes a bitset with a small int array
 and a String by [gagern](https://gist.github.com/gagern/89db1179766a702c564d) using the
 [Node.js Unicode database](https://github.com/mathiasbynens/node-unicode-data), I managed
-to get the full Unicode 8.0.0 category information for the Basic Multilingual Plane (and
+to get the full Unicode 11.0.0 category information for the Basic Multilingual Plane (and
 later, case folding information) in a single small-ish file of Java code. The compression
 code is not in the distributed jar of source, but is in etc/generator.js , and the end
 result is distributed in src/main/java/regexodus/Category.java (which also has case
@@ -71,8 +71,8 @@ if you want snapshots) and Maven Central is an easy alternative for
 version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.9%7Cjar);
-the 0.1.9 release is preferred for now, based on the 1.2 line of JRegex. You can
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.10%7Cjar);
+the 0.1.10 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -121,7 +121,7 @@ methods to make serializing Patterns easier, and allows you to retrieve the flag
 from a Pattern. The bug fixed was relatively severe under some circumstances, so
 updating is recommended.
 
-~~0.1.8~~ had serious issues on GWT and has been replaced by 0.1.9.
+~~0.1.8~~ had serious issues on GWT and has been replaced by 0.1.10.
 
 0.1.9 improves GWT compatibility and adds the Unicode-like categories for
 horizontal, vertical, and all whitespace as `Gh`, `Gv`, and `G`, respectively
@@ -137,7 +137,10 @@ are possible issues if other libraries also super-source to implement
 I'm not sure what takes precedence in that case, but it seems to work so far in
 basic GWT testing (SuperDev mode).
 
-
+0.1.10 fixes compatibility with GWT 2.8.2 and lets the `\p{InBasicLatin}` and
+`\P{Greek}` types of Unicode block matchers work (for the first time, possibly?).
+It also updates Unicode Standard compatibility to 11.0.0, though only for the
+Basic Multilingual Plane.
 
 ## Credit
 
@@ -147,7 +150,10 @@ JRegex Maven-friendly. This fork started with Ed Ropple's copy of jregex 1.2_01
 ([available on GitHub](https://github.com/eropple/jregex)). In addition, portions
 of this code use modified versions of the collections from Sebastiano Vigna's
 [FastUtil](https://github.com/vigna/fastutil) library (in the regexodus.ds package,
-CharCharMap and CharArrayList are derived from FastUtil).
+CharCharMap and CharArrayList are derived from FastUtil). Significant work by the
+team responsible for [the Node.js Unicode database](https://github.com/mathiasbynens/node-unicode-data)
+is invaluable here, especially [gagern](https://github.com/gagern) for creating
+the compression technique that RegExodus uses on Unicode category data.
 
 You can get the original jregex at: http://sourceforge.net/projects/jregex
 
