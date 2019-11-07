@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.tommyettinger</groupId>
     <artifactId>regexodus</artifactId>
-    <version>0.1.10</version>
+    <version>0.1.11-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>RegExodus</name>
@@ -31,12 +31,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.version>3.7.0</maven.compiler.version>
-        <maven.javadoc.version>3.0.0</maven.javadoc.version>
+        <maven.compiler.version>3.8.0</maven.compiler.version>
+        <maven.javadoc.version>3.1.1</maven.javadoc.version>
         <maven.resources.version>3.1.0</maven.resources.version>
         <maven.source.version>3.0.1</maven.source.version>
         <maven.gpg.version>1.6</maven.gpg.version>
-		<jdk.version>1.6</jdk.version>
+		<jdk.version>1.7</jdk.version>
         <junit.version>4.11</junit.version>
     </properties>
 
