@@ -302,9 +302,17 @@ public class BasicTest {
             System.out.println(mr.group("mode"));
             System.out.println(mr.group("bracket"));
         }
-
+        
     }
-
+    @Test
+    public void testCase() {
+        Matcher m = Pattern.compile("({=word}\\pL+)\\PL+((?#){\\!word})").matcher("I love that THAT exists");
+        System.out.println(m.find());
+        System.out.println(Arrays.toString(m.groups()));
+        m = Pattern.compile("({=initial}\\pL)({=rest}[^\\.\\?\\!]+)({=tail}[\\.\\?\\!]+)")
+                .matcher("no way I love waffles... they're like the best.");
+        System.out.println(m.replaceAll("${!initial}${rest}${tail}"));
+    }
 
     @Test
     public void testChanceReplace()

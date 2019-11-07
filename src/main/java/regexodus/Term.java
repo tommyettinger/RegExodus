@@ -163,7 +163,8 @@ public class Term implements REFlags, Serializable {
     boolean mode_insensitive;
     boolean mode_reverse;
     boolean mode_bracket;
-
+    boolean mode_upper;
+    
     // used for optimization with type=BITSET,BITSET2
     int weight;
 
@@ -480,7 +481,7 @@ public class Term implements REFlags, Serializable {
                                 int p = i + 2;
                                 if (p == end) throw new PatternSyntaxException("'group_id' expected");
                                 char cp = data[p];
-                                boolean mi = false, mb = false, mr = false;
+                                boolean mi = false, mb = false, mr = false, mu = false;
                                 while (Category.Space.contains(cp) || Category.Po.contains(cp)) {
                                     p++;
                                     if (p == end) throw new PatternSyntaxException("'group_id' expected");
@@ -494,10 +495,13 @@ public class Term implements REFlags, Serializable {
                                         case ':':
                                             mb = !mb;
                                             break;
+                                        case '!':
+                                            mu = !mu;
+                                            break;
                                     }
                                     cp = data[p];
                                 }
-                                BackReference br = new BackReference(-1, mi || (flags[0] & IGNORE_CASE) > 0, mr, mb);
+                                BackReference br = new BackReference(-1, mi || (flags[0] & IGNORE_CASE) > 0, mr, mb, mu);
                                 i = parseGroupId(data, p, end, br, gmap, '}');
                                 current = append(br);
                                 continue;
@@ -513,7 +517,7 @@ public class Term implements REFlags, Serializable {
                             int p = i + 3;
                             if (p == end) throw new PatternSyntaxException("'group_id' expected");
                             char cp = data[p];
-                            boolean mi = false, mb = false, mr = false;
+                            boolean mi = false, mb = false, mr = false, mu = false;
                             while (Category.Space.contains(cp) || Category.Po.contains(cp)) {
                                 p++;
                                 if (p == end) throw new PatternSyntaxException("'group_id' expected");
@@ -527,10 +531,13 @@ public class Term implements REFlags, Serializable {
                                     case ':':
                                         mb = !mb;
                                         break;
+                                    case '!':
+                                        mu = !mu;
+                                        break;
                                 }
                                 cp = data[p];
                             }
-                            BackReference br = new BackReference(-1, mi || (flags[0] & IGNORE_CASE) > 0, mr, mb);
+                            BackReference br = new BackReference(-1, mi || (flags[0] & IGNORE_CASE) > 0, mr, mb, mu);
                             i = parseGroupId(data, p, end, br, gmap, '>');
                             current = append(br);
                             continue;
@@ -2072,11 +2079,12 @@ class Branch extends Term implements Serializable {
 
 class BackReference extends Term implements Serializable {
     private static final long serialVersionUID = 2528136757932720807L;
-    BackReference(int no, boolean icase, boolean reverse, boolean bracket) {
+    BackReference(int no, boolean icase, boolean reverse, boolean bracket, boolean upper) {
         super(icase ? REG_I : REG);
         mode_reverse = reverse;
         mode_bracket = bracket;
         mode_insensitive = icase;
+        mode_upper = (!mode_insensitive) && upper;
         memreg = no;
     }
 }

@@ -901,6 +901,8 @@ public class Matcher implements MatchResult, Serializable {
                     t = data[j];
                     if((modes & PerlSubstitution.MODE_INSENSITIVE) > 0)
                         t = Category.caseFold(t);
+                    else if((modes & PerlSubstitution.MODE_UPPER) > 0)
+                        t = Category.caseUp(t);
                     if((modes & PerlSubstitution.MODE_BRACKET) > 0)
                         t = Category.matchBracket(t);
                     working[i] = t;
@@ -912,6 +914,8 @@ public class Matcher implements MatchResult, Serializable {
                     t = data[j];
                     if((modes & PerlSubstitution.MODE_INSENSITIVE) > 0)
                         t = Category.caseFold(t);
+                    else if((modes & PerlSubstitution.MODE_UPPER) > 0)
+                        t = Category.caseUp(t);
                     if((modes & PerlSubstitution.MODE_BRACKET) > 0)
                         t = Category.matchBracket(t);
                     working[i] = t;
@@ -928,7 +932,7 @@ public class Matcher implements MatchResult, Serializable {
     public boolean getGroup(String name, TextBuffer tb, int modes) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("unknown group: \"" + name + "\"");
-        return getGroup(id, tb);
+        return getGroup(id, tb, modes);
     }
 
     public boolean getGroup(int group, StringBuilder sb) {
@@ -952,6 +956,8 @@ public class Matcher implements MatchResult, Serializable {
                     t = data[j];
                     if((modes & PerlSubstitution.MODE_INSENSITIVE) > 0)
                         t = Category.caseFold(t);
+                    else if((modes & PerlSubstitution.MODE_UPPER) > 0)
+                        t = Category.caseUp(t);
                     if((modes & PerlSubstitution.MODE_BRACKET) > 0)
                         t = Category.matchBracket(t);
                     working[i] = t;
@@ -963,6 +969,8 @@ public class Matcher implements MatchResult, Serializable {
                     t = data[j];
                     if((modes & PerlSubstitution.MODE_INSENSITIVE) > 0)
                         t = Category.caseFold(t);
+                    else if((modes & PerlSubstitution.MODE_UPPER) > 0)
+                        t = Category.caseUp(t);
                     if((modes & PerlSubstitution.MODE_BRACKET) > 0)
                         t = Category.matchBracket(t);
                     working[i] = t;
@@ -980,7 +988,7 @@ public class Matcher implements MatchResult, Serializable {
     public boolean getGroup(String name, StringBuilder sb, int modes) {
         Integer id = re.groupId(name);
         if (id == null) throw new IllegalArgumentException("unknown group: \"" + name + "\"");
-        return getGroup(id, sb);
+        return getGroup(id, sb, modes);
     }
 
     /**
@@ -2119,11 +2127,11 @@ public class Matcher implements MatchResult, Serializable {
     private static boolean compareRegions(char[] arr, int off1, int off2, int len, int out, Term opts) {
         if(opts.mode_reverse)
         {
-            return compareRegionsReverse(arr, off1, off2, len, out, opts.mode_insensitive, opts.mode_bracket);
+            return compareRegionsReverse(arr, off1, off2, len, out, opts.mode_insensitive || opts.mode_upper, opts.mode_bracket);
         }
         else
         {
-            return compareRegionsForward(arr, off1, off2, len, out, opts.mode_insensitive, opts.mode_bracket);
+            return compareRegionsForward(arr, off1, off2, len, out, opts.mode_insensitive || opts.mode_upper, opts.mode_bracket);
         }
     }
     private static boolean compareRegionsForward(char[] arr, int off1, int off2, int len, int out,

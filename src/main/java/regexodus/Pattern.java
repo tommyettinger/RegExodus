@@ -209,7 +209,10 @@ import java.util.HashMap;
  *         characters that (only in this context) change what the backreference is considered equivalent to.</li>
  *         <li>An at sign, {@literal @}, before the name or number of the group makes the match between the
  *         backreference and matched group case-insensitive. In replacement strings, this always makes the replacement
- *         lower-case.</li>
+ *         lower-case. When matching and already case-insensitive, this does nothing.</li>
+ *         <li>An exclamation point, {@literal !}, before the name or number of the group makes the match between the
+ *         backreference and matched group case-insensitive. In replacement strings, this always makes the replacement
+ *         upper-case. When matching and already case-insensitive, this does nothing.</li>
  *         <li>A slash, {@literal /}, before the name or number of the group makes the backreference match the group
  *         in reverse order, or reverses the group when used in a replacement string. This may have bad behavior with
  *         Unicode chars outside the first 65536 (the Basic Multilingual Plane), such as emoji.</li>
@@ -217,7 +220,7 @@ import java.util.HashMap;
  *         or bracket-like characters match their closing or opening counterpart. Thus, "(" would be replaced with ")"
  *         and "〖〗" would be replaced with "〗〖" (it handles practically all of the Unicode Ps and Pe categories).
  *         </li>
- *         <li>Anywhere from none of these modifiers to all 3 can appear in a backreference; the order doesn't matter.
+ *         <li>Anywhere from none of these modifiers to all 4 can appear in a backreference; the order doesn't matter.
  *         </li>
  *     </ul>
  *     </li>

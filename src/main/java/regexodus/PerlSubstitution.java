@@ -70,7 +70,8 @@ public class PerlSubstitution implements Substitution, Serializable {
 
     static final int MODE_INSENSITIVE = 1,
             MODE_REVERSE = 2,
-            MODE_BRACKET = 4;
+            MODE_BRACKET = 4,
+            MODE_UPPER = 8;
 
     //private static int FN_NAME_ID;
     //private static int FN_ARGS_ID;
@@ -127,11 +128,13 @@ public class PerlSubstitution implements Substitution, Serializable {
                         switch (md.charAt(i))
                         {
                             case '@': modes ^= MODE_INSENSITIVE;
-                                break;
+                            break;
                             case '/': modes ^= MODE_REVERSE;
-                                break;
-                            case ':': modes ^= MODE_BRACKET;
-                                break;
+                            break; 
+                            case ':': modes ^= MODE_BRACKET;                             
+                            break; 
+                            case '!': modes ^= MODE_UPPER;
+                            break;
                         }
                     }
                 }
@@ -139,7 +142,7 @@ public class PerlSubstitution implements Substitution, Serializable {
                 if (c == '&') {
                     element = new IntRefHandler(refMatcher.prefix(), 0, modes);
                 } else if (Character.isDigit(c)) {
-                    element = new IntRefHandler(refMatcher.prefix(), new Integer(refMatcher.group(NAME_ID)), modes);
+                    element = new IntRefHandler(refMatcher.prefix(), Integer.parseInt(refMatcher.group(NAME_ID)), modes);
                 } else
                     element = new StringRefHandler(refMatcher.prefix(), refMatcher.group(NAME_ID), modes);
             } else {
