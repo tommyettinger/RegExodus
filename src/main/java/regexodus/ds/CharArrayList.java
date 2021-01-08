@@ -27,7 +27,7 @@ import java.util.RandomAccess;
  * A type-specific array-based list; provides some additional methods that use polymorphism to avoid (un)boxing.
  * <br>This class implements a lightweight, fast, open, optimized, reuse-oriented version of array-based lists. Instances of this class represent a list with an array that is enlarged as needed when
  * new entries are created (by doubling its current length), but is <em>never</em> made smaller (even on a {@link #clear()}). A family of {@linkplain #trim() trimming methods} lets you control the size
- * of the backing array; this is particularly useful if you reuse instances of this class. Range checks are equivalent to those of {@link java.util}'s classes, but they are delayed as much as
+ * of the backing array; this is particularly useful if you reuse instances of this class. Range checks are equivalent to those of {@code java.util}'s classes, but they are delayed as much as
  * possible. The backing array is exposed by the {@link #elements()} method.
  * <br>This class implements the bulk methods <code>removeElements()</code>, <code>addElements()</code> and <code>getElements()</code> using high-performance system calls (e.g.,
  * {@link System#arraycopy(Object, int, Object, int, int) System.arraycopy()} instead of expensive loops.

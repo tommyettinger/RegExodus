@@ -260,7 +260,7 @@ public class Matcher implements MatchResult, Serializable {
             data = mychars = new char[(int) (1.7f * len)];
             shared = false;
         }
-        for (int i = start, p = 0; i < len; i++, p++) {
+        for (int i = start, p = 0; p < len; i++, p++) {
             mychars[p] = text.charAt(i);
         }
         //text.getChars(start, len, mychars, 0); //(srcBegin,srcEnd,dst[],dstBegin)
