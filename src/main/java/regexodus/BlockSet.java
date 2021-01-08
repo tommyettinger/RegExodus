@@ -269,7 +269,7 @@ class BlockSet implements UnicodeConstants {
     static int add(IntBitSet bs1, IntBitSet bs2, int from, int to, boolean inv) {
         int s = bs1.cardinality();
         if (inv)
-            bs1.or(bs2.clone().negate());
+            bs1.or(bs2.copy().negate());
         else
             bs1.or(bs2);
         return bs1.cardinality() - s;
@@ -278,7 +278,7 @@ class BlockSet implements UnicodeConstants {
     static int subtract(IntBitSet bs1, IntBitSet bs2, boolean inv) {
         int s = -bs1.cardinality();
         if(inv)
-            bs1.andNot(bs2.clone().negate());
+            bs1.andNot(bs2.copy().negate());
         else
             bs1.andNot(bs2);
         return s + bs1.cardinality();
@@ -542,7 +542,7 @@ class Block implements UnicodeConstants {
     }
 
     private static IntBitSet copyBits(Block block) {
-        IntBitSet bits = block.bits.clone();
+        IntBitSet bits = block.bits.copy();
         block.bits = bits;
         block.shared = false;
         return bits;

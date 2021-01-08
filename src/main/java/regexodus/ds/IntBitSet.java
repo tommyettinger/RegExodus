@@ -192,7 +192,7 @@ public class IntBitSet {
         return Arrays.hashCode(data);
     }
 
-    public IntBitSet clone() {
+    public IntBitSet copy() {
         return new IntBitSet(data);
     }
 

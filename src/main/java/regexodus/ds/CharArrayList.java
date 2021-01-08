@@ -668,7 +668,7 @@ public class CharArrayList implements RandomAccess, Cloneable, java.io.Serializa
         return new CharArrayList(a, fromIndex, toIndex - fromIndex);
     }
 
-    public CharArrayList clone() {
+    public CharArrayList copy() {
         CharArrayList c = new CharArrayList(size);
         System.arraycopy(a, 0, c.a, 0, size);
         c.size = size;

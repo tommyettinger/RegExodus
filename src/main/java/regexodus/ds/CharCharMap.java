@@ -1,532 +1,667 @@
-/* Copyright (C) 2002-2015 Sebastiano Vigna
+/*******************************************************************************
+ * Copyright 2020 See AUTHORS file.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
- */
+ * limitations under the License.
+ ******************************************************************************/
+
 package regexodus.ds;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * A type-specific hash map with a fast, small-footprint implementation.
- * <br>Instances of this class use a hash table to represent a map. The table is filled up to a specified <em>load factor</em>, and then doubled in size to accommodate new entries. If the table is
- * emptied below <em>one fourth</em> of the load factor, it is halved in size. However, halving is not performed when deleting entries from an iterator, as it would interfere with the iteration
- * process.
- * <br>Note that {@link #clear()} does not modify the hash table size. Rather, a family of {@linkplain #trim() trimming methods} lets you control the size of the table; this is particularly useful if
- * you reuse instances of this class.
- * <br>
- * Adapted from Sebastiano Vigna's FastUtil code, https://github.com/vigna/fastutil
+ * An unordered map where the keys are unboxed chars and the values are also unboxed chars. Null keys are not allowed. No allocation is
+ * done except when growing the table size.
+ * <p>
+ * This class performs fast contains and remove (typically O(1), worst case O(n) but that is rare in practice). Add may be
+ * slightly slower, depending on hash collisions. Hashcodes are rehashed to reduce collisions and the need to resize. Load factors
+ * greater than 0.91 greatly increase the chances to resize to the next higher POT size.
+ * <p>
+ * Unordered sets and maps are not designed to provide especially fast iteration.
+ * <p>
+ * You can customize most behavior of this map by extending it. {@link #place(char)} can be overridden to change how hashCodes
+ * are calculated (which can be useful for types like {@link StringBuilder} that don't implement hashCode()), and
+ * {@link #locateKey(char)} can be overridden to change how equality is calculated.
+ * <p>
+ * This implementation uses linear probing with the backward shift algorithm for removal. Hashcodes are rehashed using Fibonacci
+ * hashing, instead of the more common power-of-two mask, to better distribute poor hashCodes (see <a href=
+ * "https://probablydance.com/2018/06/16/fibonacci-hashing-the-optimization-that-the-world-forgot-or-a-better-alternative-to-integer-modulo/">Malte
+ * Skarupke's blog post</a>). Linear probing continues to work even when all hashCodes collide, just more slowly.
+ *
+ * @author Nathan Sweet
+ * @author Tommy Ettinger
  */
-public class CharCharMap implements java.io.Serializable, Cloneable {
+public class CharCharMap implements Serializable {
     private static final long serialVersionUID = 0L;
+
+    protected int size;
+
+    protected char[] keyTable;
+    protected char[] valueTable;
+    protected boolean hasZeroValue;
+    protected char zeroValue;
+    protected float loadFactor;
+    protected int threshold;
+
+    protected int shift;
+
     /**
-     * The array of keys.
-     */
-    protected char[] key;
-    /**
-     * The array of values.
-     */
-    protected char[] value;
-    /**
-     * The mask for wrapping a position counter.
+     * A bitmask used to confine hashcodes to the size of the table. Must be all 1 bits in its low positions, ie a power of two
+     * minus 1.
      */
     protected int mask;
-    /**
-     * Whether this set contains the key zero.
-     */
-    protected boolean containsNullKey;
-    /**
-     * The current table size.
-     */
-    protected int n;
-    /**
-     * Threshold after which we rehash. It must be the table size times {@link #f}.
-     */
-    protected int maxFill;
-    /**
-     * Number of entries in the set (including the key zero, if present).
-     */
-    protected int size;
-    /**
-     * The acceptable load factor.
-     */
-    protected final float f;
-    /**
-     * Cached set of keys.
-     */
-    protected transient volatile KeySet keys;
 
+    public char defaultValue = 0;
     /**
-     * The default return value for <code>get()</code>, <code>put()</code> and <code>remove()</code>.
-     */
-    protected char defRetValue;
-
-    /**
-     * The initial default size of a hash table.
-     */
-    static final public int DEFAULT_INITIAL_SIZE = 16;
-    /**
-     * The default load factor of a hash table.
-     */
-    static final public float DEFAULT_LOAD_FACTOR = .75f;
-
-    /**
-     * Creates a new hash map.
-     * <br>The actual table size will be the least power of two greater than <code>expected</code>/<code>f</code>.
+     * Used to establish the size of a hash table for sets, maps, and related code.
+     * The table size will always be a power of two, and should be the next power of two that is at least equal
+     * to {@code capacity / loadFactor}.
      *
-     * @param expected the expected number of elements in the hash set.
-     * @param f        the load factor.
+     * @param capacity   the amount of items the hash table should be able to hold
+     * @param loadFactor between 0.0 (exclusive) and 1.0 (inclusive); the fraction of how much of the table can be filled
+     * @return the size of a hash table that can handle the specified capacity with the given loadFactor
      */
-
-    public CharCharMap(final int expected, final float f) {
-        if (f <= 0 || f > 1)
-            throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than or equal to 1");
-        if (expected < 0) throw new IllegalArgumentException("The expected number of elements must be nonnegative");
-        this.f = f;
-        n = arraySize(expected, f);
-        mask = n - 1;
-        maxFill = maxFill(n, f);
-        key = new char[n + 1];
-        value = new char[n + 1];
+    static int tableSize (int capacity, float loadFactor) {
+        if (capacity < 0) {
+            throw new IllegalArgumentException("capacity must be >= 0: " + capacity);
+        }
+        int tableSize = 1 << -Integer.numberOfLeadingZeros(Math.max(2, (int)Math.ceil(capacity / loadFactor)) - 1);
+        if (tableSize > 1 << 30 || tableSize < 0) {
+            throw new IllegalArgumentException("The required capacity is too large: " + capacity);
+        }
+        return tableSize;
     }
 
     /**
-     * Creates a new hash map with 0.75f as load factor.
-     *
-     * @param expected the expected number of elements in the hash map.
-     */
-    public CharCharMap(final int expected) {
-        this(expected, DEFAULT_LOAD_FACTOR);
-    }
-
-    /**
-     * Creates a new hash map with initial expected 16 entries and 0.75f as load factor.
+     * Creates a new map with an initial capacity of 51 and a load factor of 0.8.
      */
     public CharCharMap() {
-        this(DEFAULT_INITIAL_SIZE, DEFAULT_LOAD_FACTOR);
+        this(51, 0.8f);
     }
 
     /**
-     * Creates a new hash map using the elements of two parallel arrays.
+     * Creates a new map with a load factor of 0.8.
      *
-     * @param k the array of keys of the new hash map.
-     * @param v the array of corresponding values in the new hash map.
-     * @param f the load factor.
-     * @throws IllegalArgumentException if <code>k</code> and <code>v</code> have different lengths.
+     * @param initialCapacity If not a power of two, it is increased to the next nearest power of two.
      */
-    public CharCharMap(final char[] k, final char[] v, final float f) {
-        this(k.length, f);
-        if (k.length != v.length)
-            throw new IllegalArgumentException("The key array and the value array have different lengths (" + k.length + " and " + v.length + ")");
-        for (int i = 0; i < k.length; i++)
-            this.put(k[i], v[i]);
+    public CharCharMap(int initialCapacity) {
+        this(initialCapacity, 0.8f);
     }
 
     /**
-     * Creates a new hash map with 0.75f as load factor using the elements of two parallel arrays.
+     * Creates a new map with the specified initial capacity and load factor. This map will hold initialCapacity items before
+     * growing the backing table.
      *
-     * @param k the array of keys of the new hash map.
-     * @param v the array of corresponding values in the new hash map.
-     * @throws IllegalArgumentException if <code>k</code> and <code>v</code> have different lengths.
+     * @param initialCapacity If not a power of two, it is increased to the next nearest power of two.
      */
-    public CharCharMap(final char[] k, final char[] v) {
-        this(k, v, DEFAULT_LOAD_FACTOR);
+    public CharCharMap(int initialCapacity, float loadFactor) {
+        if (loadFactor <= 0f || loadFactor > 1f) { throw new IllegalArgumentException("loadFactor must be > 0 and <= 1: " + loadFactor); }
+        this.loadFactor = loadFactor;
+
+        int tableSize = tableSize(initialCapacity, loadFactor);
+        threshold = (int)(tableSize * loadFactor);
+        mask = tableSize - 1;
+        shift = Long.numberOfLeadingZeros(mask);
+
+        keyTable = new char[tableSize];
+        valueTable = new char[tableSize];
     }
 
-    public void defaultReturnValue(final char rv) {
-        defRetValue = rv;
+    /**
+     * Creates a new map identical to the specified map.
+     */
+    public CharCharMap(CharCharMap map) {
+        this((int)(map.keyTable.length * map.loadFactor), map.loadFactor);
+        System.arraycopy(map.keyTable, 0, keyTable, 0, map.keyTable.length);
+        System.arraycopy(map.valueTable, 0, valueTable, 0, map.valueTable.length);
+        size = map.size;
+        defaultValue = map.defaultValue;
     }
 
-    public char defaultReturnValue() {
-        return defRetValue;
+    /**
+     * Given two side-by-side arrays, one of keys, one of values, this constructs a map and inserts each pair of key and value into it.
+     * If keys and values have different lengths, this only uses the length of the smaller array.
+     * @param keys an array of keys
+     * @param values an array of values
+     */
+    public CharCharMap(char[] keys, char[] values){
+        this(Math.min(keys.length, values.length));
+        putAll(keys, values);
     }
 
-    private int realSize() {
-        return containsNullKey ? size - 1 : size;
+    /**
+     * Returns an index &gt;= 0 and &lt;= {@link #mask} for the specified {@code item}.
+     * <p>
+     * The default behavior uses Fibonacci hashing; it simply gets the {@link Object#hashCode()}
+     * of {@code item}, multiplies it by a specific char constant related to the golden ratio,
+     * and makes an unsigned right shift by {@link #shift} before casting to int and returning.
+     * This can be overridden to hash {@code item} differently, though all implementors must
+     * ensure this returns results in the range of 0 to {@link #mask}, inclusive. If nothing
+     * else is changed, then unsigned-right-shifting an int or char by {@link #shift} will also
+     * restrict results to the correct range.
+     *
+     * @param item a non-null Object; its hashCode() method should be used by most implementations.
+     */
+    protected int place (char item) {
+        return (int)(item * 0x9E3779B97F4A7C15L >>> shift);
     }
 
-    private char removeEntry(final int pos) {
-        final char oldValue = value[pos];
-        size--;
-        shiftKeys(pos);
-        if (size < maxFill / 4 && n > DEFAULT_INITIAL_SIZE) rehash(n / 2);
-        return oldValue;
-    }
-
-    private char removeNullEntry() {
-        containsNullKey = false;
-        final char oldValue = value[n];
-        size--;
-        if (size < maxFill / 4 && n > DEFAULT_INITIAL_SIZE) rehash(n / 2);
-        return oldValue;
-    }
-
-    private int insert(final char k, final char v) {
-        int pos;
-        if (((k) == ((char) 0))) {
-            if (containsNullKey) return n;
-            containsNullKey = true;
-            pos = n;
-        } else {
-            char curr;
-            final char[] key = this.key;
-            // The starting point.
-            if (!((curr = key[pos = (HashCommon.mix((k))) & mask]) == ((char) 0))) {
-                if (((curr) == (k))) return pos;
-                while (!((curr = key[pos = (pos + 1) & mask]) == ((char) 0)))
-                    if (((curr) == (k))) return pos;
+    /**
+     * Returns the index of the key if already present, else {@code -1 - index} for the next empty index. This can be overridden
+     * to compare for equality differently than {@code ==}.
+     */
+    protected int locateKey (char key) {
+        char[] keyTable = this.keyTable;
+        for (int i = place(key); ; i = i + 1 & mask) {
+            char other = keyTable[i];
+            if (other == 0) {
+                return ~i; // Empty space is available.
+            }
+            if (other == key) {
+                return i; // Same key was found.
             }
         }
-        key[pos] = k;
-        value[pos] = v;
-        if (size++ >= maxFill) rehash(arraySize(size + 1, f));
-        return -1;
     }
 
-    public char put(final char k, final char v) {
-        final int pos = insert(k, v);
-        if (pos < 0) return defRetValue;
-        final char oldValue = value[pos];
-        value[pos] = v;
+    /**
+     * Returns the old value associated with the specified key, or this map's {@link #defaultValue} if there was no prior value.
+     */
+    public char put (char key, char value) {
+        if (key == 0) {
+            char oldValue = defaultValue;
+            if (hasZeroValue) { oldValue = zeroValue; } else { size++; }
+            hasZeroValue = true;
+            zeroValue = value;
+            return oldValue;
+        }
+        int i = locateKey(key);
+        if (i >= 0) { // Existing key was found.
+            char oldValue = valueTable[i];
+            valueTable[i] = value;
+            return oldValue;
+        }
+        i = ~i; // Empty space was found.
+        keyTable[i] = key;
+        valueTable[i] = value;
+        if (++size >= threshold) { resize(keyTable.length << 1); }
+        return defaultValue;
+    }
+
+    /**
+     * Returns the old value associated with the specified key, or the given {@code defaultValue} if there was no prior value.
+     */
+    public char putOrDefault (char key, char value, char defaultValue) {
+        if (key == 0) {
+            char oldValue = defaultValue;
+            if (hasZeroValue) { oldValue = zeroValue; } else { size++; }
+            hasZeroValue = true;
+            zeroValue = value;
+            return oldValue;
+        }
+        int i = locateKey(key);
+        if (i >= 0) { // Existing key was found.
+            char oldValue = valueTable[i];
+            valueTable[i] = value;
+            return oldValue;
+        }
+        i = ~i; // Empty space was found.
+        keyTable[i] = key;
+        valueTable[i] = value;
+        if (++size >= threshold) { resize(keyTable.length << 1); }
+        return defaultValue;
+    }
+
+    public void putAll (CharCharMap map) {
+        ensureCapacity(map.size);
+        if (map.hasZeroValue) {
+            if (!hasZeroValue) { size++; }
+            hasZeroValue = true;
+            zeroValue = map.zeroValue;
+        }
+        char[] keyTable = map.keyTable;
+        char[] valueTable = map.valueTable;
+        char key;
+        for (int i = 0, n = keyTable.length; i < n; i++) {
+            key = keyTable[i];
+            if (key != 0) { put(key, valueTable[i]); }
+        }
+    }
+
+    /**
+     * Given two side-by-side arrays, one of keys, one of values, this inserts each pair of key and value into this map with put().
+     * @param keys an array of keys
+     * @param values an array of values
+     */
+    public void putAll (char[] keys, char[] values) {
+        putAll(keys, 0, values, 0, Math.min(keys.length, values.length));
+    }
+
+    /**
+     * Given two side-by-side arrays, one of keys, one of values, this inserts each pair of key and value into this map with put().
+     * @param keys an array of keys
+     * @param values an array of values
+     * @param length how many items from keys and values to insert, at-most
+     */
+    public void putAll (char[] keys, char[] values, int length) {
+        putAll(keys, 0, values, 0, length);
+    }
+
+    /**
+     * Given two side-by-side arrays, one of keys, one of values, this inserts each pair of key and value into this map with put().
+     * @param keys an array of keys
+     * @param keyOffset the first index in keys to insert
+     * @param values an array of values
+     * @param valueOffset the first index in values to insert
+     * @param length how many items from keys and values to insert, at-most
+     */
+    public void putAll (char[] keys, int keyOffset, char[] values, int valueOffset, int length) {
+        length = Math.min(length, Math.min(keys.length - keyOffset, values.length - valueOffset));
+        ensureCapacity(length);
+        for (int k = keyOffset, v = valueOffset, i = 0, n = length; i < n; i++, k++, v++) {
+            put(keys[k], values[v]);
+        }
+    }
+
+    /**
+     * Skips checks for existing keys, doesn't increment size.
+     */
+    private void putResize (char key, char value) {
+        char[] keyTable = this.keyTable;
+        for (int i = place(key); ; i = i + 1 & mask) {
+            if (keyTable[i] == 0) {
+                keyTable[i] = key;
+                valueTable[i] = value;
+                return;
+            }
+        }
+    }
+
+    /**
+     * Returns the value for the specified key, or {@link #defaultValue} if the key is not in the map.
+     *
+     * @param key any {@code char}
+     */
+    public char get (char key) {
+        if (key == 0) { return hasZeroValue ? zeroValue : defaultValue; }
+        int i = locateKey(key);
+        return i < 0 ? defaultValue : valueTable[i];
+    }
+
+    /**
+     * Returns the value for the specified key, or the default value if the key is not in the map.
+     */
+    public char getOrDefault (char key, char defaultValue) {
+        if (key == 0) { return hasZeroValue ? zeroValue : defaultValue; }
+        int i = locateKey(key);
+        return i < 0 ? defaultValue : valueTable[i];
+    }
+
+    public char remove (char key) {
+        if (key == 0) {
+            if (hasZeroValue) {
+                hasZeroValue = false;
+                --size;
+                return zeroValue;
+            }
+            return defaultValue;
+        }
+        int i = locateKey(key);
+        if (i < 0) { return defaultValue; }
+        char[] keyTable = this.keyTable;
+        char rem;
+        char[] valueTable = this.valueTable;
+        char oldValue = valueTable[i];
+        int mask = this.mask, next = i + 1 & mask;
+        while ((rem = keyTable[next]) != 0) {
+            int placement = place(rem);
+            if ((next - placement & mask) > (i - placement & mask)) {
+                keyTable[i] = rem;
+                valueTable[i] = valueTable[next];
+                i = next;
+            }
+            next = next + 1 & mask;
+        }
+        keyTable[i] = 0;
+
+        size--;
         return oldValue;
     }
 
     /**
-     * Shifts left entries with the specified hash code, starting at the specified position, and empties the resulting free entry.
-     *
-     * @param pos a starting position.
+     * Returns true if the map has one or more items.
      */
-    protected final void shiftKeys(int pos) {
-        // Shift entries with the same hash.
-        int last, slot;
-        char curr;
-        final char[] key = this.key;
-        for (; ; ) {
-            pos = ((last = pos) + 1) & mask;
-            for (; ; ) {
-                if (((curr = key[pos]) == ((char) 0))) {
-                    key[last] = ((char) 0);
-                    return;
-                }
-                slot = (HashCommon.mix((curr))) & mask;
-                if (last <= pos ? last >= slot || slot > pos : last >= slot && slot > pos) break;
-                pos = (pos + 1) & mask;
-            }
-            key[last] = curr;
-            value[last] = value[pos];
-        }
+    public boolean notEmpty () {
+        return size > 0;
     }
 
-    public char remove(final char k) {
-        if (((k) == ((char) 0))) {
-            if (containsNullKey) return removeNullEntry();
-            return defRetValue;
-        }
-        char curr;
-        final char[] key = this.key;
-        int pos;
-        // The starting point.
-        if (((curr = key[pos = (HashCommon.mix((k))) & mask]) == ((char) 0))) return defRetValue;
-        if (((k) == (curr))) return removeEntry(pos);
-        while (true) {
-            if (((curr = key[pos = (pos + 1) & mask]) == ((char) 0))) return defRetValue;
-            if (((k) == (curr))) return removeEntry(pos);
-        }
-    }
-
-    public char get(final char k) {
-        if (((k) == ((char) 0))) return containsNullKey ? value[n] : defRetValue;
-        char curr;
-        final char[] key = this.key;
-        int pos;
-        // The starting point.
-        if (((curr = key[pos = (HashCommon.mix((k))) & mask]) == ((char) 0))) return defRetValue;
-        if (((k) == (curr))) return value[pos];
-        // There's always an unused entry.
-        while (true) {
-            if (((curr = key[pos = (pos + 1) & mask]) == ((char) 0))) return defRetValue;
-            if (((k) == (curr))) return value[pos];
-        }
-    }
-
-    public boolean containsKey(final char k) {
-        if (((k) == ((char) 0))) return containsNullKey;
-        char curr;
-        final char[] key = this.key;
-        int pos;
-        // The starting point.
-        if (((curr = key[pos = (HashCommon.mix((k))) & mask]) == ((char) 0))) return false;
-        if (((k) == (curr))) return true;
-        // There's always an unused entry.
-        while (true) {
-            if (((curr = key[pos = (pos + 1) & mask]) == ((char) 0))) return false;
-            if (((k) == (curr))) return true;
-        }
-    }
-
-    public boolean containsValue(final char v) {
-        final char value[] = this.value;
-        final char key[] = this.key;
-        if (containsNullKey && ((value[n]) == (v))) return true;
-        for (int i = n; i-- != 0; )
-            if (!((key[i]) == ((char) 0)) && ((value[i]) == (v))) return true;
-        return false;
-    }
-
-    /* Removes all elements from this map.
+    /**
+     * Returns the number of key-value mappings in this map.  If the
+     * map contains more than {@code Integer.MAX_VALUE} elements, returns
+     * {@code Integer.MAX_VALUE}.
      *
-     * <br>To increase object reuse, this method does not change the table size. If you want to reduce the table size, you must use {@link #trim()}. */
-    public void clear() {
-        if (size == 0) return;
-        size = 0;
-        containsNullKey = false;
-        Arrays.fill(key, ((char) 0));
-    }
-
-    public int size() {
+     * @return the number of key-value mappings in this map
+     */
+    public int size () {
         return size;
     }
 
-    public boolean isEmpty() {
+    /**
+     * Returns true if the map is empty.
+     */
+    public boolean isEmpty () {
         return size == 0;
     }
 
-    private final class KeySet {
-
-        public int size() {
-            return size;
-        }
-
-        public boolean contains(char k) {
-            return containsKey(k);
-        }
-
-        public boolean remove(char k) {
-            final int oldSize = size;
-            CharCharMap.this.remove(k);
-            return size != oldSize;
-        }
-
-        public void clear() {
-            CharCharMap.this.clear();
-        }
-
-        /**
-         * Delegates to the corresponding type-specific method.
-         */
-        public boolean remove(final Object o) {
-            return remove(((((Character) (o)).charValue())));
-        }
-    }
-
-    public KeySet keySet() {
-        if (keys == null) keys = new KeySet();
-        return keys;
-    }
-
     /**
-     * Rehashes the map, making the table as small as possible.
-     * <br>This method rehashes the table to the smallest size satisfying the load factor. It can be used when the set will not be changed anymore, so to optimize access speed and size.
-     * <br>If the table size is already the minimum possible, this method does nothing.
+     * Gets the default value, a {@code char} which is returned by {@link #get(char)} if the key is not found.
+     * If not changed, the default value is 0.
      *
-     * @return true if there was enough memory to trim the map.
-     * @see #trim(int)
+     * @return the current default value
      */
-    public boolean trim() {
-        final int l = arraySize(size, f);
-        if (l >= n || size > maxFill(l, f)) return true;
-        try {
-            rehash(l);
-        } catch (Error cantDoIt) {
-            return false;
-        }
-        return true;
+    public char getDefaultValue () {
+        return defaultValue;
     }
 
     /**
-     * Rehashes this map if the table is too large.
-     * <br>Let <var>N</var> be the smallest table size that can hold <code>max(n,{@link #size()})</code> entries, still satisfying the load factor. If the current table size is smaller than or equal to
-     * <var>N</var>, this method does nothing. Otherwise, it rehashes this map in a table of size <var>N</var>.
-     * <br>This method is useful when reusing maps. {@linkplain #clear() Clearing a map} leaves the table size untouched. If you are reusing a map many times, you can call this method with a typical
-     * size to avoid keeping around a very large table just because of a few large transient maps.
+     * Sets the default value, a {@code char} which is returned by {@link #get(char)} if the key is not found.
+     * If not changed, the default value is 0. Note that {@link #getOrDefault(char, char)} is also available,
+     * which allows specifying a "not-found" value per-call.
      *
-     * @param n the threshold for the trimming.
-     * @return true if there was enough memory to trim the map.
-     * @see #trim()
+     * @param defaultValue may be any char; should usually be one that doesn't occur as a typical value
      */
-    public boolean trim(final int n) {
-        final int l = HashCommon.nextPowerOfTwo((int) Math.ceil(n / f));
-        if (l >= n || size > maxFill(l, f)) return true;
-        try {
-            rehash(l);
-        } catch (Error cantDoIt) {
-            return false;
-        }
-        return true;
+    public void setDefaultValue (char defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     /**
-     * Rehashes the map.
-     * <br>This method implements the basic rehashing strategy, and may be overriden by subclasses implementing different rehashing strategies (e.g., disk-based rehashing). However, you should not
-     * override this method unless you understand the internal workings of this class.
-     *
-     * @param newN the new size
+     * Reduces the size of the backing arrays to be the specified capacity / loadFactor, or less. If the capacity is already less,
+     * nothing is done. If the map contains more items than the specified capacity, the next highest power of two capacity is used
+     * instead.
      */
-
-    protected void rehash(final int newN) {
-        final char key[] = this.key;
-        final char value[] = this.value;
-        final int mask = newN - 1; // Note that this is used by the hashing macro
-        final char newKey[] = new char[newN + 1];
-        final char newValue[] = new char[newN + 1];
-        int i = n, pos;
-        for (int j = realSize(); j-- != 0; ) {
-            while (((key[--i]) == ((char) 0))) ;
-            if (!((newKey[pos = (HashCommon.mix((key[i]))) & mask]) == ((char) 0)))
-                while (!((newKey[pos = (pos + 1) & mask]) == ((char) 0))) ;
-            newKey[pos] = key[i];
-            newValue[pos] = value[i];
-        }
-        newValue[newN] = value[n];
-        n = newN;
-        this.mask = mask;
-        maxFill = maxFill(n, f);
-        this.key = newKey;
-        this.value = newValue;
+    public void shrink (int maximumCapacity) {
+        if (maximumCapacity < 0) { throw new IllegalArgumentException("maximumCapacity must be >= 0: " + maximumCapacity); }
+        int tableSize = tableSize(maximumCapacity, loadFactor);
+        if (keyTable.length > tableSize) { resize(tableSize); }
     }
 
     /**
-     * Returns a deep copy of this map.
-     * <br>
-     * This method performs a deep copy of this hash map, but with primitive keys and values it doesn't matter much.
-     * @return a deep copy of this map.
+     * Clears the map and reduces the size of the backing arrays to be the specified capacity / loadFactor, if they are larger.
      */
+    public void clear (int maximumCapacity) {
+        int tableSize = tableSize(maximumCapacity, loadFactor);
+        if (keyTable.length <= tableSize) {
+            clear();
+            return;
+        }
+        size = 0;
+        resize(tableSize);
+    }
 
-    public CharCharMap clone() {
-        char[] k = new char[key.length], v = new char[value.length];
-        System.arraycopy(key, 0, k, 0, key.length);
-        System.arraycopy(value, 0, v, 0, value.length);
-        return new CharCharMap(k, v, f);
+    public void clear () {
+        if (size == 0) { return; }
+        size = 0;
+        Arrays.fill(keyTable, '\u0000');
     }
 
     /**
-     * Returns a hash code for this map.
-     * <br>
-     * This method overrides the generic method provided by the superclass. Since <code>equals()</code> is not overriden, it is important that the value returned by this method is the same value as
-     * the one returned by the overriden method.
-     *
-     * @return a hash code for this map.
+     * Returns true if the specified value is in the map. Note this traverses the entire map and compares every value, which may
+     * be an expensive operation.
      */
-    public int hashCode() {
-        int h = 0;
-        for (int j = realSize(), i = 0, t = 0; j-- != 0; ) {
-            while (((key[i]) == ((char) 0)))
-                i++;
-            t = (key[i]);
-            t ^= (value[i]);
-            h += t;
-            i++;
+    public boolean containsValue (char value) {
+        if (hasZeroValue && zeroValue == value) { return true; }
+        char[] valueTable = this.valueTable;
+        char[] keyTable = this.keyTable;
+        for (int i = valueTable.length - 1; i >= 0; i--) {
+            if (keyTable[i] != 0 && valueTable[i] == value) { return true; }
         }
-        // Zero / null keys have hash zero.
-        if (containsNullKey) h += (value[n]);
+        return false;
+    }
+
+    public boolean containsKey (char key) {
+        if (key == 0) { return hasZeroValue; }
+        return locateKey(key) >= 0;
+    }
+
+    /**
+     * Returns the key for the specified value, or null if it is not in the map. Note this traverses the entire map and compares
+     * every value, which may be an expensive operation.
+     */
+    public char findKey (char value, char defaultKey) {
+        if (hasZeroValue && zeroValue == value) { return 0; }
+        char[] valueTable = this.valueTable;
+        char[] keyTable = this.keyTable;
+        for (int i = valueTable.length - 1; i >= 0; i--) {
+            if (keyTable[i] != 0 && valueTable[i] == value) { return keyTable[i]; }
+        }
+
+        return defaultKey;
+    }
+
+    /**
+     * Increases the size of the backing array to accommodate the specified number of additional items / loadFactor. Useful before
+     * adding many items to avoid multiple backing array resizes.
+     */
+    public void ensureCapacity (int additionalCapacity) {
+        int tableSize = tableSize(size + additionalCapacity, loadFactor);
+        if (keyTable.length < tableSize) { resize(tableSize); }
+    }
+
+    protected void resize (int newSize) {
+        int oldCapacity = keyTable.length;
+        threshold = (int)(newSize * loadFactor);
+        mask = newSize - 1;
+        shift = Long.numberOfLeadingZeros(mask);
+
+        char[] oldKeyTable = keyTable;
+        char[] oldValueTable = valueTable;
+
+        keyTable = new char[newSize];
+        valueTable = new char[newSize];
+
+        if (size > 0) {
+            for (int i = 0; i < oldCapacity; i++) {
+                char key = oldKeyTable[i];
+                if (key != 0) { putResize(key, oldValueTable[i]); }
+            }
+        }
+    }
+
+    public float getLoadFactor(){
+        return loadFactor;
+    }
+
+    public void setLoadFactor(float loadFactor){
+        if (loadFactor <= 0f || loadFactor > 1f) { throw new IllegalArgumentException("loadFactor must be > 0 and <= 1: " + loadFactor); }
+        this.loadFactor = loadFactor;
+        int tableSize = tableSize(size, loadFactor);
+        if(tableSize - 1 != mask) {
+            resize(tableSize);
+        }
+    }
+
+    @Override
+    public int hashCode () {
+        int h = hasZeroValue ? zeroValue + size : size;
+        char[] keyTable = this.keyTable;
+        char[] valueTable = this.valueTable;
+        for (int i = 0, n = keyTable.length; i < n; i++) {
+            char key = keyTable[i];
+            if (key != 0) {
+                h += key * 31;
+                key = valueTable[i];
+                h += key;
+            }
+        }
         return h;
     }
 
-    /**
-     * Returns the maximum number of entries that can be filled before rehashing.
-     *
-     * @param n the size of the backing array.
-     * @param f the load factor.
-     * @return the maximum number of entries before rehashing.
-     */
-    public static int maxFill(final int n, final float f) {
-        /* We must guarantee that there is always at least
-		 * one free entry (even with pathological load factors). */
-        return Math.min((int) Math.ceil(n * f), n - 1);
+    @Override
+    public boolean equals (Object obj) {
+        if (obj == this) { return true; }
+        if (!(obj instanceof CharCharMap)) { return false; }
+        CharCharMap other = (CharCharMap)obj;
+        if (other.size != size) { return false; }
+        if (other.hasZeroValue != hasZeroValue || other.zeroValue != zeroValue) { return false; }
+        char[] keyTable = this.keyTable;
+        char[] valueTable = this.valueTable;
+        for (int i = 0, n = keyTable.length; i < n; i++) {
+            char key = keyTable[i];
+            if (key != 0) {
+                char value = valueTable[i];
+                if (value != other.get(key)) { return false; }
+            }
+        }
+        return true;
     }
 
-    /**
-     * Returns the least power of two smaller than or equal to 2<sup>30</sup> and larger than or equal to <code>Math.ceil( expected / f )</code>.
-     *
-     * @param expected the expected number of elements in a hash table.
-     * @param f        the load factor.
-     * @return the minimum possible size for a backing array.
-     * @throws IllegalArgumentException if the necessary size is larger than 2<sup>30</sup>.
-     */
-    public static int arraySize(final int expected, final float f) {
-        final long s = Math.max(2, HashCommon.nextPowerOfTwo((long) Math.ceil(expected / f)));
-        if (s > (1 << 30))
-            throw new IllegalArgumentException("Too large (" + expected + " expected elements with load factor " + f + ")");
-        return (int) s;
+    public String toString (String separator) {
+        return toString(separator, false);
     }
 
-    private static class HashCommon {
+    @Override
+    public String toString () {
+        return toString(", ", true);
+    }
 
-        private HashCommon() {
+    protected String toString (String separator, boolean braces) {
+        if (size == 0) { return braces ? "{}" : ""; }
+        StringBuilder buffer = new StringBuilder(32);
+        if (braces) { buffer.append('{'); }
+        if (hasZeroValue) {
+            buffer.append("0=").append(zeroValue);
+            if (size > 1) { buffer.append(separator); }
+        }
+        char[] keyTable = this.keyTable;
+        char[] valueTable = this.valueTable;
+        int i = keyTable.length;
+        while (i-- > 0) {
+            char key = keyTable[i];
+            if (key == 0) { continue; }
+            buffer.append(key);
+            buffer.append('=');
+            char value = valueTable[i];
+            buffer.append(value);
+            break;
+        }
+        while (i-- > 0) {
+            char key = keyTable[i];
+            if (key == 0) { continue; }
+            buffer.append(separator);
+            buffer.append(key);
+            buffer.append('=');
+            char value = valueTable[i];
+            buffer.append(value);
+        }
+        if (braces) { buffer.append('}'); }
+        return buffer.toString();
+    }
+
+    public static class Entry {
+        public char key;
+        public char value;
+
+        @Override
+        public String toString () {
+            return key + "=" + value;
         }
 
         /**
-         * 2<sup>32</sup> &middot; &phi;, &phi; = (&#x221A;5 &minus; 1)/2.
-         */
-        private static final int INT_PHI = 0x9E3779B9;
-
-        /**
-         * Quickly mixes the bits of an integer.
-         * <br>This method mixes the bits of the argument by multiplying by the golden ratio and
-         * xorshifting the result. It is borrowed from <a href="https://github.com/OpenHFT/Koloboke">Koloboke</a>, and
-         * it has slightly worse behaviour than murmurHash3 (in open-addressing hash tables the average number of probes
-         * is slightly larger), but it's much faster.
+         * Returns the key corresponding to this entry.
          *
-         * @param x an integer.
-         * @return a hash value obtained by mixing the bits of {@code x}.
+         * @return the key corresponding to this entry
+         * @throws IllegalStateException implementations may, but are not
+         *                               required to, throw this exception if the entry has been
+         *                               removed from the backing map.
          */
-        public final static int mix(final int x) {
-            final int h = x * INT_PHI;
-            return h ^ (h >>> 16);
+        public char getKey () {
+            return key;
         }
 
         /**
-         * Return the least power of two greater than or equal to the specified value.
-         * <br>Note that this function will return 1 when the argument is 0.
+         * Returns the value corresponding to this entry.  If the mapping
+         * has been removed from the backing map (by the iterator's
+         * {@code remove} operation), the results of this call are undefined.
          *
-         * @param x an integer smaller than or equal to 2<sup>30</sup>.
-         * @return the least power of two greater than or equal to the specified value.
+         * @return the value corresponding to this entry
          */
-        public static int nextPowerOfTwo(int x) {
-            if (x == 0) return 1;
-            x--;
-            x |= x >> 1;
-            x |= x >> 2;
-            x |= x >> 4;
-            x |= x >> 8;
-            return (x | x >> 16) + 1;
+        public char getValue () {
+            return value;
         }
 
         /**
-         * Return the least power of two greater than or equal to the specified value.
-         * <br>Note that this function will return 1 when the argument is 0.
+         * Replaces the value corresponding to this entry with the specified
+         * value (optional operation).  (Writes through to the map.)  The
+         * behavior of this call is undefined if the mapping has already been
+         * removed from the map (by the iterator's {@code remove} operation).
          *
-         * @param x a long integer smaller than or equal to 2<sup>62</sup>.
-         * @return the least power of two greater than or equal to the specified value.
+         * @param value new value to be stored in this entry
+         * @return old value corresponding to the entry
+         * @throws UnsupportedOperationException if the {@code put} operation
+         *                                       is not supported by the backing map
+         * @throws ClassCastException            if the class of the specified value
+         *                                       prevents it from being stored in the backing map
+         * @throws NullPointerException          if the backing map does not permit
+         *                                       null values, and the specified value is null
+         * @throws IllegalArgumentException      if some property of this value
+         *                                       prevents it from being stored in the backing map
+         * @throws IllegalStateException         implementations may, but are not
+         *                                       required to, throw this exception if the entry has been
+         *                                       removed from the backing map.
          */
-        public static long nextPowerOfTwo(long x) {
-            if (x == 0) return 1;
-            x--;
-            x |= x >> 1;
-            x |= x >> 2;
-            x |= x >> 4;
-            x |= x >> 8;
-            x |= x >> 16;
-            return (x | x >> 32) + 1;
+        public char setValue (char value) {
+            char old = this.value;
+            this.value = value;
+            return old;
         }
+
+        @Override
+        public boolean equals ( Object o) {
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+
+            Entry entry = (Entry)o;
+
+            if (key != entry.key) { return false; }
+            return value == entry.value;
+        }
+
+        @Override
+        public int hashCode () {
+            return (int)((key ^ key >>> 32) * 0x9E3779B97F4A7C15L + (value ^ value << 32) >>> 32);
+        }
+    }
+
+    public char putIfAbsent(char key, char value) {
+        char v = get(key);
+        if (!containsKey(key)) {
+            v = put(key, value);
+        }
+        return v;
+    }
+    public boolean replace(char key, char oldValue, char newValue) {
+        char curValue = get(key);
+        if (curValue != oldValue || !containsKey(key)) {
+            return false;
+        }
+        put(key, newValue);
+        return true;
+    }
+
+    public char replace(char key, char value) {
+        char curValue = get(key);
+        if (containsKey(key)) {
+            curValue = put(key, value);
+        }
+        return curValue;
     }
 }
