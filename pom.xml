@@ -36,6 +36,7 @@
         <maven.javadoc.version>3.2.0</maven.javadoc.version>
         <maven.resources.version>3.2.0</maven.resources.version>
         <maven.source.version>3.2.1</maven.source.version>
+        <maven.surefire.version>3.0.0-M5</maven.surefire.version>
         <maven.gpg.version>1.6</maven.gpg.version>
         <jdk.version>1.7</jdk.version>
         <junit.version>4.13.1</junit.version>
@@ -178,6 +179,14 @@
 					<includePom>true</includePom>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.version}</version>
+                <configuration>
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
+                </configuration>
+            </plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.version}</version>
