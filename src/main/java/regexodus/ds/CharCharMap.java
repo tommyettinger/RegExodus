@@ -61,7 +61,7 @@ public class CharCharMap implements Serializable {
      */
     protected int mask;
 
-    public char defaultValue = 0;
+    public char defaultReturnValue = 0;
     /**
      * Used to establish the size of a hash table for sets, maps, and related code.
      * The table size will always be a power of two, and should be the next power of two that is at least equal
@@ -125,7 +125,7 @@ public class CharCharMap implements Serializable {
         System.arraycopy(map.keyTable, 0, keyTable, 0, map.keyTable.length);
         System.arraycopy(map.valueTable, 0, valueTable, 0, map.valueTable.length);
         size = map.size;
-        defaultValue = map.defaultValue;
+        defaultReturnValue = map.defaultReturnValue;
     }
 
     /**
@@ -137,6 +137,15 @@ public class CharCharMap implements Serializable {
     public CharCharMap(char[] keys, char[] values){
         this(Math.min(keys.length, values.length));
         putAll(keys, values);
+    }
+
+    /**
+     * Explicitly implemented, does not interact with the {@link Object#clone()} method, and simply calls
+     * {@link #CharCharMap(CharCharMap)} with this CharCharMap as its argument.
+     * @return a deep copy of this CharCharMap
+     */
+    public CharCharMap clone() {
+        return new CharCharMap(this);
     }
 
     /**
@@ -174,11 +183,11 @@ public class CharCharMap implements Serializable {
     }
 
     /**
-     * Returns the old value associated with the specified key, or this map's {@link #defaultValue} if there was no prior value.
+     * Returns the old value associated with the specified key, or this map's {@link #defaultReturnValue} if there was no prior value.
      */
     public char put (char key, char value) {
         if (key == 0) {
-            char oldValue = defaultValue;
+            char oldValue = defaultReturnValue;
             if (hasZeroValue) { oldValue = zeroValue; } else { size++; }
             hasZeroValue = true;
             zeroValue = value;
@@ -194,7 +203,7 @@ public class CharCharMap implements Serializable {
         keyTable[i] = key;
         valueTable[i] = value;
         if (++size >= threshold) { resize(keyTable.length << 1); }
-        return defaultValue;
+        return defaultReturnValue;
     }
 
     /**
@@ -287,14 +296,14 @@ public class CharCharMap implements Serializable {
     }
 
     /**
-     * Returns the value for the specified key, or {@link #defaultValue} if the key is not in the map.
+     * Returns the value for the specified key, or {@link #defaultReturnValue} if the key is not in the map.
      *
      * @param key any {@code char}
      */
     public char get (char key) {
-        if (key == 0) { return hasZeroValue ? zeroValue : defaultValue; }
+        if (key == 0) { return hasZeroValue ? zeroValue : defaultReturnValue; }
         int i = locateKey(key);
-        return i < 0 ? defaultValue : valueTable[i];
+        return i < 0 ? defaultReturnValue : valueTable[i];
     }
 
     /**
@@ -313,10 +322,10 @@ public class CharCharMap implements Serializable {
                 --size;
                 return zeroValue;
             }
-            return defaultValue;
+            return defaultReturnValue;
         }
         int i = locateKey(key);
-        if (i < 0) { return defaultValue; }
+        if (i < 0) { return defaultReturnValue; }
         char[] keyTable = this.keyTable;
         char rem;
         char[] valueTable = this.valueTable;
@@ -368,8 +377,8 @@ public class CharCharMap implements Serializable {
      *
      * @return the current default value
      */
-    public char getDefaultValue () {
-        return defaultValue;
+    public char defaultReturnValue() {
+        return defaultReturnValue;
     }
 
     /**
@@ -377,10 +386,10 @@ public class CharCharMap implements Serializable {
      * If not changed, the default value is 0. Note that {@link #getOrDefault(char, char)} is also available,
      * which allows specifying a "not-found" value per-call.
      *
-     * @param defaultValue may be any char; should usually be one that doesn't occur as a typical value
+     * @param defaultReturnValue may be any char; should usually be one that doesn't occur as a typical value
      */
-    public void setDefaultValue (char defaultValue) {
-        this.defaultValue = defaultValue;
+    public void defaultReturnValue(char defaultReturnValue) {
+        this.defaultReturnValue = defaultReturnValue;
     }
 
     /**
