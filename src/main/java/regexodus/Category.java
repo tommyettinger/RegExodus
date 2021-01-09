@@ -1,6 +1,5 @@
 package regexodus;
 
-import regexodus.ds.CharArrayList;
 import regexodus.ds.CharCharMap;
 import regexodus.ds.IntBitSet;
 
@@ -16,22 +15,22 @@ import java.util.LinkedHashMap;
 public class Category {
     public final int length;
     private int n;
-    private CharArrayList cal;
+    private final char[] cal;
     final Block[] blocks;
     private Category()
     {
         length = 0;
-        cal = new CharArrayList(0);
+        cal = new char[0];
         blocks = new Block[0];
     }
     private Category(int[] directory, String data)
     {
         n = data.length();
         int j = 0, len = 0;
-        cal = new CharArrayList(n);
+        cal = new char[n];
         for (int i = 0; i < n; ++i) {
-            cal.add(j += directory[data.charAt(i) - 32]);
-            if((i & 1) == 1) len += 1 + j - cal.getChar(i-1);
+            cal[i] = (char) (j += directory[data.charAt(i) - 32]);
+            if((i & 1) == 1) len += 1 + j - cal[i-1];
         }
         length = len;
         blocks = makeBlocks();
@@ -42,7 +41,7 @@ public class Category {
         int k = 0;
         char[] con = new char[length];
         for (int i = 0; i < n - 1; i += 2)
-            for (char e = cal.getChar(i); e <= cal.getChar(i+1); ++e)
+            for (char e = cal[i]; e <= cal[i+1]; ++e)
                 con[k++] = e;
         return con;
     }
@@ -53,8 +52,8 @@ public class Category {
         IntBitSet[] bss = new IntBitSet[256];
         int e, e2, eb, e2b;
         for (int i = 0; i < n - 1; i += 2) {
-            e = cal.getChar(i);
-            e2 = cal.getChar(i+1);
+            e = cal[i];
+            e2 = cal[i+1];
             eb = e >>> 8;
             e2b = e2 >>> 8;
             if(bss[eb] == null) bss[eb] = new IntBitSet();
@@ -82,7 +81,7 @@ public class Category {
 
     public boolean contains(char checking) {
         for (int i = 0; i < n - 1; i += 2) {
-            if (checking >= cal.getChar(i) && checking <= cal.getChar(i + 1))
+            if (checking >= cal[i] && checking <= cal[i + 1])
                 return true;
         }
         return false;
@@ -104,8 +103,7 @@ public class Category {
 
         if (length != category.length) return false;
         if (n != category.n) return false;
-        if (cal != null ? !cal.equals(category.cal) : category.cal != null) return false;
-        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if(category.cal == null || !Arrays.equals(cal, category.cal)) return false;
         return Arrays.equals(blocks, category.blocks);
 
     }
@@ -114,14 +112,10 @@ public class Category {
     public int hashCode() {
         int result = length;
         result = 31 * result + n;
-        result = 31 * result + (cal != null ? cal.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(cal);
         result = 31 * result + Arrays.hashCode(blocks);
         return result;
     }
-
-    /*
-
-     */
 
     /**
      * All control, format, surrogate, private use, and unassigned characters; Unicode category C.
