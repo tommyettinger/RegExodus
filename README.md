@@ -40,14 +40,14 @@ it originally used the Unicode character database that ships with Java... except
 With some tricky code to minimize file sizes that encodes a bitset with a small int array
 and a String by [gagern](https://gist.github.com/gagern/89db1179766a702c564d) using the
 [Node.js Unicode database](https://github.com/mathiasbynens/node-unicode-data), I managed
-to get the full Unicode 11.0.0 category information for the Basic Multilingual Plane (and
+to get the full Unicode 13.0.0 category information for the Basic Multilingual Plane (and
 later, case folding information) in a single small-ish file of Java code. The compression
 code is not in the distributed jar of source, but is in etc/generator.js , and the end
 result is distributed in src/main/java/regexodus/Category.java (which also has case
-folding information, and uses primitive equivalents to `List<char>` and `Map<char, char>`
-(sic) from [FastUtil](https://github.com/vigna/fastutil)). Now RegExodus acts like an
-updated version of JRegex that carries much of Unicode with it, in a jar no more than 1/6
-of a megabyte in size (currently). Though testing so far has been light, it seems to be
+folding information, and uses code adapted from [libGDX](https://github.com/libgdx/libgdx)
+by way of [jdkgdxds](https://github.com/tommyettinger/jdkgdxds)). Now RegExodus acts like
+an updated version of JRegex that carries much of Unicode with it, in a jar no more than
+1/7 of a megabyte in size (currently). Though testing so far has been light, it seems to be
 fully compatible with GWT, in development or production mode.
 
 The name RegExodus comes from both the idea of taking Java regular expressions and
@@ -65,16 +65,26 @@ to imitate an implementation of java.util.regex with a close approximation, but 
 hasn't been attempted. Super-sourcing won't be completely compatible at the moment,
 but is likely to work at least reasonably well with regexodus.regex .
 
+Some usage will be easier if you can fully embrace RegExodus' style of regular
+expressions, and the classes that use them. The `Replacer` class has a different API
+than java.util.regex offers, and you can implement the `Substitution` interface for
+more-involved replacements. The `Category` class has useful Unicode 13.0.0 info that
+isn't especially easy to get from the JDK, and is great when you want to evaluate if
+a particular character is, say, a lower-case letter. The documentation for the regex
+flavor available here is mostly in the class JavaDocs for `Pattern`.
+
 Installation should be simple if you use a build tool like Maven, Gradle, or the like.
 For version or snapshot releases you can use JitPack (this repository is recommended
 if you want snapshots) and Maven Central is an easy alternative for
 version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.10%7Cjar);
-the 0.1.10 release is preferred for now, based on the 1.2 line of JRegex. You can
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.11%7Cjar);
+the 0.1.11 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
+
+## Changelog
 
 0.1.2 adds support for a missing Java regex feature, `\Q...\E` literal sections.
 It also fixes some not-insignificant issues with features not present in Java's
@@ -121,7 +131,7 @@ methods to make serializing Patterns easier, and allows you to retrieve the flag
 from a Pattern. The bug fixed was relatively severe under some circumstances, so
 updating is recommended.
 
-~~0.1.8~~ had serious issues on GWT and has been replaced by 0.1.10.
+~~0.1.8~~ had serious issues on GWT and has been replaced by 0.1.11.
 
 0.1.9 improves GWT compatibility and adds the Unicode-like categories for
 horizontal, vertical, and all whitespace as `Gh`, `Gv`, and `G`, respectively
@@ -142,16 +152,26 @@ basic GWT testing (SuperDev mode).
 It also updates Unicode Standard compatibility to 11.0.0, though only for the
 Basic Multilingual Plane.
 
+0.1.11 fixes a 20-year-old bug in `Matcher.setTarget(CharSequence, int, int)`
+that affected any targets with a non-zero start. It replaces the utility data
+structure `CharCharMap` with an implementation from jdkgdxds, which is largely
+the same as libGDX's style, and fixes a few long-standing bugs in the old
+version. It removes the utility data structure `CharArrayList` because it was
+completely unnecessary here. There's an option in replacements to upper-case a
+group captured from the search string, which rounds out the previous lower-casing
+option. Finally, the Unicode data has been updated to 13.0.0.
+
 ## Credit
 
 This is a modified fork of JRegex, by Sergey A. Samokhodkin, meant to improve
 compatibility with Android and GWT. This builds off Ed Ropple's work to make
 JRegex Maven-friendly. This fork started with Ed Ropple's copy of jregex 1.2_01
 ([available on GitHub](https://github.com/eropple/jregex)). In addition, portions
-of this code use modified versions of the collections from Sebastiano Vigna's
-[FastUtil](https://github.com/vigna/fastutil) library (in the regexodus.ds package,
-CharCharMap and CharArrayList are derived from FastUtil). Significant work by the
-team responsible for [the Node.js Unicode database](https://github.com/mathiasbynens/node-unicode-data)
+of this code use modified versions of the collections from
+[jdkgdxds](https://github.com/tommyettinger/jdkgdxds) (in the regexodus.ds package,
+CharCharMap is derived from jdkgdxds, which is derived from
+[libGDX](https://github.com/libgdx/libgdx)). Significant work by the team
+responsible for [the Node.js Unicode database](https://github.com/mathiasbynens/node-unicode-data)
 is invaluable here, especially [gagern](https://github.com/gagern) for creating
 the compression technique that RegExodus uses on Unicode category data.
 
