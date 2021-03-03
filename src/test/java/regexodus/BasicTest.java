@@ -312,6 +312,21 @@ public class BasicTest {
         m = Pattern.compile("({=initial}\\pL)({=rest}[^\\.\\?\\!]+)({=tail}[\\.\\?\\!]+)")
                 .matcher("no way I love waffles... they're like the best.");
         System.out.println(m.replaceAll("${!initial}${rest}${tail}"));
+
+        String sentence = "the quick brown fox jumps over the lazy dog.";
+        char[] sc = sentence.toCharArray();
+        for (int i = 0; i < sc.length; i++) {
+            sc[i] = Category.caseUp(sc[i]);
+        }
+        Assert.assertEquals("Case should both be upper-case",
+                sentence.toUpperCase(),
+                String.valueOf(sc));
+        for (int i = 0; i < sc.length; i++) {
+            sc[i] = Category.caseDown(sc[i]);
+        }
+        Assert.assertEquals("Case should both be lower-case",
+                sentence.toLowerCase(),
+                String.valueOf(sc));
     }
 
     @Test
