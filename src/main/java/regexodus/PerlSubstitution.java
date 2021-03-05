@@ -68,30 +68,78 @@ public class PerlSubstitution implements Substitution, Serializable {
     private static int NAME_ID;
     private static int ESC_ID;
 
-    static final int MODE_INSENSITIVE = 1,
-            MODE_REVERSE = 2,
-            MODE_BRACKET = 4,
-            MODE_UPPER = 8;
+    /**
+     * Bit flag that toggles case-insensitive mode.
+     * When text is found and that group is sent to a Substitution with this flag on,
+     * the text will be all lower-case.
+     * <br>
+     * Specified by <code>@</code> .
+     */
+    public static final int MODE_INSENSITIVE = 1;
+    /**
+     * Bit flag that toggles reverse mode.
+     * When text is found and that group is sent to a Substitution with this flag on,
+     * the text will be reversed in order.
+     * <br>
+     * Specified by <code>/</code> .
+     */
+    public static final int MODE_REVERSE = 2;
+    /**
+     * Bit flag that toggles bracket-matching mode.
+     * When text is found and that group is sent to a Substitution with this flag on,
+     * any bracket characters (as determined by {@link Category#matchBracket(char)}
+     * flipped from opening to closing and vice versa.
+     * <br>
+     * Specified by <code>:</code> .
+     */
+    public static final int MODE_BRACKET = 4;
+    /**
+     * Bit flag that toggles caps-lock mode.
+     * When text is found and that group is sent to a Substitution with this flag on,
+     * the text will be all upper-case.
+     * <br>
+     * Specified by <code>!</code> .
+     */
+    public static final int MODE_UPPER = 8;
 
-    //private static int FN_NAME_ID;
-    //private static int FN_ARGS_ID;
-    //private static int ARG_NAME_ID;
+    /**
+     * Given a String that may contain any of the four mode specifiers <code>@ / : !</code> ,
+     * this parses the mode specifiers it finds and combines them to form a flag that can be passed
+     * to {@link Matcher#getGroup(int, StringBuilder, int)} or similar methods.
+     * <br>
+     * The modes are {@link #MODE_INSENSITIVE} (<code>@</code>), {@link #MODE_REVERSE} (<code>/</code>),
+     * {@link #MODE_BRACKET} (<code>:</code>), and {@link #MODE_UPPER} (<code>!</code>).
+     * See their docs for more information.
+     * @param modeString if this contains any of <code>@ / : !</code> , a different mode flag will be returned
+     * @return the mode flag corresponding to whatever modes were found in {@code modeString}
+     */
+    public static int parseModes(String modeString){
+        if(modeString == null) return 0;
+        int modes = 0;
+        for (int i = 0; i < modeString.length(); i++) {
+            switch (modeString.charAt(i))
+            {
+                case '@': modes ^= MODE_INSENSITIVE;
+                    break;
+                case '/': modes ^= MODE_REVERSE;
+                    break;
+                case ':': modes ^= MODE_BRACKET;
+                    break;
+                case '!': modes ^= MODE_UPPER;
+                    break;
+            }
+        }
+        return modes;
+    }
 
     private static final String groupRef = "\\$(?:(?:\\{({=mode}\\p{Po}+)?({=name}\\w+)\\})|({=name}\\d+|\\&)|\\\\({esc}.))";
-    //private static final String fnRef="\\&({fn_name}\\w+)\\(({fn_args}"+groupRef+"(?:,"+groupRef+")*)*\\)";
 
     static {
         try {
-            //refPtn=new Pattern("(?<!\\\\)"+fnRef+"|"+groupRef);
-            //argsPtn=new Pattern(groupRef);
-            //refPtn=new Pattern("(?<!\\\\)"+groupRef);
             refPtn = new Pattern(groupRef);
             MODE_ID = refPtn.groupId("mode");
             NAME_ID = refPtn.groupId("name");
             ESC_ID = refPtn.groupId("esc");
-            //ARG_NAME_ID=argsPtn.groupId("name").intValue();
-            //FN_NAME_ID=refPtn.groupId("fn_name").intValue();
-            //FN_ARGS_ID=refPtn.groupId("fn_args").intValue();
         } catch (PatternSyntaxException e) {
             e.printStackTrace();
         }
