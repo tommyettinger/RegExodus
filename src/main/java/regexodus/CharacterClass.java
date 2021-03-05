@@ -743,16 +743,16 @@ class CharacterClass extends Term implements UnicodeConstants {
             int first = c;
 
             c = arr.nextClearBit(c);
-            if (c <= 0 || c > 0xff) break;
+            int last = (c <= 0 || c > 0xff) ? 255 : c - 1;
 
-            int last = c - 1;
-            if (last == first) b0.append(stringValue(last));
+            if (last == first) {
+                b0.append(stringValue(last));
+            }
             else {
                 b0.append(stringValue(first));
                 b0.append('-');
                 b0.append(stringValue(last));
             }
-            if (c > 0xff) break;
         }
         return b0.toString();
     }

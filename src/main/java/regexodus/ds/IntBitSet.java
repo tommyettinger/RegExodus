@@ -151,11 +151,10 @@ public class IntBitSet {
     {
         int low = 0;
         for (int i = current >>> 5; i < 8 && current < 256; i++) {
-            if (current % 32 != 31)
-                low = Integer.numberOfTrailingZeros(Integer.lowestOneBit(data[(current) >>> 5] >>> (current & 31)));
-            if (low % 32 != 0)
+            low = Integer.numberOfTrailingZeros(Integer.lowestOneBit(data[(current) >>> 5] >>> (current & 31)));
+            if (low != 32)
                 return current + low;
-            current = ((current >>> 5) + 1) * 32;
+            current = (current & 0xE0) + 32;
         }
         return -1;
     }
@@ -163,11 +162,10 @@ public class IntBitSet {
     {
         int low = 0;
         for (int i = current >>> 5; i < 8 && current < 256; i++) {
-            if (current % 32 != 31)
-                low = Integer.numberOfTrailingZeros(Integer.lowestOneBit(~(data[(current) >>> 5] >>> (current & 31))));
-            if (low % 32 != 0)
+            low = Integer.numberOfTrailingZeros(Integer.lowestOneBit(~(data[(current) >>> 5] >>> (current & 31))));
+            if (low != 32)
                 return current + low;
-            current = ((current >>> 5) + 1) * 32;
+            current = (current & 0xE0) + 32;
         }
         return -1;
     }

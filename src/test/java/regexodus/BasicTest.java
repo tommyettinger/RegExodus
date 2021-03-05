@@ -238,7 +238,9 @@ public class BasicTest {
     public void testToStringIssues()
     {
         System.out.println(CharacterClass.stringValue0(
-                new IntBitSet(new int[]{0, 67043328, -2013265922, 134217726, 0, 0, 0, 0})));
+                new IntBitSet(new int[]{0, 0x03ff0000, 0x87fffffe, 0x07fffffe, 0, 0, 0, 0})));
+        System.out.println(CharacterClass.stringValue0(
+                new IntBitSet(new int[]{0, 0xFFFFFFFE, 0x87ffffff, 0x07fffffe, 0, 0, -1, -1})));
     }
     @Test
     public void testBrackets()
