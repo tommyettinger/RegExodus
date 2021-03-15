@@ -2,7 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        jcenter()
+        gradlePluginPortal()
     }
 }
 ext {
@@ -14,9 +14,9 @@ apply plugin: 'maven'
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
 group = 'com.github.tommyettinger'
-version = '0.1.12-SNAPSHOT'
+version = '0.1.12'
 
-description = """RegExodus"""
+description = """A modern fork of jregex meant to increase compatibility with Java variants like GWT."""
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6

@@ -79,8 +79,8 @@ if you want snapshots) and Maven Central is an easy alternative for
 version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.11%7Cjar);
-the 0.1.11 release is preferred for now, based on the 1.2 line of JRegex. You can
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.12%7Cjar);
+the 0.1.12 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -131,7 +131,7 @@ methods to make serializing Patterns easier, and allows you to retrieve the flag
 from a Pattern. The bug fixed was relatively severe under some circumstances, so
 updating is recommended.
 
-~~0.1.8~~ had serious issues on GWT and has been replaced by 0.1.11.
+~~0.1.8~~ had serious issues on GWT and has been replaced by 0.1.12.
 
 0.1.9 improves GWT compatibility and adds the Unicode-like categories for
 horizontal, vertical, and all whitespace as `Gh`, `Gv`, and `G`, respectively
@@ -160,6 +160,13 @@ version. It removes the utility data structure `CharArrayList` because it was
 completely unnecessary here. There's an option in replacements to upper-case a
 group captured from the search string, which rounds out the previous lower-casing
 option. Finally, the Unicode data has been updated to 13.0.0.
+
+0.1.12 is mostly a minor update, but fixes a bug in case mapping where certain
+chars would have strangely-incorrect results for upper-case or lower-case
+conversions, like `Category.caseUp('s')` returned `'ſ'` (the 1700s-era long-S).
+Some actually-useful parts of PerlSubstitution are now public and documented,
+where before they were only usable if reading the RegExodus sources. There's
+also some cleanup on internals, which may help with debugging.
 
 ## Credit
 

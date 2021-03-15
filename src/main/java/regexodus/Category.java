@@ -394,6 +394,11 @@ public class Category {
 
     /**
      * Returns the given char c's lower-case representation, if it has one, otherwise returns it verbatim.
+     * This is currently the same as {@link #caseDown(char)}, but this method may change in the future to more precisely
+     * support case folding instead of caseDown()'s case mapping. Future code is encouraged to use
+     * {@link #caseDown(char)} and {@link #caseUp(char)} for case mapping, and this method only when case folding is
+     * preferred (such as for case-insensitive comparisons). Like caseDown(), this will prefer the char with the lower
+     * codepoint if there are multiple possible conversions to lower-case.
      * @param c any char; this should only return a case-folded different char for upper-case letters
      * @return the single-char case-folded version of c, of it has one, otherwise c
      */
@@ -427,7 +432,7 @@ public class Category {
     }
 
     /**
-     * The counterpart to {@link #caseDown(char)} hat returns the given char c's upper-case representation, if it has
+     * The counterpart to {@link #caseDown(char)} that returns the given char c's upper-case representation, if it has
      * one, otherwise it returns it verbatim. This has dubiously correct behavior for digraphs and ligature chars, but
      * they tend to be rare or even discouraged in practice. If there are multiple possible upper-case conversions from
      * the given character, this prefers the character with the lower codepoint value.
@@ -475,7 +480,7 @@ public class Category {
         return String.valueOf(c);
     }
 
-    public static boolean reverseEqual(String left, String right)
+    public static boolean reverseEqual(CharSequence left, CharSequence right)
     {
         if(left == null) return right == null;
         if(right == null) return false;
@@ -486,7 +491,7 @@ public class Category {
         return true;
     }
 
-    public static boolean reverseBracketEqual(String left, String right)
+    public static boolean reverseBracketEqual(CharSequence left, CharSequence right)
     {
         if(left == null) return right == null;
         if(right == null) return false;

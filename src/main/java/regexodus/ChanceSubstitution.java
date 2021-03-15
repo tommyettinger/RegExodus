@@ -62,7 +62,6 @@ import java.io.Serializable;
 
 
 public class ChanceSubstitution implements Substitution, Serializable {
-    //private static Pattern refPtn,argsPtn;
     private static final long serialVersionUID = -1537346657932720807L;
 
     private static Pattern refPtn;
@@ -74,25 +73,14 @@ public class ChanceSubstitution implements Substitution, Serializable {
             MODE_REVERSE = 2,
             MODE_BRACKET = 4;
 
-    //private static int FN_NAME_ID;
-    //private static int FN_ARGS_ID;
-    //private static int ARG_NAME_ID;
-
     private static final String groupRef = "\\$(?:(?:\\{({=mode}\\p{Po}+)?({=name}\\w+)\\})|({=name}\\d+|\\&)|\\\\({esc}.))";
-    //private static final String fnRef="\\&({fn_name}\\w+)\\(({fn_args}"+groupRef+"(?:,"+groupRef+")*)*\\)";
 
     static {
         try {
-            //refPtn=new Pattern("(?<!\\\\)"+fnRef+"|"+groupRef);
-            //argsPtn=new Pattern(groupRef);
-            //refPtn=new Pattern("(?<!\\\\)"+groupRef);
             refPtn = new Pattern(groupRef);
             MODE_ID = refPtn.groupId("mode");
             NAME_ID = refPtn.groupId("name");
             ESC_ID = refPtn.groupId("esc");
-            //ARG_NAME_ID=argsPtn.groupId("name").intValue();
-            //FN_NAME_ID=refPtn.groupId("fn_name").intValue();
-            //FN_ARGS_ID=refPtn.groupId("fn_args").intValue();
         } catch (PatternSyntaxException e) {
             e.printStackTrace();
         }
@@ -167,7 +155,7 @@ public class ChanceSubstitution implements Substitution, Serializable {
                 if (c == '&') {
                     element = new IntRefHandler(refMatcher.prefix(), 0, modes);
                 } else if (Character.isDigit(c)) {
-                    element = new IntRefHandler(refMatcher.prefix(), new Integer(refMatcher.group(NAME_ID)), modes);
+                    element = new IntRefHandler(refMatcher.prefix(), Integer.valueOf(refMatcher.group(NAME_ID)), modes);
                 } else
                     element = new StringRefHandler(refMatcher.prefix(), refMatcher.group(NAME_ID), modes);
             } else {
