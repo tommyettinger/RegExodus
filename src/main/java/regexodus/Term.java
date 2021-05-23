@@ -1067,7 +1067,6 @@ public class Term implements REFlags, Serializable {
                 break;
 
             case '$':
-                //term.type=mods[MULTILINE_IND]? LINE_END: END; //??
                 term.type = (flags & MULTILINE) > 0 ? LINE_END : END_EOL;
                 break;
 
@@ -1233,12 +1232,12 @@ public class Term implements REFlags, Serializable {
                     case 'p':   // \\p{..}
                         i = CharacterClass.parseName(data, i, out, term, inv, (flags & IGNORE_SPACES) > 0);
                         return i;
-                    case 'Q':
+                    case 'Q':   // literal
                         term.type = LITERAL_START;
                         return i;
+                    //case 'E': // end of literal; only handled if a literal has started
 
-
-                    default:
+                    default: // match numbered group, decimal number
                         if (c >= '1' && c <= '9') {
                             int n = c - '0';
                             while ((i < out) && (c = data[i]) >= '0' && c <= '9') {
@@ -1249,15 +1248,6 @@ public class Term implements REFlags, Serializable {
                             term.memreg = n;
                             return i;
                         }
-                  /*
-                  if(c<256){
-                     CustomParser termp=customParsers[c];
-                     if(termp!=null){
-                        i=termp.parse(i,data,term);
-                        return i;
-                     }
-                  }
-                  */
                 }
                 term.type = CHAR;
                 term.c = c;
@@ -1270,7 +1260,6 @@ public class Term implements REFlags, Serializable {
                 } else {
                     term.type = CHAR;
                     term.c = Category.caseFold(c);
-                    //CharacterClass.makeICase(term, c);
                 }
                 break;
         }

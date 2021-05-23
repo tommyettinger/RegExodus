@@ -373,4 +373,16 @@ public class BasicTest {
         System.out.println(r);
         System.out.println(r.replace("hey"));
     }
+
+    @Test
+    public void testUnnecessaryEscapes(){
+        regexodus.Pattern p = regexodus.Pattern.compile("^<<");
+        Assert.assertTrue(p.matcher("<<setBgMusic SongOfYarn.mp3>>").find());
+        java.util.regex.Pattern jp = java.util.regex.Pattern.compile("^<<");
+        Assert.assertTrue(jp.matcher("<<setBgMusic SongOfYarn.mp3>>").find());
+        p = regexodus.Pattern.compile("(<=|lte(?!\\w))");
+        Assert.assertTrue(p.matcher("A <= B").find());
+        jp = java.util.regex.Pattern.compile("(<=|lte(?!\\w))");
+        Assert.assertTrue(jp.matcher("A <= B").find());
+    }
 }
