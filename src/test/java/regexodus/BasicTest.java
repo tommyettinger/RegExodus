@@ -375,11 +375,56 @@ public class BasicTest {
     }
 
     @Test
-    public void testUnnecessaryEscapes(){
-        regexodus.Pattern p = regexodus.Pattern.compile("^<<");
+    public void testCompatibility(){
+        boolean b;
+        regexodus.Pattern p;
+        java.util.regex.Pattern jp;
+
+        p = regexodus.Pattern.compile("^<<");
         Assert.assertTrue(p.matcher("<<setBgMusic SongOfYarn.mp3>>").find());
-        java.util.regex.Pattern jp = java.util.regex.Pattern.compile("^<<");
+        jp = java.util.regex.Pattern.compile("^<<");
         Assert.assertTrue(jp.matcher("<<setBgMusic SongOfYarn.mp3>>").find());
+
+        p = regexodus.Pattern.compile("[a-zA-Z0-9_:.]+");
+        Matcher m = p.matcher("<<setBgMusic SongOfYarn.mp3>>");
+        Assert.assertTrue(m.find());
+        System.out.println(m.group());
+
+        jp = java.util.regex.Pattern.compile("[a-zA-Z0-9_:.]+");
+        java.util.regex.Matcher jm = jp.matcher("<<setBgMusic SongOfYarn.mp3>>");
+        Assert.assertTrue(jm.find());
+        System.out.println(jm.group());
+
+        p = regexodus.Pattern.compile("\\G\\W*(\\w+)");
+        m = p.matcher("Why don't we sing the Song of Yarn?");
+        b = m.find();
+        System.out.println(m.group(1));
+        Assert.assertTrue(b);
+        b = m.find();
+        System.out.println(b ? m.group(1) : "not found");
+        b = m.find();
+        System.out.println(b ? m.group(1) : "not found");
+        b = m.find();
+        System.out.println(b ? m.group(1) : "not found");
+        b = m.find();
+        System.out.println(b ? m.group(1) : "not found");
+        Assert.assertTrue(m.find());
+
+        jp = java.util.regex.Pattern.compile("\\G\\W*(\\w+)");
+        jm = jp.matcher("Why don't we sing the Song of Yarn?");
+        b = jm.find();
+        System.out.println(jm.group(1));
+        Assert.assertTrue(b);
+        b = jm.find();
+        System.out.println(b ? jm.group(1) : "not found");
+        b = jm.find();
+        System.out.println(b ? jm.group(1) : "not found");
+        b = jm.find();
+        System.out.println(b ? jm.group(1) : "not found");
+        b = jm.find();
+        System.out.println(b ? jm.group(1) : "not found");
+        Assert.assertTrue(jm.find());
+
         p = regexodus.Pattern.compile("(<=|lte(?!\\w))");
         Assert.assertTrue(p.matcher("A <= B").find());
         jp = java.util.regex.Pattern.compile("(<=|lte(?!\\w))");

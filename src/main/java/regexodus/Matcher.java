@@ -1361,7 +1361,8 @@ public class Matcher implements MatchResult, Serializable {
                             else break main;
 
                         case Term.LAST_MATCH_END:
-                            if (i == wEnd) {  //meets
+                            if (i == wEnd // at last match end
+                                    || (wEnd == -1 && i == offset)) {  //or, no match yet, but at the start
                                 term = term.next;
                                 continue matchHere;
                             }
