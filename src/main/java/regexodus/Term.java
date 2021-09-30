@@ -1737,18 +1737,6 @@ public class Term implements REFlags, Serializable {
         if (bitset != null ? !bitset.equals(term.bitset) : term.bitset != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         return Arrays.equals(bitset2, term.bitset2) && Arrays.equals(categoryBitset, term.categoryBitset);
-//if (!Arrays.equals(brackets, term.brackets)) return false;
-        /*
-        if (failNext != null ? !failNext.equals(term.failNext) : term.failNext != null) return false;
-        if (target != null ? !target.equals(term.target) : term.target != null) return false;
-        if (prev != null ? !prev.equals(term.prev) : term.prev != null) return false;
-        if (in != null ? !in.equals(term.in) : term.in != null) return false;
-        if (out != null ? !out.equals(term.out) : term.out != null) return false;
-        if (out1 != null ? !out1.equals(term.out1) : term.out1 != null) return false;
-        if (first != null ? !first.equals(term.first) : term.first != null) return false;
-        if (current != null ? !current.equals(term.current) : term.current != null) return false;
-        return branchOut != null ? branchOut.equals(term.branchOut) : term.branchOut == null;
-        */
     }
 
     @Override

@@ -430,4 +430,25 @@ public class BasicTest {
         jp = java.util.regex.Pattern.compile("(<=|lte(?!\\w))");
         Assert.assertTrue(jp.matcher("A <= B").find());
     }
+
+    @Test
+    public void testEquals() {
+        String[] patternTexts = new String[]{"[ghjkGHJK]{3}","(\\p{L})\\1\\1","[Ii][iyq]","[Yy]([aiu])\\1","[Rr][uy]+[rh]","[Qq]u[yu]","[^oaei]uch","[Hh][tcszi]?h","[Tt]t[^aeiouy]{2}","[Yy]h([^aeiouy]|$)","([xqy])\\1$","[qi]y$","[szSZrlRL]+?[^aeiouytdfgkcpbmnslrv][rlsz]","[UIuiYy][wy]","^[UIui]e","[AEIOUaeiou]{3}","^([^aeioyl])\\1"};
+        for (int i = 1; i < patternTexts.length; i++) {
+            String pt = patternTexts[i];
+            Pattern pNo = Pattern.compile(patternTexts[i-1]);
+            Pattern p0 = Pattern.compile(pt);
+            Pattern p1 = Pattern.compile(pt);
+            Pattern p2 = Pattern.compile(pt, "i");
+            Assert.assertNotEquals(pNo, p0);
+            Assert.assertNotEquals(pNo, p1);
+            Assert.assertEquals(p0, p1);
+            Assert.assertNotEquals(p0, p2);
+            p0.matches("aaa");
+            Assert.assertNotEquals(pNo, p0);
+            Assert.assertNotEquals(pNo, p1);
+            Assert.assertEquals(p0, p1);
+            Assert.assertNotEquals(p0, p2);
+        }
+    }
 }

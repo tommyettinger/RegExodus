@@ -721,7 +721,10 @@ public class Pattern implements Serializable, REFlags {
         if (counters != pattern.counters) return false;
         if (lookaheads != pattern.lookaheads) return false;
         if (stringRepr != null ? !stringRepr.equals(pattern.stringRepr) : pattern.stringRepr != null) return false;
-        return root != null ? root.equals(pattern.root) : pattern.root == null && (root0 != null ? root0.equals(pattern.root0) : pattern.root0 == null && (namedGroupMap != null ? namedGroupMap.equals(pattern.namedGroupMap) : pattern.namedGroupMap == null));
+        return (flags == pattern.flags);
+//        return root != null ? root.equals(pattern.root) : pattern.root == null
+//                && (root0 != null ? root0.equals(pattern.root0) : pattern.root0 == null
+//                && (namedGroupMap != null ? namedGroupMap.equals(pattern.namedGroupMap) : pattern.namedGroupMap == null));
 
     }
 
