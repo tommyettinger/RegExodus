@@ -245,12 +245,12 @@ import java.util.HashMap;
  */
 
 public class Pattern implements Serializable, REFlags {
-    private static final long serialVersionUID = -3628346657932720807L;
+    private static final long serialVersionUID = 0x0000010130L;
 
     String stringRepr;
 
     // tree entry
-    Term root, root0;
+    transient Term root, root0;
 
     // required number of memory slots
     int memregs;
@@ -731,12 +731,12 @@ public class Pattern implements Serializable, REFlags {
     @Override
     public int hashCode() {
         int result = stringRepr != null ? stringRepr.hashCode() : 0;
-        result = 31 * result + (root != null ? root.hashCode() : 0);
-        result = 31 * result + (root0 != null ? root0.hashCode() : 0);
+//        result = 31 * result + (root != null ? root.hashCode() : 0);
+//        result = 31 * result + (root0 != null ? root0.hashCode() : 0);
         result = 31 * result + memregs;
         result = 31 * result + counters;
         result = 31 * result + lookaheads;
-        result = 31 * result + (namedGroupMap != null ? namedGroupMap.hashCode() : 0);
+//        result = 31 * result + (namedGroupMap != null ? namedGroupMap.hashCode() : 0);
         return result;
     }
 
@@ -748,6 +748,5 @@ public class Pattern implements Serializable, REFlags {
     public static Pattern deserializeFromString(String ser)
     {
         return new Pattern(ser.substring(0, ser.length() - 1), ser.charAt(ser.length() - 1) >>> 1);
-
     }
 }
