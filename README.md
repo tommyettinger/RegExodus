@@ -10,12 +10,12 @@ involves using a subset of Java's standard library, one that does not include th
 java.util.regex package and has only a few methods that take Strings to be interpreted
 as semi-compatible regular expressions. These methods, like `String.matches(String)`,
 use Java syntax for regular expressions on most targets, but use JavaScript syntax on
-HTML via GWT. This incompatibility is particularly painful in regards to Unicode,
+HTML via GWT. This incompatibility is particularly painful in regard to Unicode,
 where JS is rather crippled compared to Java's fully-fledged understanding of Unicode.
 
 Matching any letter seems easy enough with `[A-Za-z]` until the need to match letters
 in French, German, Hebrew, and more comes up as the application finds I18N necessary.
-Then if you need to perform case-insensitive matching, things get even more troubling
+Then, if you need to perform case-insensitive matching, things get even more troubling
 with naive solutions... There needs to be a better way.
 
 ## A Solution
@@ -79,8 +79,8 @@ if you want snapshots) and Maven Central is an easy alternative for
 version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.12%7Cjar);
-the 0.1.12 release is preferred for now, based on the 1.2 line of JRegex. You can
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.13%7Cjar);
+the 0.1.13 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -167,6 +167,12 @@ conversions, like `Category.caseUp('s')` returned `'ſ'` (the 1700s-era long-S).
 Some actually-useful parts of PerlSubstitution are now public and documented,
 where before they were only usable if reading the RegExodus sources. There's
 also some cleanup on internals, which may help with debugging.
+
+0.1.13 fixes some long-standing usually-minor issues with the `equals()` method
+on Pattern and Term (it was extremely rarely used, but could enter an infinite
+loop). It makes sure Pattern compares the flags, such as case-insensitive
+mode or ignore-whitespace mode, as part of the Pattern's equality. This release
+also matches Java's behavior with the `\\G` escape at the start of text.
 
 ## Credit
 
