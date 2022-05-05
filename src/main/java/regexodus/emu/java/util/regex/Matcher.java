@@ -522,7 +522,7 @@ public class Matcher implements MatchResult {
         Replacer.StringBufferBuffer dest = Replacer.wrap(sb);
         if (matcher.start() > 0) matcher.getGroup(-1 /*regexodus.MatchResult.PREFIX*/, dest);
         new PerlSubstitution(replacement).appendSubstitution(matcher, dest);
-        m.setTarget(m, -2 /*regexodus.MatchResult.SUFFIX*/);
+        m.setTarget(matcher, -2 /*regexodus.MatchResult.SUFFIX*/);
         return this;
     }
 
