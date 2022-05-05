@@ -451,4 +451,14 @@ public class BasicTest {
             Assert.assertNotEquals(p0, p2);
         }
     }
+
+    @Test
+    public void testAppendReplacement() {
+        String format = "test%d";
+        Matcher matcher = Pattern.compile("test").matcher(format);
+        TextBuffer buffer = Replacer.wrap(new StringBuilder());
+        while (Replacer.replaceStep(matcher, new PerlSubstitution("AAAAAAAAAAAAAAAA"), buffer));
+        matcher.getGroup(MatchResult.TARGET, buffer);
+        System.out.println("Result: " + buffer);
+    }
 }
