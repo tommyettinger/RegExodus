@@ -138,18 +138,25 @@ public class BasicTest {
         //additionally splits on words, so that each word can be arranged individually
         Pattern regularSplitterMultiline = Pattern.compile("(?<= )|(?= )|(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|"
         + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+        for(String s : regularSplitter.split(sentence)){
+            System.out.println(s);
+        }
+        System.out.println();
+        for(String s : regularSplitterMultiline.split(sentence)){
+            System.out.println(s);
+        }
 //        for (MatchIterator it = regularSplitter.matcher(sentence).findAll(); it.hasNext(); ) {
 //            MatchResult mr = it.next();
 //            System.out.println(mr.group(0));
 //        }
 
-//        java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(
-//                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJKUnifiedIdeographs})|(?=\\p{InCJKUnifiedIdeographs})|" + "(?<=\\p{InCJKSymbolsAndPunctuation})|(?=\\p{InCJKSymbolsAndPunctuation})");
+        java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(
+                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJKUnifiedIdeographs})|(?=\\p{InCJKUnifiedIdeographs})|" + "(?<=\\p{InCJKSymbolsAndPunctuation})|(?=\\p{InCJKSymbolsAndPunctuation})");
 //        java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(
 //                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|" + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
-//        for(String s : jurSplitter.split(sentence)){
-//            System.out.println(s);
-//        }
+        for(String s : jurSplitter.split(sentence)){
+            System.out.println(s);
+        }
     }
     @Test
     public void testReplace()

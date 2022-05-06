@@ -32,6 +32,7 @@ package regexodus;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -708,6 +709,132 @@ public class Pattern implements Serializable, REFlags {
         if((flags & XML_SCHEMA) != 0)
             sb.append('X');
         return sb.toString();
+    }
+    /**
+     * Splits the given input sequence around matches of this pattern.
+     * <br>
+     * The array returned by this method contains each substring of the
+     * input sequence that is terminated by another subsequence that matches
+     * this pattern or is terminated by the end of the input sequence.  The
+     * substrings in the array are in the order in which they occur in the
+     * input.  If this pattern does not match any subsequence of the input then
+     * the resulting array has just one element, namely the input sequence in
+     * string form.
+     * <br>
+     * The <tt>limit</tt> parameter controls the number of times the
+     * pattern is applied and therefore affects the length of the resulting
+     * array.  If the limit <i>n</i> is greater than zero then the pattern
+     * will be applied at most <i>n</i>&nbsp;-&nbsp;1 times, the array's
+     * length will be no greater than <i>n</i>, and the array's last entry
+     * will contain all input beyond the last matched delimiter.  If <i>n</i>
+     * is non-positive then the pattern will be applied as many times as
+     * possible and the array can have any length.  If <i>n</i> is zero then
+     * the pattern will be applied as many times as possible, the array can
+     * have any length, and trailing empty strings will be discarded.
+     * <br>
+     * The input <tt>"boo:and:foo"</tt>, for example, yields the following
+     * results with these parameters:
+     *
+     * <blockquote><table cellpadding=1 cellspacing=0
+     *              summary="Split examples showing regex, limit, and result">
+     * <tr><th><P align="left"><i>Regex&nbsp;&nbsp;&nbsp;&nbsp;</i></th>
+     *     <th><P align="left"><i>Limit&nbsp;&nbsp;&nbsp;&nbsp;</i></th>
+     *     <th><P align="left"><i>Result&nbsp;&nbsp;&nbsp;&nbsp;</i></th></tr>
+     * <tr><td align=center>:</td>
+     *     <td align=center>2</td>
+     *     <td><tt>{ "boo", "and:foo" }</tt></td></tr>
+     * <tr><td align=center>:</td>
+     *     <td align=center>5</td>
+     *     <td><tt>{ "boo", "and", "foo" }</tt></td></tr>
+     * <tr><td align=center>:</td>
+     *     <td align=center>-2</td>
+     *     <td><tt>{ "boo", "and", "foo" }</tt></td></tr>
+     * <tr><td align=center>o</td>
+     *     <td align=center>5</td>
+     *     <td><tt>{ "b", "", ":and:f", "", "" }</tt></td></tr>
+     * <tr><td align=center>o</td>
+     *     <td align=center>-2</td>
+     *     <td><tt>{ "b", "", ":and:f", "", "" }</tt></td></tr>
+     * <tr><td align=center>o</td>
+     *     <td align=center>0</td>
+     *     <td><tt>{ "b", "", ":and:f" }</tt></td></tr>
+     * </table></blockquote>
+     *
+     *
+     * @param  input
+     *         The character sequence to be split
+     *
+     * @param  limit
+     *         The result threshold, as described above
+     *
+     * @return  The array of strings computed by splitting the input
+     *          around matches of this pattern
+     */
+    public String[] split(CharSequence input, int limit) {
+        int index = 0;
+        boolean matchLimited = limit > 0;
+        ArrayList<String> matchList = new ArrayList<String>();
+        Matcher m = matcher(input);
+
+        // Add segments before each match found
+        while(m.find()) {
+            if (!matchLimited || matchList.size() < limit - 1) {
+                CharSequence match = input.subSequence(index, m.start());
+                if(match.length() != 0)
+                    matchList.add(match.toString());
+                index = m.end();
+            } else if (matchList.size() == limit - 1) { // last one
+                CharSequence match = input.subSequence(index,
+                        input.length());
+                if(match.length() != 0)
+                    matchList.add(match.toString());
+                index = m.end();
+            }
+        }
+
+        // If no match was found, return this
+        if (index == 0)
+            return new String[] {input.toString()};
+
+        // Add remaining segment
+        if (!matchLimited || matchList.size() < limit)
+            matchList.add(input.subSequence(index, input.length()).toString());
+
+        // Construct result
+        int resultSize = matchList.size();
+        String[] result = new String[resultSize];
+        return matchList.subList(0, resultSize).toArray(result);
+    }
+
+    /**
+     * Splits the given input sequence around matches of this pattern.
+     *
+     * This method works as if by invoking the two-argument {@link
+     * #split(java.lang.CharSequence, int) split} method with the given input
+     * sequence and a limit argument of zero.  Trailing empty strings are
+     * therefore not included in the resulting array.
+     * <br>
+     * The input <tt>"boo:and:foo"</tt>, for example, yields the following
+     * results with these expressions:
+     *
+     * <blockquote><table cellpadding=1 cellspacing=0
+     *              summary="Split examples showing regex and result">
+     * <tr><th><P align="left"><i>Regex&nbsp;&nbsp;&nbsp;&nbsp;</i></th>
+     *     <th><P align="left"><i>Result</i></th></tr>
+     * <tr><td align=center>:</td>
+     *     <td><tt>{ "boo", "and", "foo" }</tt></td></tr>
+     * <tr><td align=center>o</td>
+     *     <td><tt>{ "b", "", ":and:f" }</tt></td></tr>
+     * </table></blockquote>
+     *
+     * @param  input
+     *         The character sequence to be split
+     *
+     * @return  The array of strings computed by splitting the input
+     *          around matches of this pattern
+     */
+    public String[] split(CharSequence input) {
+        return split(input, 0);
     }
 
     @Override
