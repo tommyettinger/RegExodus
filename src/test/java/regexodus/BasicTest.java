@@ -122,6 +122,34 @@ public class BasicTest {
         System.out.println(Category.IdentifierPart.contains('Ⅹ'));
 
         System.out.println(Pattern.compile("\\pL\\p{InBasicLatin}\\P{BasicLatin}\\p{Greek}").matches("buζζ"));
+        System.out.println(Pattern.compile("\\p{InHiragana}+").matches("ひらがな"));
+
+        String sentence = "Hiragana (ひらがな) is one of two kana\n" +
+                "writing systems in use in modern Japan,\n" +
+                "the other being katakana (カタカナ).";
+
+        //splits on newlines, underscores, and chinese/japanese characters
+        Pattern regularSplitter = Pattern.compile(
+                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|"
+                        + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|"
+                        + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|"
+                        + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+
+        //additionally splits on words, so that each word can be arranged individually
+        Pattern regularSplitterMultiline = Pattern.compile("(?<= )|(?= )|(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|"
+        + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+//        for (MatchIterator it = regularSplitter.matcher(sentence).findAll(); it.hasNext(); ) {
+//            MatchResult mr = it.next();
+//            System.out.println(mr.group(0));
+//        }
+
+//        java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(
+//                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJKUnifiedIdeographs})|(?=\\p{InCJKUnifiedIdeographs})|" + "(?<=\\p{InCJKSymbolsAndPunctuation})|(?=\\p{InCJKSymbolsAndPunctuation})");
+//        java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(
+//                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|" + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+//        for(String s : jurSplitter.split(sentence)){
+//            System.out.println(s);
+//        }
     }
     @Test
     public void testReplace()
