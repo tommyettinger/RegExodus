@@ -284,13 +284,15 @@ public class Pattern implements Serializable {
         // Add segments before each match found
         while(m.find()) {
             if (!matchLimited || matchList.size() < limit - 1) {
-                String match = input.subSequence(index, m.start()).toString();
-                matchList.add(match);
+                CharSequence match = input.subSequence(index, m.start());
+                if(match.length() != 0)
+                    matchList.add(match.toString());
                 index = m.end();
             } else if (matchList.size() == limit - 1) { // last one
-                String match = input.subSequence(index,
-                        input.length()).toString();
-                matchList.add(match);
+                CharSequence match = input.subSequence(index,
+                        input.length());
+                if(match.length() != 0)
+                    matchList.add(match.toString());
                 index = m.end();
             }
         }
@@ -305,9 +307,6 @@ public class Pattern implements Serializable {
 
         // Construct result
         int resultSize = matchList.size();
-        if (limit == 0)
-            while (resultSize > 0 && matchList.get(resultSize-1).equals(""))
-                resultSize--;
         String[] result = new String[resultSize];
         return matchList.subList(0, resultSize).toArray(result);
     }
