@@ -1,7 +1,8 @@
 package regexodus;
 
 /**
- * Dumb format.
+ * Dumb format. Meant for consumption by <a href="https://github.com/TheLogicMaster/switch-gdx">Switch-GDX</a>, which
+ * doesn't have access to Formatter. May be useful in other places. Still, very limited.
  */
 public class Doormat implements Substitution {
 
@@ -11,8 +12,8 @@ public class Doormat implements Substitution {
     }
     public static final Pattern pattern = Pattern.compile(
             "%(?:({=esc}%)|({=str}s)" +
-                    "|({=int}({=pad}[0 ])?({=width}[1-9][0-9]*)?d)" +
-                    "|({=float}({=pad}[0 ])?({=width}[1-9][0-9]*)?({=pre}\\.({=precise}[0-9]+))?f)" +
+                    "|({=int}({=flags}[ 0-]+)?({=width}[1-9][0-9]*)?d)" +
+                    "|({=float}({=flags}[ 0-]+)?({=width}[1-9][0-9]*)?({=pre}\\.({=precise}[0-9]+))?f)" +
                     ")");
 
     private Object[] arguments;
@@ -21,12 +22,23 @@ public class Doormat implements Substitution {
     public void appendSubstitution(MatchResult match, TextBuffer dest) {
         if(match.isCaptured("str")) dest.append(arguments[index++].toString());
         else if(match.isCaptured("int")) {
-            StringBuilder isb = new StringBuilder(arguments[index++].toString());
+            long n = ((Number)arguments[index++]).longValue();
+            StringBuilder isb = new StringBuilder(Long.toString(n));
             int precision = -1;
             if(match.isCaptured("width")) precision = Integer.parseInt(match.group("width"));
             char pad = ' ';
-            if(match.isCaptured("pad")) pad = match.group("pad").charAt(0);
-            while (isb.length() < precision) isb.insert(0, pad);
+            if(match.isCaptured("flags")){
+                if(match.group("flags").contains("0")) pad = '0';
+                if(n >= 0L && match.group("flags").contains(" ")) isb.insert(0, ' ');
+
+                if(match.group("flags").contains("-"))
+                    while (isb.length() < precision) isb.append(pad);
+                else
+                    while (isb.length() < precision) isb.insert(0, pad);
+            }
+            else{
+                while (isb.length() < precision) isb.insert(0, pad);
+            }
             dest.append(isb.toString());
         } else if(match.isCaptured("float")) {
             double f = ((Number)arguments[index++]).doubleValue();
@@ -44,8 +56,19 @@ public class Doormat implements Substitution {
             int precision = -1;
             if(match.isCaptured("width")) precision = Integer.parseInt(match.group("width"));
             char pad = ' ';
-            if(match.isCaptured("pad")) pad = match.group("pad").charAt(0);
-            while (isb.length() < precision) isb.insert(0, pad);
+            if(match.isCaptured("flags")){
+                if(match.group("flags").contains("0")) pad = '0';
+                // ugh, this copySign is needed because of -0.0
+                if(Math.copySign(1.0, f) == 1.0 && match.group("flags").contains(" ")) isb.insert(0, ' ');
+
+                if(match.group("flags").contains("-"))
+                    while (isb.length() < precision) isb.append(pad);
+                else
+                    while (isb.length() < precision) isb.insert(0, pad);
+            }
+            else{
+                while (isb.length() < precision) isb.insert(0, pad);
+            }
             dest.append(isb.toString());
         } else if(match.isCaptured("esc")) dest.append('%');
     }

@@ -502,7 +502,7 @@ public class BasicTest {
     @Test
     public void testDoormat() {
         System.out.println(Doormat.format("My name is %s, I have %d toes, my padding is %010d, escape on the nose %%", "Regexodus", 12, 10));
-        System.out.println(Doormat.format("Floats? %f Fun. %010f Fantastic. %8.2f Flabbergasting!", 1.2345f, 123.456f, 1.2345));
+        System.out.println(Doormat.format("Floats? %f Fun. %010f Fantastic. %8.2f Flabbergasting!", 1.2345, 123.456, 1.2345));
         System.out.println(Doormat.format("Pie! %14.1f %14.3f %14.5f %14.7f %14.9f %14.11f ", PI, PI, PI, PI, PI, PI));
         System.out.println(Doormat.format("PIE. %14.1f %14.3f %14.5f %14.7f %14.9f %14.11f ", -PI, -PI, -PI, -PI, -PI, -PI));
     }
