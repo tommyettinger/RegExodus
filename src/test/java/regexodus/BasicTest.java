@@ -496,4 +496,9 @@ public class BasicTest {
         matcher.getGroup(MatchResult.TARGET, buffer);
         System.out.println("Result: " + buffer);
     }
+
+    @Test
+    public void testDoormat() {
+        System.out.println(Doormat.format("My name is %s, I have %d toes, my padding is %010d, escape on the nose %%", "Regexodus", 12, 10));
+    }
 }
