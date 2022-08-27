@@ -505,5 +505,6 @@ public class BasicTest {
         System.out.println(Doormat.format("Floats? %f Fun. %010f Fantastic. %8.2f Flabbergasting!", 1.2345, 123.456, 1.2345));
         System.out.println(Doormat.format("Pie! %14.1f %14.3f %14.5f %14.7f %14.9f %14.11f ", PI, PI, PI, PI, PI, PI));
         System.out.println(Doormat.format("PIE. %14.1f %14.3f %14.5f %14.7f %14.9f %14.11f ", -PI, -PI, -PI, -PI, -PI, -PI));
+        System.out.println(Doormat.format("Hex? An int %08X or %08X, a long %X or %X, a 'short' %20X or %20X", 123, -123, 123456123456L, -123456123456L, (short)123, (short)-123));
     }
 }
