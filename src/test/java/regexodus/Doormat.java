@@ -29,12 +29,17 @@ public class Doormat implements Substitution {
             while (isb.length() < precision) isb.insert(0, pad);
             dest.append(isb.toString());
         } else if(match.isCaptured("float")) {
-            String is = arguments[index++].toString();
+            double f = ((Number)arguments[index++]).doubleValue();
+            String is;
             if(match.isCaptured("pre")) {
+                int p = Integer.parseInt(match.group("precise"));
+                f += Math.copySign(0.5 * Math.pow(10.0, -p), f);
+                is = Double.toString(f);
                 int dot = is.lastIndexOf('.') + 1;
-                String post = is.substring(dot, Math.min(is.length(), dot + Integer.parseInt(match.group("precise"))));
+                String post = is.substring(dot, Math.min(is.length(), dot + p));
                 is = is.substring(0, dot) + post;
             }
+            else is = Double.toString(f);
             StringBuilder isb = new StringBuilder(is);
             int precision = -1;
             if(match.isCaptured("width")) precision = Integer.parseInt(match.group("width"));
