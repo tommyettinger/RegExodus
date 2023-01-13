@@ -140,10 +140,12 @@ public class BasicTest {
         //additionally splits on words, so that each word can be arranged individually
         Pattern regularSplitterMultiline = Pattern.compile("(?<= )|(?= )|(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|"
         + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+
+        System.out.println("regular");
         for(String s : regularSplitter.split(sentence)){
             System.out.println(s);
         }
-        System.out.println();
+        System.out.println("regularMultiline");
         for(String s : regularSplitterMultiline.split(sentence)){
             System.out.println(s);
         }
@@ -152,6 +154,7 @@ public class BasicTest {
 //            System.out.println(mr.group(0));
 //        }
 
+        System.out.println("jur");
         java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(
                 "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJKUnifiedIdeographs})|(?=\\p{InCJKUnifiedIdeographs})|" + "(?<=\\p{InCJKSymbolsAndPunctuation})|(?=\\p{InCJKSymbolsAndPunctuation})");
 //        java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(

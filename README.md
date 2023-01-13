@@ -79,8 +79,8 @@ if you want snapshots) and Maven Central is an easy alternative for
 version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.13%7Cjar);
-the 0.1.13 release is preferred for now, based on the 1.2 line of JRegex. You can
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.14%7Cjar);
+the 0.1.14 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -173,6 +173,13 @@ on Pattern and Term (it was extremely rarely used, but could enter an infinite
 loop). It makes sure Pattern compares the flags, such as case-insensitive
 mode or ignore-whitespace mode, as part of the Pattern's equality. This release
 also matches Java's behavior with the `\\G` escape at the start of text.
+
+0.1.14 includes some GWT fixes and changes the `inherits` line you need to:
+```
+<inherits name='regexodus.regexodus' />
+```
+It also fixes the behavior of Matcher in some cases, and Category for blocks
+and non-BMP letters (which aren't supported, just now officially).
 
 ## Credit
 
