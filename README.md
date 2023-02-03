@@ -80,7 +80,7 @@ version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
 here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.14%7Cjar);
-the 0.1.14 release is preferred for now, based on the 1.2 line of JRegex. You can
+the 0.1.15 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -131,7 +131,7 @@ methods to make serializing Patterns easier, and allows you to retrieve the flag
 from a Pattern. The bug fixed was relatively severe under some circumstances, so
 updating is recommended.
 
-~~0.1.8~~ had serious issues on GWT and has been replaced by 0.1.12.
+~~0.1.8~~ had serious issues on GWT and has been replaced by 0.1.15.
 
 0.1.9 improves GWT compatibility and adds the Unicode-like categories for
 horizontal, vertical, and all whitespace as `Gh`, `Gv`, and `G`, respectively
@@ -174,7 +174,10 @@ loop). It makes sure Pattern compares the flags, such as case-insensitive
 mode or ignore-whitespace mode, as part of the Pattern's equality. This release
 also matches Java's behavior with the `\\G` escape at the start of text.
 
-0.1.14 includes some GWT fixes and changes the `inherits` line you need to:
+~~0.1.14 shouldn't be used, because the java.util.regex replacement for GWT has
+an error in it.~~ This prevents compilation on GWT, so use 0.1.15 instead.
+
+0.1.15 includes some GWT fixes and changes the `inherits` line you need to:
 ```
 <inherits name='regexodus.regexodus' />
 ```
