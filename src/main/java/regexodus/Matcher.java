@@ -670,15 +670,10 @@ public class Matcher implements MatchResult, Serializable {
         defaultEntry.reset(0);
         first.reset(minQueueLength);
 
-        for (int i = memregs.length - 1; i > 0; i--) {
+        for (int i = memregs.length - 1; i >= 0; i--) {
             MemReg mr = memregs[i];
             mr.in = mr.out = -1;
         }
-        /*
-        for (int i = memregs.length - 1; i > 0; i--) {
-            MemReg mr = memregs[i];
-            mr.in = mr.out = -1;
-        }*/
         called = false;
     }
 
@@ -1008,6 +1003,8 @@ public class Matcher implements MatchResult, Serializable {
     }
 
     /**
+     * Gets a new ArrayList of the matching groups.
+     * If a group did not match, its index in the List will contain an empty String, {@code ""}.
      */
     public ArrayList<String> groupv() {
         MemReg[] memregs = this.memregs;
@@ -1016,7 +1013,7 @@ public class Matcher implements MatchResult, Serializable {
         for (int i = 0; i < memregs.length; i++) {
             mr = bounds(i);
             if (mr == null) {
-                v.add("empty");
+                v.add("");
                 continue;
             }
             String s = getString(mr.in, mr.out);
