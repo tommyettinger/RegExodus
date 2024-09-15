@@ -510,4 +510,23 @@ public class BasicTest {
         System.out.println(Doormat.format("PIE. %14.1f %14.3f %14.5f %14.7f %14.9f %14.11f ", -PI, -PI, -PI, -PI, -PI, -PI));
         System.out.println(Doormat.format("Hex? An int %08X or %08X, a long %X or %X, a 'short' %20X or %20X", 123, -123, 123456123456L, -123456123456L, (short)123, (short)-123));
     }
+
+    @Test
+    public void testIssue5() {
+        Pattern pattern = new Pattern("^\\s*(?:(?:get|put)(?:static|field))\\s+({type}[\\w\\/]+)?(?:\\.({name}\\w+)?)?(?:\\s+({desc}[\\w\\/;]+))?\\s*$");
+        Matcher matcher = pattern.matcher();
+        String line = "  getstatic java... ";
+        for (int i = 17; i < line.length() - 1; i++) {
+            System.out.println(i);
+            String s = line.substring(0, i);
+            matcher.setTarget(s);
+            matcher.setPosition(0);
+            if (matcher.find()) {
+                String type = matcher.group("type");
+                String name = matcher.group("name");
+                String desc = matcher.group("desc");
+                System.out.println("Field " + type + "." + name + " " + desc);
+            }
+        }
+    }
 }
