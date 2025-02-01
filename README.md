@@ -79,10 +79,32 @@ if you want snapshots) and Maven Central is an easy alternative for
 version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.16%7Cjar);
-the 0.1.16 release is preferred for now, based on the 1.2 line of JRegex. You can
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.17%7Cjar);
+the 0.1.17 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
+
+If you use Gradle in the way libGDX organizes projects, adding this dependency to
+the core module:
+
+```groovy
+api 'com.github.tommyettinger:regexodus:0.1.17'
+```
+
+And this dependency to the GWT module:
+
+```groovy
+api 'com.github.tommyettinger:regexodus:0.1.17:sources'
+```
+
+And this line to your GdxDefinition.gwt.xml file:
+
+```xml
+<inherits name='regexodus.regexodus' />
+```
+
+Should be the only steps needed. GDX-Liftoff can also add RegExodus by checking
+off a box in Third-Party Extensions.
 
 ## Changelog
 
@@ -188,6 +210,13 @@ and non-BMP letters (which aren't supported, just now officially).
 done correctly. The only other change should be `Matcher.groupv()` being documented
 and using the empty String `""` where there is no match for a group, instead of the
 String `"empty"` that it used before.
+
+0.1.17 fixes some bugs in the internal CharCharMap, which would have mostly affected
+Category. There's more compatibility with Character's isLetter(), isDigit(), and so
+on in Category. Lastly, the case transformation functions are now just an array
+lookup internally, using one of two very large arrays. This release increases the
+language level used to 8, because JDK 7 isn't a possible target release for current
+JDK versions.
 
 ## Credit
 
