@@ -8,9 +8,11 @@ import java.util.LinkedHashMap;
 
 /**
  * Unicode categories constructed from tightly compressed string and array literals instead of large resources.
- * Credit for the technique and much of the code goes to gagern, https://gist.github.com/gagern/89db1179766a702c564d
+ * Credit for the technique and much of the code goes to gagern,
+ * <a href="https://gist.github.com/gagern/89db1179766a702c564d">from this Gist</a>.
  * Also, the heavy amount of work that went into the Unicode DB for Node.JS (which the pre-processing stage for this
- * depends on) must be commended; that project is https://github.com/mathiasbynens/node-unicode-data
+ * depends on) must be commended; that project is
+ * <a href="https://github.com/mathiasbynens/node-unicode-data">node-unicode-data</a>.
  */
 public class Category {
     public final int length;
@@ -404,11 +406,7 @@ public class Category {
      */
     public static char caseFold(char c)
     {
-        if(upperToLower.containsKey(c))
-        {
-            return upperToLower.get(c);
-        }
-        return c;
+        return upperToLower.getOrDefault(c, c);
     }
 
     /**
@@ -424,11 +422,7 @@ public class Category {
      */
     public static char caseDown(char c)
     {
-        if(upperToLower.containsKey(c))
-        {
-            return upperToLower.get(c);
-        }
-        return c;
+        return upperToLower.getOrDefault(c, c);
     }
 
     /**
@@ -441,11 +435,7 @@ public class Category {
      */
     public static char caseUp(char c)
     {
-        if(lowerToUpper.containsKey(c))
-        {
-            return lowerToUpper.get(c);
-        }
-        return c;
+        return lowerToUpper.getOrDefault(c, c);
     }
 
     /**
