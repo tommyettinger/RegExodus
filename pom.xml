@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.tommyettinger</groupId>
     <artifactId>regexodus</artifactId>
-    <version>0.1.16</version>
+    <version>0.1.17-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>RegExodus</name>
@@ -38,7 +38,7 @@
         <maven.source.version>3.2.1</maven.source.version>
         <maven.surefire.version>3.0.0-M5</maven.surefire.version>
         <maven.gpg.version>1.6</maven.gpg.version>
-        <jdk.version>1.7</jdk.version>
+        <jdk.version>1.8</jdk.version>
         <junit.version>4.13.2</junit.version>
     </properties>
 

@@ -124,6 +124,8 @@ public class CharCharMap implements Serializable {
         this((int)(map.keyTable.length * map.loadFactor), map.loadFactor);
         System.arraycopy(map.keyTable, 0, keyTable, 0, map.keyTable.length);
         System.arraycopy(map.valueTable, 0, valueTable, 0, map.valueTable.length);
+        zeroValue = map.zeroValue;
+        hasZeroValue = map.hasZeroValue;
         size = map.size;
         defaultReturnValue = map.defaultReturnValue;
     }
@@ -162,7 +164,7 @@ public class CharCharMap implements Serializable {
      * @param item a non-null Object; its hashCode() method should be used by most implementations.
      */
     protected int place (char item) {
-        return (int)(item * 0x9E3779B97F4A7C15L >>> shift);
+        return (item * 0x9E3779B9 >>> shift);
     }
 
     /**
@@ -506,7 +508,7 @@ public class CharCharMap implements Serializable {
         for (int i = 0, n = keyTable.length; i < n; i++) {
             char key = keyTable[i];
             if (key != 0) {
-                h += key * 31;
+                h += key * 53;
                 key = valueTable[i];
                 h += key;
             }
@@ -646,7 +648,7 @@ public class CharCharMap implements Serializable {
 
         @Override
         public int hashCode () {
-            return (int)((key ^ key >>> 32) * 0x9E3779B97F4A7C15L + (value ^ value << 32) >>> 32);
+            return (key * 0x9E3779B9 + value);
         }
     }
 
