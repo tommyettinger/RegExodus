@@ -125,6 +125,15 @@ public class Category {
     public static final Category C=new Category(new int[]{0,1,2,3,4,5,8,6,7,11,10,9,12,13,14,15,16,23,27,24,44,19,25,20,31,32,33,34,37,39,50,52,56,57,61,90,17,18,21,22,28,29,30,36,46,48,60,65,71,87,95,104,117,26,40,41,42,43,45,49,51,54,55,58,59,62,63,66,68,73,77,79,85,96,102,107,116,125,127,136,141,149,153,162,185,191,192,193,199,215,251,284,349,366,367,378,398,664,670,715,1166,1813,8451,11173,28126}," 8i9. \u0083!(#& \" F \u0080 =!\\!$ @(H#(01!v [!N!j-N!>!0 I!\" ,?G 5*0 s +!#!1 & \"\"%!*!#!%(\"## '!U!$ (##!1 & # # #!\" '##!$\"\"'% \"'E+$ * $ 1 & # '!) $ $!\".%!-'& $ +!#!1 & # '!*!#!$'$## '!5+# (\"$ %\"# \" #\"#\"$\"-#'\"$ %!\"%\"-G$. $ 3 D\"+ $ %'# $$%!)'1 $ 3 ) '!* $ %'#'\" %!) #,. $ ? $ (#D!2 $ 5\"6 * \"!&\"\"#( \" +%)!$)`#JK# \" ' 6 \" 3!' \" (!)!%8e <#V < 0 .Kx \"$\"!\u007f %!& \" %!X %!; %!& \" %!0 _ %!d!:\"2%Q!(!\u0082\"C'. &*3&F). $ #)R!)%)%/!)%C'4$P+9 -#-#\"\"Y!'*Z#2%,\"b!c J!,%)%/!Eaf#L\"T(B\"0\"B'4!,(4$z {!(!=!(!+ \" \" \" 9!] 0 /!( 7!$ * ,$2$>/#!H .\":/;.p#\u00813,7\u0085!: r M q$L \"$\"!A'#-6&& & & & & & & & l42 C)y6-#O Q!S$4 R h)M \u0088\"\u0084\"@&|5t(w!*WA\")%A(P(-%T*8\"g ,#; @&/!)!S1I+(!(!(&& & B#n!)%\u0087)3#>\u0086~!k<&)'$2 ' \" # # m0}/O!^=/!2%? 7 %#' o#u\"(!(!(!$\"& &,#! ");
 
     /**
+     * Returns true if c is an ISO control character, in the ranges {@code 0x00 to 0x1F} or {@code 0x7F to 0x9F}, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a Unicode letter
+     */
+    public static boolean isISOControl(char c) {
+        return c < 0x1F || (c >= 0x7F && c <= 0x9F);
+    }
+
+    /**
      * All private use characters; Unicode category Co.
      */
     public static final Category Co=new Category(new int[]{1792,6399,57344},"\"! ");
@@ -155,14 +164,41 @@ public class Category {
     public static final Category L=new Category(new int[]{2,0,3,4,1,6,5,7,8,17,11,12,15,22,9,10,25,21,42,13,16,30,46,18,37,14,19,24,29,35,40,43,53,23,27,31,32,33,49,52,65,88,20,26,28,36,48,50,51,55,56,59,63,68,69,85,102,117,34,38,39,41,45,47,54,61,64,66,72,74,81,82,83,89,93,94,98,105,107,114,116,130,132,134,138,165,191,268,277,332,362,365,457,470,513,619,1164,2684,6591,8453,11171,20988},"H0'0N!*!&!%- 5 |&*,#(! !q# $\"\" !'!   ! : g t.u 8\"!'>dK&\"62M$ l !4$($* \"!)! <5I+!0D/$&!%1&!/!#!;;(/`J )a@#!:!(.4,&'\"$\"1 % !#\"#!)!9$  ,$*!.&&$\"1 % $ $ $D\" !J )(   1 % $ ##!:!4$;!+'\"$\"1 % $ ##!C$  4!7! &#  \"#$ ! $#$# #*A!@'   - ,#!B %$C!&'   - . ##!E! $4$7(   >\"!)!% . 0&%)#A ( !\"%S_ $3%S$ ! # A ! . $/!\"# !-\"E!b' =L#p21!)&&\"#!#$( &+3!78 !%!\"2 y \"\"% ! \"\"> \"\"D \"\"% ! \"\"9 R \"\"c[,)W\"&#\u007f\"4 0%e''(+ \",),),+  4PM!&!UI(#\"E !%V*5O<\"#+?&0Q-/Gh!k67%R<9$*?B=2 *=\"((2\" 2\" & $#!%vHx\"&\"8\"&\"' ! ! ! 5\"G % !#  %#\"\"&&+%  %Y!9!)+X!&!\". !##'! ! ! \" /\"\"%#&!@$\u00816 6 r'\"#$38 !%!\"Q(!)-/% % % % % % % %f!}$?#%$&W'  i \"%2 j7CF,~\u0082H\u0085#\u0080U^\"w#,*$16)5\"VO(\"X\"G\"(?+   \" -5P,FT&#! $+B*-KL(6<!)# .*# >;  '1-#!#F !#$\"#\"! !0 \"/( 3&\"&\"&/% % 2 3'o5\u00843-&N\u0083{\"m\\%3#%! . + # ! $ $ nZz:T\"@]*Y# s80'0+I#&\"&\"&\" =");
 
     /**
+     * Returns true if c is a Unicode letter, in category {@link #L}, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a Unicode letter
+     */
+    public static boolean isLetter(char c) {
+        return L.contains(c);
+    }
+
+    /**
      * All upper-case letters; Unicode category Lu.
      */
     public static final Category Lu=new Category(new int[]{0,2,3,1,4,9,7,5,6,8,10,11,13,12,25,37,50,16,20,22,34,36,42,44,46,49,62,65,73,85,102,136,197,263,290,321,723,2203,2685,2890,22316,31054},";.>3!(4 ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! \" ! ! ! ! ! ! ! \" ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !#! ! $#! !#!!\"\"!#!!$#!#! ! !#! \" !#!!! !#$ ) \" \" \" ! ! ! ! ! ! ! \" ! ! ! ! ! ! ! ! \" \" !!! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! )#!#\" !\"! ! ! ! B ! $ % & !!! !#!1!)5 \"!$ ! ! ! ! ! ! ! ! ! ! ! ( \" !#\"09 ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! * ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !#! ! ! ! ! ! \" ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! \"/G/! ( D=E6\"!C ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! * ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! *&%'+&%&%'- ! ! ! %&<\",\",\",$-\"A ' $!\"!\" $$& ! ! !\"\"\"+#( : F80 !!\" ! ! !\"! \" %!! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! % ! ' I ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! 2 ! ! ! ! ! ! ! ! ! ! ! ! ! ? ! ! ! ! ! ! $ ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! + ! !#! ! ! ! ' ! \" ! $ ! ! ! ! ! ! ! ! ! !$!$! ! ! ! ! $ !\"! 7 H.@");
 
     /**
+     * Returns true if c is a Unicode upper-case letter, in category {@link #Lu}, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a Unicode upper-case letter
+     */
+    public static boolean isUpperCase(char c) {
+        return Lu.contains(c);
+    }
+
+    /**
      * All lower-case letters; Unicode category Ll.
      */
     public static final Category Ll=new Category(new int[]{0,2,3,1,4,5,7,9,6,8,11,13,42,25,28,10,12,19,20,23,26,33,34,37,40,43,44,46,47,49,52,54,59,64,68,79,97,103,120,136,165,194,275,761,822,1066,2179,2732,2888,20289,30996},"D-@ ,3!&! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !#! ! ! ! ! ! ! !#! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! \" ! !!\" ! \" $#% \" $!\" \" ! ! \" !#! \" $ ! \"#\"!& \" \" ! ! ! ! ! ! ! !#! ! ! ! ! ! ! ! !#\" ! $ ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !(\" \"#! % ! ! ! !B!4I ! $ $!1 .6!#$!! ! ! ! ! ! ! ! ! ! ! !$! \" \"#><! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! / ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! \" ! ! ! ! ! !#! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! =8P,\"!K%N)F9A0!5E ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !)! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !)'%*&'&'%*&'&'+\"&'&'&'$!#& $!!#'\"\"#'&*!!#J $#$ . % % \"#'\"% ? O;\" $#! ! ! % !#!%( ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !#) ! % +7! ( R ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! 2 ! ! ! ! ! ! ! ! ! ! ! ! ! G ! ! ! ! ! !!! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !&! ! \" ! ! ! ! % ! \" !!! ! ! ! ! ! ! ! ! ! ( ( ! ! ! ! ! $ % ! : $ L,())CQ(+$M-H");
+
+    /**
+     * Returns true if c is a Unicode lower-case letter, in category {@link #Ll}, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a Unicode lower-case letter
+     */
+    public static boolean isLowerCase(char c) {
+        return Ll.contains(c);
+    }
 
     /**
      * All title-case letters; Unicode category Lt.
@@ -213,6 +249,15 @@ public class Category {
      * All decimal digits; Unicode category Nd.
      */
     public static final Category Nd=new Category(new int[]{9,119,7,39,71,87,135,199,23,48,97,129,167,183,230,279,301,407,413,679,1575,1863,21271,35271},") 4 & ' 2 ! ! ! ! ! ! ! ! ! * ! $ / $ 5 # 0 + , \" - % & \" 7 3 # ' ( % 1 6 .");
+
+    /**
+     * Returns true if c is a Unicode decimal digit, in category {@link #Nd}, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a Unicode decimal digit
+     */
+    public static boolean isDigit(char c) {
+        return Nd.contains(c);
+    }
 
     /**
      * All "letter numbers" such as Roman numerals; Unicode category Nl.
@@ -298,9 +343,27 @@ public class Category {
     public static final Category Sm=new Category(new int[]{0,2,3,5,1,4,7,32,62,14,17,31,40,257,6,8,10,11,15,19,20,23,24,30,33,38,41,43,46,49,55,69,91,112,130,132,140,165,267,337,470,528,767,825,6716,53213},"; *!( ! < # 9 ' J I!L ) ,!)!D ,%& ?%.$# \" \" / '$\" ! 'F8$@ +6:#H 0 >&A G%\"712-B5(#+\"-=4\"#M K !!E *!( ! C &\"3");
 
     /**
+     * Returns true if c is a Unicode math symbol, in category {@link #Sm}, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a Unicode math symbol
+     */
+    public static boolean isMath(char c) {
+        return Sm.contains(c);
+    }
+
+    /**
      * All currency symbols; Unicode category Sc.
      */
     public static final Category Sc=new Category(new int[]{0,1,499,3,4,8,25,31,36,109,124,126,155,220,246,264,582,1258,2245,2460,21956,34681},"( +#1 * \"!\"!% . / 0 3 2'5 4 ) , -!$!&");
+
+    /**
+     * Returns true if c is a Unicode currency symbol, in category {@link #Sc}, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a Unicode currency symbol
+     */
+    public static boolean isCurrency(char c) {
+        return Sc.contains(c);
+    }
 
     /**
      * All modifier symbols; Unicode category Sk.
@@ -322,6 +385,15 @@ public class Category {
     public static final Category Word=new Category(new int[]{2,3,0,4,5,6,1,9,7,8,10,11,12,15,13,14,17,18,19,25,21,22,48,30,42,23,35,37,40,16,20,27,31,33,38,52,26,28,39,43,45,46,50,53,54,55,57,58,64,65,69,73,85,88,116,24,29,32,34,41,44,47,49,51,56,59,62,63,66,68,72,74,75,77,79,82,83,89,93,100,101,102,105,107,114,115,122,128,132,134,138,165,249,268,282,321,332,362,365,457,470,619,631,727,1133,1164,6591,8453,11171,20988},"6')3$\" 36\")& \"#&   5 7 \203$+-#)\" \"1V &!! \"(\"   \" 2 k z #!{ ;!\"(<'\\ \" & & \"'D$!7*%S$p (!' 1!\"0O!o-K$\"!\"!H2?$*L> 0,/ w!' 1 (!&!4 % \"#!!)!&!!'\"$& #!+!$!\" \"!  $$&!4 % & & &!\" #$&! #\")! \")-,  )   4 % & #!'    !\"=!!'*%   (!&!4 % & #!)!&! ) $& #!' %+& $#  !#& \" &#&# #+$##  !!\"(\"-,/,   5 -#(   !)&  %!!''% ! (   5 ' #!)   !)&)\" !!' &/,   J   #%-!1 $   0#9 ) \"!%#\"$$ \" (('!&/N%/ '<& \" # 9 \" 5!# \" $!'!!A\"W&(2 \" \" \"$' :$2 0 :*\"OS(i!; \"%\"!8 \200 !!% \" !!< !!Y !!% \" !!/ ` !!d! *2#-0T!$#\205!= 3%g#*), %,>,2.,   &.l#\"$&!'('1 !'(U)8%R+7 +$++F!#,G$3(*B?$b E!*('/\"'. &Ph$'1).u.M''#6!))8! 0  B%| ~!$!;!$!( \" \" \" 7!C % \"#  %#!!$$,%  %V&!$%*(,C,$\"#+1\"$\"!' \"##(\" \" \" ! *!!%#$\" N\207aj4\206X\210I I x()*\"!; \"%\"!M)\"=9*% % % % % % % % @6\"\204 D/ #!#$T!&!  m !%8 n#!+@^-A'@( /A'</\177\212Q\215#\211eH!}#?4]$' tB)!q!C!)GJ$\"#$+_.R+'(9#\" 6!:.E#P-*(7 L*.!'(5#f3 !-!#+$!$!$*% % 8 .(v &!'(\214.5$6\213\202!rF%.#%+ , # \" & & sZ\2012c!K[+$-0-Q# y>')3(3,U#$!$!$! :");
 
     /**
+     * Returns true if c is a "word-like" character, meaning a letter, a number, or the underscore, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a "word-like" character
+     */
+    public static boolean isWord(char c) {
+        return Word.contains(c);
+    }
+
+    /**
      * All valid characters that can be used in a Java identifier.
      * <br>
      * Accessible in regexes via "<code>\pJ</code>" or "<code>\p{J}</code>" (J for Java).
@@ -336,11 +408,31 @@ public class Category {
     public static final Category IdentifierStart=new Category(new int[]{2,0,3,4,1,5,6,8,7,12,17,25,15,22,10,11,9,16,21,42,29,40,13,18,30,46,14,19,23,26,31,37,20,24,27,32,33,35,36,43,49,52,55,65,88,28,41,51,53,56,59,63,67,68,85,34,38,39,45,47,48,50,54,61,64,66,69,74,79,81,82,83,89,93,94,98,102,105,107,114,116,130,132,134,138,165,191,268,277,332,362,365,457,470,513,619,1164,2680,6591,8453,11171,20988},"F!4+%! +5\"%!/!%!&- 8 |%/,#'! !q# $\"\" !(!   ! ; f t0u ?\"!(5(!K=%\"+!23F$ k !1$'$/ \"!*! 48L)!+C.$%!#<%!.!#!AA'.^@ *_P#!;!'01,%(\"$\"2 & !#\"#!*!:$  ,\"'$0%%$\"2 & $ $ $C\" !@ *'   2 & $ ##!;!1$1!'!)(\"$\"2 & $ ##!>$  1!7! %#  \"#$ ! $#$# #/<!N!)(   - ,#!B &$>!%(   - 0 ##!D! $1$7'   5\"!*!& 0 +%&*#< ' !\"&R[ $)(R$ ! # < ! 0 $.!\"# !-\"D!`( EM#p32!*%%\"#!#$' %)6!7? !&!\"3 y \"\"& ! \"\"5 \"\"C \"\"& ! \"\": Q \"\"aX,*V\"%#\177\"1 +&c#.') \",*,*,)  1OF!#$UL'#\"D !&b/8]4\"#)G%+J-.Ig!j97&Q4:$/GBE3 /E\"''3\" 3\" % $#!&vKx\"%\"?\"%\"( ! ! ! 8\"I & !#  &#\"\"%%)&  &T$@!4!:!*)#>T!%!\"0 !##(! ! ! \" .\"\"&#%!75\2019 9 r(\"#$6? !&!\"J'!*-.& & & & & & & &e!} =''#\"#%V(  h \"&3 i7>H,~\202K\205#\200UZ\"w#,/$29*8\"d5'\"l\"I\"'G)   \" --!'O,HS%#! $)B/-=M'94!*# 0/# 5A  (2-#!#H !#$\"#\"! !+ \".' 6%\"%\"%.& & 3 6(o8\2046-%\\\203{\"mY&6#&! 0 ) # ! $ $ nWz;S\"PN)J$+ =!(# s'!4+%! +)L#%\"%\"%\" #$#$+");
 
     /**
+     * Returns true if c is allowed as the start of a Java identifier, meaning a letter, a currency symbol, a
+     * connecting punctuation character such as the underscore, or a "letter number", or false otherwise.
+     * @param c the char to check
+     * @return true if c is allowed as the start of a Java identifier
+     */
+    public static boolean isJavaIdentifierStart(char c) {
+        return IdentifierStart.contains(c);
+    }
+
+    /**
      * All valid characters that can be used as the second or later character in a Java identifier.
      * <br>
      * Accessible in regexes via "<code>\p{Jp}</code>".
      */
     public static final Category IdentifierPart=new Category(new int[]{2,3,0,4,5,1,6,9,7,8,12,10,15,11,13,25,14,17,19,18,21,22,42,48,23,30,31,37,40,16,20,26,27,28,33,35,38,32,39,43,46,50,52,53,54,55,57,58,64,69,73,85,88,24,29,34,41,44,45,47,49,51,56,59,62,63,65,66,67,68,72,74,75,77,79,82,83,89,93,100,101,102,105,107,114,115,116,122,128,132,134,138,165,249,268,282,321,332,362,365,457,470,619,631,727,1133,1164,6591,8453,11171,20988},"\")&.'\"*')/$\" /$E!!$\")% \"#%   5 9 \204$-,#)\" \"3v %!! \"(\"   \" 2 k { #!| ;!\"(<(\" Y \" % % \"'?$!/\"$+&R$p (!' 3!\"1O!o,K$\"!72@$+L> 1*0 x!' 3 (!%!4 & \"#!!)!%!!'\"$% #!2 % \"!  $$%!4 & % % %!\" #$%! #\")! \"),*  )   4 & % #!'    !\"=!!' \")&   (!%!4 & % #!)!%! ) $% #!' &-% $#  !#% \" %#%# #-$##  !!\"(\",*(\"(*   5 ,#(   !)%  &!!''& ! (   5 ' #!)   !)%)\" !!' %0*   I   #&,!3 $   1#8 ) \"!&#\"$$ \" (('!%0N$, '<% \" # 8 \" 5!# \" $!'!!B\"U%(2 \" \" \"$' C$2 1 C+\"OR(i!; \"&\"!6 \201 !!& \" !!< !!E !!& \" !!0 ^ !!c! +2#,1S!$#\206!= /&g#+)* &*>*2.*   %.l#\"# !'('3 !'(T)6&Q-9 -$--F!#*G$/(+D@$` A!+('0\"'. %Ph$'3).u.M''#7!))6! 1  D&} \177!$!;!$!( \" \" \" 9!J & \"#  &#!!$$*&  &d%>\"A%!$&+(*#:1*$\"#-3\"$\"!' \"##(\" \" \" ! +!!&#$\" N\210_j4\207V\211H H y()+\"!; \"&\"!M)\"=8+& & & & & & & & :7\"\205 ?0 #!#$S!%!  m !&6 n#!-:\\,B':( 0B'<0\200\213b\216#\212eZ!~#@4[$' tD)!q!J!)GI$\"#$!\")].Q-'(8#\" 7!C.A#P,+(9 L+.!'(5#f/ !,!#-$!$!$+& & 6 .(w %!'(\215.5$7\214\203!rF&.#&- * # \" % % sW\2022a!KX*#,1,#%/ ?\"(# z)\"*')/$\" /*T#$!$!$! #%#%/");
+
+    /**
+     * Returns true if c is allowed as a later part of a Java identifier, meaning a letter, a number, a currency symbol,
+     * a connecting punctuation character such as the underscore, or a "letter number", or false otherwise.
+     * @param c the char to check
+     * @return true if c is allowed as a later part of a Java identifier
+     */
+    public static boolean isJavaIdentifierPart(char c) {
+        return IdentifierPart.contains(c);
+    }
 
     /**
      * Horizontal whitespace characters; not an actual Unicode category but probably more useful because it contains
@@ -367,6 +459,15 @@ public class Category {
      * Accessible in regexes via "<code>\pG</code>" or "<code>\p{G}</code>" (G for Gap).
      */
     public static final Category Space=new Category(new int[]{0,1,4,6,9,10,19,27,30,48,101,2432,4001,5600},"$\"& * ' - +%(!# ) , ");
+
+    /**
+     * Returns true if c is a whitespace character, including space, tab, newline, carriage return, and more Unicode space characters, or false otherwise.
+     * @param c the char to check
+     * @return true if c is a whitespace character
+     */
+    public static boolean isWhitespace(char c) {
+        return Space.contains(c);
+    }
 
     private static final char[] openers =
             new char[]{'(','<','[','{','༺','༼','᚛','⁅','⁽','₍','⌈','⌊','〈','❨','❪','❬','❮','❰','❲','❴','⟅','⟦',
