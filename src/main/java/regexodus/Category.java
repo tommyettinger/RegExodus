@@ -488,8 +488,9 @@ public class Category {
      * This is currently the same as {@link #caseDown(char)}, but this method may change in the future to more precisely
      * support case folding instead of caseDown()'s case mapping. Future code is encouraged to use
      * {@link #caseDown(char)} and {@link #caseUp(char)} for case mapping, and this method only when case folding is
-     * preferred (such as for case-insensitive comparisons). Like caseDown(), this will prefer the char with the lower
-     * codepoint if there are multiple possible conversions to lower-case.
+     * preferred (such as for some case-insensitive comparisons). Case-insensitive comparisons are easier to do with
+     * {@link #caseUp(char)} on both compared chars; that technique works for every alphabet except Georgian. This
+     * method will currently act exactly how {@link Character#toLowerCase(char)} acts on Java 23 on a PC.
      * @param c any char; this should only return a case-folded different char for upper-case letters
      * @return the single-char case-folded version of c, of it has one, otherwise c
      */
@@ -504,9 +505,9 @@ public class Category {
      * distinction between case folding and case mapping is needed by this library. This is the counterpart to
      * {@link #caseUp(char)}, but because of the complexities of... language, calling caseDown() and then caseUp() will
      * not always return the original character. This has to do with how some characters, like lower-case s, have
-     * multiple upper-case conversions possible, and the same in the other direction. This method and caseUp() both will
-     * prefer the character that has a lower codepoint value if there are multiple possible conversions.
-     * @param c any char; this should only return a lower-cased different char for upper-case letters
+     * multiple upper-case conversions possible, and the same in the other direction. This method will
+     * act exactly how {@link Character#toLowerCase(char)} acts on Java 23 on a PC.
+     * @param c any char; this should only return a case-changed different char for upper-case letters
      * @return the single-char lower-case version of c, of it has one, otherwise c
      */
     public static char caseDown(char c)
@@ -517,9 +518,10 @@ public class Category {
     /**
      * The counterpart to {@link #caseDown(char)} that returns the given char c's upper-case representation, if it has
      * one, otherwise it returns it verbatim. This has dubiously correct behavior for digraphs and ligature chars, but
-     * they tend to be rare or even discouraged in practice. If there are multiple possible upper-case conversions from
-     * the given character, this prefers the character with the lower codepoint value.
-     * @param c any char; this should only return a case-folded different char for lower-case letters
+     * they tend to be rare or even discouraged in practice. Case-insensitive comparisons are easier to do with
+     * caseUp() on both compared chars; this technique works for every alphabet except Georgian. This method will
+     * act exactly how {@link Character#toUpperCase(char)} acts on Java 23 on a PC.
+     * @param c any char; this should only return a case-changed different char for lower-case letters
      * @return the single-char upper-case version of c, if it has one, otherwise c
      */
     public static char caseUp(char c)
@@ -540,14 +542,8 @@ public class Category {
     public static char matchBracket(char c)
     {
         if(openBrackets.containsKey(c))
-        {
             return openBrackets.get(c);
-        }
-        else if(closingBrackets.containsKey(c))
-        {
-            return closingBrackets.get(c);
-        }
-        return c;
+        return closingBrackets.getOrDefault(c, c);
     }
 
     public static String reverseWithBrackets(CharSequence s)
