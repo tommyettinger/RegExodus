@@ -218,6 +218,21 @@ lookup internally, using one of two very large arrays. This release increases th
 language level used to 8, because JDK 7 isn't a possible target release for current
 JDK versions.
 
+0.1.18 updates Category quite a bit, using Java 24's info from Unicode 16 and also
+updating the actual Category constants for the first time in a while (using Node.JS,
+believe it or not). It also now allows using named categories with longer names for
+better readability; yes, I now acknowledge that `"\p{Sc}"` is not the ideal way to
+match a currency symbol for most people, and `"\p{CurrencySymbol}"` is often better.
+Aliases are available for all the previously-abbreviated Category constants, so `Sc`
+is the same thing as `CurrencySymbol`. The Casing information has been updated for
+Unicode 16, though probably not much changed, and so has the opening and closing
+bracket info, which should be a little more robust. If anything about the brackets
+seems wrong for the text you're using, which is not unlikely because some brackets
+are considered either opening or closing depending on locale and context, you can
+now check what the known brackets actually are with the public constant Strings
+`Category.OPENING_BRACKETS` and `Category.CLOSING_BRACKETS`. An index into one of
+those Strings matches its counterpart in the other String.
+
 ## Credit
 
 This is a modified fork of JRegex, by Sergey A. Samokhodkin, meant to improve

@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.tommyettinger</groupId>
     <artifactId>regexodus</artifactId>
-    <version>0.1.18-SNAPSHOT</version>
+    <version>0.1.18</version>
     <packaging>jar</packaging>
 
     <name>RegExodus</name>
