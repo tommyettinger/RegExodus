@@ -14,12 +14,12 @@ apply plugin: 'maven'
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
 group = 'com.github.tommyettinger'
-version = '0.1.17-SNAPSHOT'
+version = '0.1.18-SNAPSHOT'
 
 description = """A modern fork of jregex meant to increase compatibility with Java variants like GWT."""
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     maven { url "http://repo.maven.apache.org/maven2" }
