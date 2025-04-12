@@ -146,7 +146,7 @@ public class Category {
     /**
      * All private use characters; Unicode category Co.
      */
-    public static final Category Private_Use = Co;
+    public static final Category PrivateUse = Co;
 
     /**
      * All unassigned characters; Unicode category Cn.
@@ -215,7 +215,7 @@ public class Category {
     /**
      * All upper-case letters; Unicode category Lu.
      */
-    public static final Category Uppercase_Letter = Lu;
+    public static final Category UppercaseLetter = Lu;
 
     /**
      * Returns true if c is a Unicode upper-case letter, in category {@link #Lu}, or false otherwise.
@@ -234,7 +234,7 @@ public class Category {
     /**
      * All lower-case letters; Unicode category Ll.
      */
-    public static final Category Lowercase_Letter = Ll;
+    public static final Category LowercaseLetter = Ll;
 
     /**
      * Returns true if c is a Unicode lower-case letter, in category {@link #Ll}, or false otherwise.
@@ -253,7 +253,7 @@ public class Category {
     /**
      * All title-case letters; Unicode category Lt.
      */
-    public static final Category Titlecase_Letter = Lt;
+    public static final Category TitlecaseLetter = Lt;
 
     /**
      * All modifier letters; Unicode category Lm.
@@ -263,7 +263,7 @@ public class Category {
     /**
      * All modifier letters; Unicode category Lm.
      */
-    public static final Category Modifier_Letter = Lm;
+    public static final Category ModifierLetter = Lm;
 
     /**
      * All other letters (those without casing information); Unicode category Lo.
@@ -273,7 +273,7 @@ public class Category {
     /**
      * All other letters (those without casing information); Unicode category Lo.
      */
-    public static final Category Other_Letter = Lo;
+    public static final Category OtherLetter = Lo;
 
     /**
      * All letters that have a case, including lower-case (Ll), upper-case (Lu), and title-case (Lt) letters.
@@ -283,7 +283,7 @@ public class Category {
     /**
      * All letters that have a case, including lower-case (Ll), upper-case (Lu), and title-case (Lt) letters.
      */
-    public static final Category Cased_Letter = Lc;
+    public static final Category CasedLetter = Lc;
 
     /**
      * All marks; Unicode category M.
@@ -303,7 +303,7 @@ public class Category {
     /**
      * All non-spacing marks; Unicode category Mn.
      */
-    public static final Category Nonspacing_Mark = Mn;
+    public static final Category NonspacingMark = Mn;
 
     /**
      * All enclosing marks; Unicode category Me.
@@ -313,7 +313,7 @@ public class Category {
     /**
      * All enclosing marks; Unicode category Me.
      */
-    public static final Category Enclosing_Mark = Me;
+    public static final Category EnclosingMark = Me;
 
     /**
      * All combining spacing marks; Unicode category Mc.
@@ -323,7 +323,7 @@ public class Category {
     /**
      * All combining spacing marks; Unicode category Mc.
      */
-    public static final Category Spacing_Mark = Mc;
+    public static final Category SpacingMark = Mc;
 
     /**
      * All numbers; Unicode category N.
@@ -343,7 +343,7 @@ public class Category {
     /**
      * All decimal digits; Unicode category Nd.
      */
-    public static final Category Decimal_Number = Nd;
+    public static final Category DecimalNumber = Nd;
 
     /**
      * Returns true if c is a Unicode decimal digit, in category {@link #Nd}, or false otherwise.
@@ -362,7 +362,7 @@ public class Category {
     /**
      * All "letter numbers" such as Roman numerals; Unicode category Nl.
      */
-    public static final Category Letter_Number = Nl;
+    public static final Category LetterNumber = Nl;
 
     /**
      * All other kinds of number character; Unicode category No.
@@ -372,7 +372,7 @@ public class Category {
     /**
      * All other kinds of number character; Unicode category No.
      */
-    public static final Category Other_Number = No;
+    public static final Category OtherNumber = No;
 
     /**
      * Some whitespace characters; Unicode category Z. This has some notable missing characters, like newline, tab (both
@@ -398,7 +398,7 @@ public class Category {
     /**
      * Some space separator characters; Unicode category Zs.
      */
-    public static final Category Space_Separator = Zs;
+    public static final Category SpaceSeparator = Zs;
 
     /**
      * All line separator characters (well, character; there's only one, and it isn't in ASCII); Unicode category Zl.
@@ -408,7 +408,7 @@ public class Category {
     /**
      * All line separator characters (well, character; there's only one, and it isn't in ASCII); Unicode category Zl.
      */
-    public static final Category Line_Separator = Zl;
+    public static final Category LineSeparator = Zl;
 
     /**
      * All paragraph separator characters (well, character; there's only one); Unicode category Zp.
@@ -418,7 +418,7 @@ public class Category {
     /**
      * All paragraph separator characters (well, character; there's only one); Unicode category Zp.
      */
-    public static final Category Paragraph_Separator = Zp;
+    public static final Category ParagraphSeparator = Zp;
 
     /**
      * All punctuation (but not symbols); Unicode category P.
@@ -438,7 +438,7 @@ public class Category {
     /**
      * All dash punctuation; Unicode category Pd.
      */
-    public static final Category Dash_Punctuation = Pd;
+    public static final Category DashPunctuation = Pd;
 
     /**
      * All starting/opening "bracket-like" punctuation; Unicode category Ps.
@@ -448,7 +448,7 @@ public class Category {
     /**
      * All starting/opening "bracket-like" punctuation; Unicode category Ps.
      */
-    public static final Category Open_Punctuation = Ps;
+    public static final Category OpenPunctuation = Ps;
 
     /**
      * All initial/opening "quote-like" punctuation; Unicode category Pi.
@@ -458,7 +458,7 @@ public class Category {
     /**
      * All initial/opening "quote-like" punctuation; Unicode category Pi.
      */
-    public static final Category Initial_Punctuation = Pi;
+    public static final Category InitialPunctuation = Pi;
 
     /**
      * All ending/closing "bracket-like" punctuation; Unicode category Pe.
@@ -468,7 +468,7 @@ public class Category {
     /**
      * All ending/closing "bracket-like" punctuation; Unicode category Pe.
      */
-    public static final Category Close_Punctuation = Pe;
+    public static final Category ClosePunctuation = Pe;
 
     /**
      * All finalizing/closing "quote-like" punctuation; Unicode category Pf.
@@ -478,7 +478,7 @@ public class Category {
     /**
      * All finalizing/closing "quote-like" punctuation; Unicode category Pf.
      */
-    public static final Category Final_Punctuation = Pf;
+    public static final Category FinalPunctuation = Pf;
 
     /**
      * All connector punctuation, such as the underscore; Unicode category Pc.
@@ -488,7 +488,7 @@ public class Category {
     /**
      * All connector punctuation, such as the underscore; Unicode category Pc.
      */
-    public static final Category Connector_Punctuation = Pc;
+    public static final Category ConnectorPunctuation = Pc;
 
     /**
      * All other punctuation; Unicode category Po.
@@ -498,7 +498,7 @@ public class Category {
     /**
      * All other punctuation; Unicode category Po.
      */
-    public static final Category Other_Punctuation = Po;
+    public static final Category OtherPunctuation = Po;
 
     /**
      * All symbols (but not punctuation); Unicode category S.
@@ -518,7 +518,7 @@ public class Category {
     /**
      * All math symbols; Unicode category Sm.
      */
-    public static final Category Math_Symbol = Sm;
+    public static final Category MathSymbol = Sm;
 
     /**
      * Returns true if c is a Unicode math symbol, in category {@link #Sm}, or false otherwise.
@@ -537,7 +537,7 @@ public class Category {
     /**
      * All currency symbols; Unicode category Sc.
      */
-    public static final Category Currency_Symbol = Sc;
+    public static final Category CurrencySymbol = Sc;
 
     /**
      * Returns true if c is a Unicode currency symbol, in category {@link #Sc}, or false otherwise.
@@ -556,7 +556,7 @@ public class Category {
     /**
      * All modifier symbols; Unicode category Sk.
      */
-    public static final Category Modifier_Symbol = Sk;
+    public static final Category ModifierSymbol = Sk;
 
     /**
      * All other symbols; Unicode category So.
@@ -566,7 +566,7 @@ public class Category {
     /**
      * All other symbols; Unicode category So.
      */
-    public static final Category Other_Symbol = So;
+    public static final Category OtherSymbol = So;
 
     /**
      * All "programming word" characters, an odd group that includes all letters, all numbers, and the underscore '_'.
@@ -838,7 +838,7 @@ public class Category {
     public static final LinkedHashMap<String, Category> superCategories;
     static {
 
-        superCategories = new LinkedHashMap<String, Category>(16);
+        superCategories = new LinkedHashMap<String, Category>(32);
         superCategories.put("C", C);
         superCategories.put("L", L);
         superCategories.put("M", M);
@@ -846,10 +846,20 @@ public class Category {
         superCategories.put("Z", Z);
         superCategories.put("P", P);
         superCategories.put("S", S);
-        superCategories.put("J", Identifier);
-        superCategories.put("G", Space);
+        superCategories.put("J", J);
+        superCategories.put("G", G);
 
-        categories = new LinkedHashMap<String, Category>(64);
+//        superCategories.put("Other", Other);
+//        superCategories.put("Letter", Letter);
+//        superCategories.put("Mark", Mark);
+//        superCategories.put("Number", Number);
+//        superCategories.put("Separator", Separator);
+//        superCategories.put("Punctuation", Punctuation);
+//        superCategories.put("Symbol", Symbol);
+//        superCategories.put("Identifier", Identifier);
+//        superCategories.put("Space", Space);
+
+        categories = new LinkedHashMap<String, Category>(128);
         categories.put("C", C);
         categories.put("L", L);
         categories.put("M", M);
@@ -857,8 +867,8 @@ public class Category {
         categories.put("Z", Z);
         categories.put("P", P);
         categories.put("S", S);
-        categories.put("J", Identifier);
-        categories.put("G", Space);
+        categories.put("J", J);
+        categories.put("G", G);
         categories.put("Cc", Cc);
         categories.put("Cf", Cf);
         categories.put("Co", Co);
@@ -890,11 +900,57 @@ public class Category {
         categories.put("Sc", Sc);
         categories.put("Sk", Sk);
         categories.put("So", So);
-        categories.put("Zh", Horizontal);
-        categories.put("Zv", Vertical);
-        categories.put("Gh", Horizontal);
-        categories.put("Gv", Vertical);
-        categories.put("Js", IdentifierStart);
-        categories.put("Jp", IdentifierPart);
+        categories.put("Zh", Gh);
+        categories.put("Zv", Gv);
+        categories.put("Gh", Gh);
+        categories.put("Gv", Gv);
+        categories.put("Js", Js);
+        categories.put("Jp", Jp);
+
+        categories.put("Other", Other);
+        categories.put("Private_Use", PrivateUse);
+        categories.put("Unassigned", Unassigned);
+        categories.put("Control", Control);
+        categories.put("Format", Format);
+        categories.put("Surrogate", Surrogate);
+        categories.put("Letter", Letter);
+        categories.put("Uppercase_Letter", UppercaseLetter);
+        categories.put("Lowercase_Letter", LowercaseLetter);
+        categories.put("Titlecase_Letter", TitlecaseLetter);
+        categories.put("Modifier_Letter", ModifierLetter);
+        categories.put("Other_Letter", OtherLetter);
+        categories.put("Cased_Letter", CasedLetter);
+        categories.put("Mark", Mark);
+        categories.put("Nonspacing_Mark", NonspacingMark);
+        categories.put("Enclosing_Mark", EnclosingMark);
+        categories.put("Spacing_Mark", SpacingMark);
+        categories.put("Number", Number);
+        categories.put("Decimal_Number", DecimalNumber);
+        categories.put("Letter_Number", LetterNumber);
+        categories.put("Other_Number", OtherNumber);
+        categories.put("Separator", Separator);
+        categories.put("Space_Separator", SpaceSeparator);
+        categories.put("Line_Separator", LineSeparator);
+        categories.put("Paragraph_Separator", ParagraphSeparator);
+        categories.put("Punctuation", Punctuation);
+        categories.put("Dash_Punctuation", DashPunctuation);
+        categories.put("Open_Punctuation", OpenPunctuation);
+        categories.put("Initial_Punctuation", InitialPunctuation);
+        categories.put("Close_Punctuation", ClosePunctuation);
+        categories.put("Final_Punctuation", FinalPunctuation);
+        categories.put("Connector_Punctuation", ConnectorPunctuation);
+        categories.put("Other_Punctuation", OtherPunctuation);
+        categories.put("Symbol", Symbol);
+        categories.put("Math_Symbol", MathSymbol);
+        categories.put("Currency_Symbol", CurrencySymbol);
+        categories.put("Modifier_Symbol", ModifierSymbol);
+        categories.put("Other_Symbol", OtherSymbol);
+        categories.put("Identifier", Identifier);
+        categories.put("Space", Space);
+        categories.put("Horizontal", Horizontal);
+        categories.put("Vertical", Vertical);
+        categories.put("Identifier_Start", IdentifierStart);
+        categories.put("Identifier_Part", IdentifierPart);
+
     }
 }
