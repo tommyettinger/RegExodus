@@ -164,6 +164,129 @@ public class BasicTest {
         }
     }
     @Test
+    public void testLongCategories() {
+
+        String[] strings = new String[100000];
+        for (int i = 0; i < 100000; i++) {
+            strings[i] = exampleASCII();
+        }
+        Pattern p1 = new Pattern("([0-9a-f])\\1", "i"), p2 = Pattern.compile("([0-9A-F])\\1", "i");
+        Matcher m1 = p1.matcher(), m2 = p2.matcher();
+        Replacer r1 = p1.replacer("$1$1$1$1"), r2 = p2.replacer("$1$1$1$1");
+        long ctr = 0;
+        boolean found;
+        /*
+        for (int i = 0; i < 100000; i++) {
+            m1.setTarget(strings[i]);
+            m2.setTarget(strings[i]);
+            found = m1.find();
+            if(found) ctr++;
+            Assert.assertEquals(found, m2.find());
+            //System.out.println(r1.replace(strings[i]) + ";;;" + r2.replace(strings[i]));
+        }*/
+        System.out.println(r1.replace("aaB") + ";;;" + r2.replace("aaB"));
+        m1.setTarget("aaB");
+        m2.setTarget("aaB");
+        System.out.println(m1.find() + "---" + m2.find());
+        System.out.println(r1.replace("AAB") + ";;;" + r2.replace("AAB"));
+        m1.setTarget("AAB");
+        m2.setTarget("AAB");
+        System.out.println(m1.find() + "---" + m2.find());
+        System.out.println(r1.replace("aaB") + ";;;" + r2.replace("AAB"));
+        m1.setTarget("aaB");
+        m2.setTarget("AAB");
+        System.out.println(m1.find() + "---" + m2.find());
+        System.out.println(r1.replace("AAB") + ";;;" + r2.replace("aaB"));
+        m1.setTarget("AAB");
+        m2.setTarget("aaB");
+        System.out.println(m1.find() + "---" + m2.find());
+
+
+        /*
+        Assert.assertEquals(p, p2);
+        Assert.assertNotEquals(p2, p3);
+        Assert.assertTrue(p.matches("1337ca7CAFE"));
+        Assert.assertTrue(p3.matches("[0-9a-fA-F]"));
+        */
+        System.out.println(Pattern.compile("(\\Q[]\\){)$^(\\E)").matches("[]\\){)$^("));
+        System.out.println(Pattern.compile("\\m11").matches("\13")); //decimal is nicer than octal, huh
+        System.out.println(Pattern.compile("[\\v]{3}").matches("\u2028\r\n"));
+        System.out.println(Pattern.compile("[\\h]{5}").matches("\u1680\u00A0 \u2009\t"));
+        System.out.println(Pattern.compile("\\bDorothy\\b", "ui").replacer("Nadanno")
+                .replace("Dorothy lived in the midst of the great Kansas prairies"));
+        System.out.println(Pattern.compile("\\b(?:(?:\\Qciploû\\E)|(?:\\Qlaounctouige\\E))\\b", "ui").matches("ciploû"));
+        System.out.println(Pattern.compile("\\((?:[\\s,]*(?:[^\\s,]+)|(?:\\((?:[\\s,]*[^\\s,]+)*\\)))*\\)").matches("(ciploû (+ 1 2))"));
+        System.out.println(Pattern.compile("(z\\p{IsOpenPunctuation}\\*)\\QABC\\E{\\:@/1}").matches("z(*ABC*)Z"));
+        System.out.println(Pattern.compile("([\\(\\[\\{]){\\:/1}").matches("()"));
+        Matcher m = Pattern.compile("({=NAME}a+)").matcher("aa a aaa aaa");
+        m.find();
+        System.out.println(m.group("NAME"));
+        System.out.println();
+        m.flush();
+        for (String s : m.foundStrings())
+        {
+            System.out.println(s);
+        }
+        m = Pattern.compile("\\p{IdentifierStart}\\p{Identifier}*").matcher("... uh, $1 please? That's 1 dollar.");
+        for (String s : m.foundStrings())
+        {
+            System.out.println(s);
+        }
+        System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new PerlSubstitution("'$1'")).replace("abc 123 def"));
+        System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("OOBAWOOBA", 0.5, 10)).replace("12 34 56 78"));
+        System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("'$1'", 0.5, 10)).replace("12 34 56 78"));
+        System.out.println(new Replacer(new Pattern("\\b(\\d+)\\b"),new ChanceSubstitution("$1$1$1", 0.5, 10)).replace("12 34 56 78"));
+
+        Pattern classGroup = Pattern.compile("(?[[\\p{J}]-[\\p{CurrencySymbol}]])");
+        System.out.println(classGroup.matches("$"));
+        System.out.println(classGroup.matches("a"));
+        System.out.println(classGroup.matches("2"));
+
+        System.out.println(Category.Nl.contents());
+        System.out.println(Category.IdentifierStart.contains('Ⅹ'));
+        System.out.println(Category.IdentifierPart.contains('Ⅹ'));
+
+        System.out.println(Pattern.compile("\\pL\\p{InBasicLatin}\\P{BasicLatin}\\p{Greek}").matches("buζζ"));
+        System.out.println(Pattern.compile("\\p{InHiragana}+").matches("ひらがな"));
+
+        String sentence = "Hiragana (ひらがな) is one of two kana\n" +
+                "writing systems in use in modern Japan,\n" +
+                "the other being katakana (カタカナ).";
+
+        //splits on newlines, underscores, and chinese/japanese characters
+        Pattern regularSplitter = Pattern.compile(
+                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|"
+                        + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|"
+                        + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|"
+                        + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+
+        //additionally splits on words, so that each word can be arranged individually
+        Pattern regularSplitterMultiline = Pattern.compile("(?<= )|(?= )|(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|"
+        + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+
+        System.out.println("regular");
+        for(String s : regularSplitter.split(sentence)){
+            System.out.println(s);
+        }
+        System.out.println("regularMultiline");
+        for(String s : regularSplitterMultiline.split(sentence)){
+            System.out.println(s);
+        }
+//        for (MatchIterator it = regularSplitter.matcher(sentence).findAll(); it.hasNext(); ) {
+//            MatchResult mr = it.next();
+//            System.out.println(mr.group(0));
+//        }
+
+        System.out.println("jur");
+        java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(
+                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJKUnifiedIdeographs})|(?=\\p{InCJKUnifiedIdeographs})|" + "(?<=\\p{InCJKSymbolsAndPunctuation})|(?=\\p{InCJKSymbolsAndPunctuation})");
+//        java.util.regex.Pattern jurSplitter = java.util.regex.Pattern.compile(
+//                "(?<=\n)|(?=\n)|(?<=_)|(?=_)|" + "(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" + "(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" + "(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|" + "(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+        for(String s : jurSplitter.split(sentence)){
+            System.out.println(s);
+        }
+    }
+    @Test
     public void testReplace()
     {
         String[] strings = new String[10000];
