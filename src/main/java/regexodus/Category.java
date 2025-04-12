@@ -122,7 +122,12 @@ public class Category {
     /**
      * All control, format, surrogate, private use, and unassigned characters; Unicode category C.
      */
-    public static final Category C=new Category(new int[]{0,1,2,3,4,5,8,6,7,11,10,9,12,13,14,15,16,23,27,24,44,19,25,20,31,32,33,34,37,39,50,52,56,57,61,90,17,18,21,22,28,29,30,36,46,48,60,65,71,87,95,104,117,26,40,41,42,43,45,49,51,54,55,58,59,62,63,66,68,73,77,79,85,96,102,107,116,125,127,136,141,149,153,162,185,191,192,193,199,215,251,284,349,366,367,378,398,664,670,715,1166,1813,8451,11173,28126}," 8i9. \u0083!(#& \" F \u0080 =!\\!$ @(H#(01!v [!N!j-N!>!0 I!\" ,?G 5*0 s +!#!1 & \"\"%!*!#!%(\"## '!U!$ (##!1 & # # #!\" '##!$\"\"'% \"'E+$ * $ 1 & # '!) $ $!\".%!-'& $ +!#!1 & # '!*!#!$'$## '!5+# (\"$ %\"# \" #\"#\"$\"-#'\"$ %!\"%\"-G$. $ 3 D\"+ $ %'# $$%!)'1 $ 3 ) '!* $ %'#'\" %!) #,. $ ? $ (#D!2 $ 5\"6 * \"!&\"\"#( \" +%)!$)`#JK# \" ' 6 \" 3!' \" (!)!%8e <#V < 0 .Kx \"$\"!\u007f %!& \" %!X %!; %!& \" %!0 _ %!d!:\"2%Q!(!\u0082\"C'. &*3&F). $ #)R!)%)%/!)%C'4$P+9 -#-#\"\"Y!'*Z#2%,\"b!c J!,%)%/!Eaf#L\"T(B\"0\"B'4!,(4$z {!(!=!(!+ \" \" \" 9!] 0 /!( 7!$ * ,$2$>/#!H .\":/;.p#\u00813,7\u0085!: r M q$L \"$\"!A'#-6&& & & & & & & & l42 C)y6-#O Q!S$4 R h)M \u0088\"\u0084\"@&|5t(w!*WA\")%A(P(-%T*8\"g ,#; @&/!)!S1I+(!(!(&& & B#n!)%\u0087)3#>\u0086~!k<&)'$2 ' \" # # m0}/O!^=/!2%? 7 %#' o#u\"(!(!(!$\"& &,#! ");
+    public static final Category C = new Category(new int[]{0,1,2,3,4,5,8,6,7,11,9,10,12,14,13,23,15,16,27,25,32,20,24,31,34,44,19,21,33,37,50,56,60,87,90,17,28,29,30,36,39,43,49,52,57,61,63,71,95,104,127,18,22,26,40,42,45,46,48,51,54,55,58,59,66,68,73,76,78,79,81,96,102,107,117,126,136,141,162,167,185,191,193,199,207,215,349,350,367,378,398,446,535,667,670,715,1813,8451,11173,29294}," 7g4- \u007f!(#& \" ; z H![!$ ?(D#(1/ r J!@!h.@!>!1 E!\" ,$4(c n *!#!/ & \"\"%!+!#!%(\"## '!U!$ (##!/ & # # #!\" '##!$\"\"'% \"'S*$ + $ / & # '!) $ $!\"-%!.'& $ *!#!/ & # '!+!#!$'$## '!:*# (\"$ %\"# \" #\"#\"$\".#'\"$ %!\"%\".T$- $ 6 C!+ $ %'# $!\"!%!)'/ $ 6 ) '!+ $ %'#%# %!) $)- $ K $ (#C!2 $ :\"3 + \"!&\"\"#( \" *%)!$)_#FG# \" ' 3 \" 6!' \" & )!%7b =#V = 1 -Gs \"$\"!y %!& \" %!W %!8 %!& \" %!1 ^ %!a!<\"2%A!(!~\"B'/&3&;)- $ #)P!)%)%0 ,%B'9$O*4 .#.#\"\"I!'+X#2%,\"N!` F!,%)%0!4Zd o(M\"1\"N$9!,(9$|!(!H!(!* \" \" \" 4!\\ 1 0!( 5!$ + ,$2$>0#!D -\"8-8-m#};,5\u0080!< w$Y \"$\"!L'#.3&& & & & & & & & R<2 B)u3f A!Q$9 P A&J \u0083\"?&v:p(t!# \" *5@\")%L(O(.%j+7\"e ,#8 ?&0!)!Q/E*(!(!(&& & M#R!)%\u0082)6#>\u0081x!i=&)'$2 ' \" # # k0{!]'\"7I%K 5 %#' l#q\"(!(!(!$\"& &,#! ");
+
+    /**
+     * All control, format, surrogate, private use, and unassigned characters; Unicode category C.
+     */
+    public static final Category Other = C;
 
     /**
      * Returns true if c is an ISO control character, in the ranges {@code 0x00 to 0x1F} or {@code 0x7F to 0x9F}, or false otherwise.
@@ -136,27 +141,52 @@ public class Category {
     /**
      * All private use characters; Unicode category Co.
      */
-    public static final Category Co=new Category(new int[]{1792,6399,57344},"\"! ");
-    
+    public static final Category Co = new Category(new int[]{1792,6399,57344},"\"! ");
+
+    /**
+     * All private use characters; Unicode category Co.
+     */
+    public static final Category Private_Use = Co;
+
     /**
      * All unassigned characters; Unicode category Cn.
      */
-    public static final Category Cn=new Category(new int[]{0,1,2,3,4,5,8,6,7,11,10,9,13,14,12,16,15,23,24,27,44,19,25,61,20,30,33,34,37,39,52,56,57,90,17,18,21,22,28,29,31,32,36,46,48,50,65,71,87,95,102,104,117,26,40,41,42,43,45,51,54,55,58,59,60,62,63,66,68,73,77,79,85,107,116,125,127,136,141,149,153,178,185,191,193,199,215,241,251,284,349,366,378,398,664,670,888,1166,1813,8815,11173,28126},"\u0080!(#& \" D } =![!$ ?(F#(*9 w 7!R,`!M!/ G!\" .>E 5*q +!#!1 & \"\"%!*!#!%(\"## '!U!$ (##!1 & # # #!\" '##!$\"\"'% \"'C+$ * $ 1 & # '!) $ $!\"-%!,'& $ +!#!1 & # '!*!#!$'$## '!5+# (\"$ %\"# \" #\"#\"$\",#'\"$ %!\"%\",E$- $ 2 B\"+ $ %'# $$%!)'1 $ 2 ) '!* $ %'#'\" %!) #.- $ > $ (#B!3 $ 5\"6 * \"!&\"\"#( \" +%)!$)_#9J# \" ' 6 \" 2!' \" (!)!%He <#V < / -Ju \"$\"!| %!& \" %!X %!; %!& \" %!/ ^ %!d!:\"3%P!(!\u007f\"A'- &*2&D)- $ #)Q!)%)%/ )%A'4$O+I ,#,#\"\"Y!'*Z#3%.\"b!c 9!.%)%0!Caf#K\"T(7\"/\"7'4!.(4$x y!(!=!(!+ \" \" \" I!\\ / 0!( 8!$ * R ,!F -\":0;-n#~2.8\u0082!: p L o$K \"$\"!@'#,6&& & & & & & & & j43 A)v6,#N P!S$4 Q h)L \u0085\"\u0081\"?&z5r(t!*W@\")%@(O(,%T*H\"g .#; ?&0!)!S1G+(!(!(&& & 7#l!)%\u0084)2#M#\u0083!i<&)'$3 ' \" # # k/{0N!]=0!3%> 8 %#' m!\" s\"(!(!(!$\"& &+'! ");
+    public static final Category Cn = new Category(new int[]{0,1,2,3,4,5,8,6,7,11,9,10,13,14,23,12,27,16,25,15,20,24,32,34,44,19,21,31,33,37,56,61,87,90,17,28,29,30,36,39,43,50,52,57,60,63,71,95,102,104,127,18,22,26,40,42,45,46,48,49,51,54,55,58,59,66,68,73,78,79,81,107,117,126,136,141,167,185,191,199,207,215,238,271,349,350,378,398,446,535,667,670,888,1813,8815,11173,29294},"|!(#& \" : w G!\\!$ >(C#(+s ?!P,L!I!1 D!\" /$6 #$r *!#!. & \"\"%!+!#!%(\"## '!U!$ (##!. & # # #!\" '##!$\"\"'% \"'S*$ + $ . & # '!) $ $!\"-%!,'& $ *!#!. & # '!+!#!$'$## '!9*# (\"$ %\"# \" #\"#\"$\",#'\"$ %!\"%\",T$- $ 5 B!+ $ %'# $!\"!%!)'. $ 5 ) '!+ $ %'#%# %!) $)- $ J $ (#B!0 $ 9\"2 + \"!&\"\"#( \" *%)!$)`#EF# \" ' 2 \" 5!' \" & )!%;c =#V = 1 -Fo \"$\"!v %!& \" %!W %!7 %!& \" %!1 _ %!b!<\"0%@!(!{\"A'.&2&:)- $ #)O!)%)%0%A'8$N*6 ,#,#\"\"H!'+X#0%/\"M!a E!/%)%3!6Zd l(?\"1\"M$8!/(8$y!(!G!(!* \" \" \" 6!] 1 3!( 4!$ + P ,!C -\"7-7-k#z:/4}!< u$Y \"$\"!K'#,2&& & & & & & & & R<0 A)q2f @!Q$8 O @&[ \u0080\">&t9m(p!# \" *4L\")%K(N(,%h+;\"e /#7 >&3!)!Q.D*(!(!(&& & ?#R!)%\u007f)5#I#~!g=&)'$0 ' \" # # i3x!^'\";H%J 4 %#' j!\" n\"(!(!(!$\"& &*'! ");
+
+    /**
+     * All unassigned characters; Unicode category Cn.
+     */
+    public static final Category Unassigned = Cn;
 
     /**
      * All control characters; Unicode category Cc.
      */
-    public static final Category Cc=new Category(new int[]{0,31,32,96}," !#\"");
+    public static final Category Cc = new Category(new int[]{0,31,32,96}," !#\"");
+
+    /**
+     * All control characters; Unicode category Cc.
+     */
+    public static final Category Control = Cc;
 
     /**
      * All format characters; Unicode category Cf.
      */
-    public static final Category Cf=new Category(new int[]{0,4,2,50,5,9,23,27,173,193,250,467,1363,2045,3884,56976},"( ,$& ) # + . -!'!#!\"%/ *\"!");
+    public static final Category Cf = new Category(new int[]{0,4,2,50,1,5,9,23,27,81,173,193,250,385,1363,2045,3884,56976},"* .%' + # -$) 0 /!(!#!\"&1 ,\"!");
+
+    /**
+     * All format characters; Unicode category Cf.
+     */
+    public static final Category Format = Cf;
 
     /**
      * All surrogate characters; Unicode category Cs.
      */
-    public static final Category Cs=new Category(new int[]{2047,55296},"! ");
+    public static final Category Cs = new Category(new int[]{2047,55296},"! ");
+
+    /**
+     * All surrogate characters; Unicode category Cs.
+     */
+    public static final Category Surrogate = Cs;
 
     /**
      * All letters; Unicode category L.
@@ -376,7 +406,7 @@ public class Category {
     public static final Category So=new Category(new int[]{0,2,1,3,5,7,9,11,6,10,16,29,30,4,8,12,13,14,22,26,31,33,38,47,15,19,20,21,23,25,27,35,39,42,43,45,53,54,59,63,65,68,77,80,82,88,104,110,128,131,133,134,158,166,182,198,207,208,213,230,247,248,255,267,269,319,337,354,358,374,392,487,513,516,574,723,724,753,866,978,1412,6593,21380,22161},"U # $ ! o _\"P\"X ' :\"] i e Q$! R Y A f!* !!#$; ! ! S%!$!\"(#W\"m&l k T5c&).p\"!#!\"' !\"%$! ! ! $ /\"8 !\"! F\")-##!\"!\"!(!,#\"! !,`%$9#(#K!+3@%I3)LJ<V!.!D&O!\\CBH^h72\"%6#4!N[$d\"7=!M0Z>'& 1\"0 2\"%\"b\"$&5?+,/+& *4'6*aqGsEn#'\"! j!r g - $\"1\"!");
 
     /**
-     * All "programming word" characters, a weird group that includes all letters, all numbers, and the underscore '_'.
+     * All "programming word" characters, an odd group that includes all letters, all numbers, and the underscore '_'.
      * You may want {@link #Identifier}, {@link #IdentifierPart}, and/or {@link #IdentifierStart} for Java identifier
      * characters, which are a larger group and allow matching the initial character differently from the rest.
      * <br>
@@ -398,6 +428,13 @@ public class Category {
      * <br>
      * Accessible in regexes via "<code>\pJ</code>" or "<code>\p{J}</code>" (J for Java).
      */
+    public static final Category J=new Category(new int[]{2,3,0,4,5,1,6,9,7,8,12,10,15,11,13,25,14,17,19,18,21,22,42,48,23,30,31,37,40,16,20,26,27,28,33,35,38,32,39,43,46,50,52,53,54,55,57,58,64,69,73,85,88,24,29,34,41,44,45,47,49,51,56,59,62,63,65,66,67,68,72,74,75,77,79,82,83,89,93,100,101,102,105,107,114,115,116,122,128,132,134,138,165,249,268,282,321,332,362,365,457,470,619,631,727,1133,1164,6591,8453,11171,20988},"\")&.'\"*')/$\" /$E!!$\")% \"#%   5 9 \204$-,#)\" \"3v %!! \"(\"   \" 2 k { #!| ;!\"(<(\" Y \" % % \"'?$!/\"$+&R$p (!' 3!\"1O!o,K$\"!72@$+L> 1*0 x!' 3 (!%!4 & \"#!!)!%!!'\"$% #!2 % \"!  $$%!4 & % % %!\" #$%! #\")! \"),*  )   4 & % #!'    !\"=!!' \")&   (!%!4 & % #!)!%! ) $% #!' &-% $#  !#% \" %#%# #-$##  !!\"(\",*(\"(*   5 ,#(   !)%  &!!''& ! (   5 ' #!)   !)%)\" !!' %0*   I   #&,!3 $   1#8 ) \"!&#\"$$ \" (('!%0N$, '<% \" # 8 \" 5!# \" $!'!!B\"U%(2 \" \" \"$' C$2 1 C+\"OR(i!; \"&\"!6 \201 !!& \" !!< !!E !!& \" !!0 ^ !!c! +2#,1S!$#\206!= /&g#+)* &*>*2.*   %.l#\"# !'('3 !'(T)6&Q-9 -$--F!#*G$/(+D@$` A!+('0\"'. %Ph$'3).u.M''#7!))6! 1  D&} \177!$!;!$!( \" \" \" 9!J & \"#  &#!!$$*&  &d%>\"A%!$&+(*#:1*$\"#-3\"$\"!' \"##(\" \" \" ! +!!&#$\" N\210_j4\207V\211H H y()+\"!; \"&\"!M)\"=8+& & & & & & & & :7\"\205 ?0 #!#$S!%!  m !&6 n#!-:\\,B':( 0B'<0\200\213b\216#\212eZ!~#@4[$' tD)!q!J!)GI$\"#$!\")].Q-'(8#\" 7!C.A#P,+(9 L+.!'(5#f/ !,!#-$!$!$+& & 6 .(w %!'(\215.5$7\214\203!rF&.#&- * # \" % % sW\2022a!KX*#,1,#%/ ?\"(# z)\"*')/$\" /*T#$!$!$! #%#%/");
+
+    /**
+     * All valid characters that can be used in a Java identifier.
+     * <br>
+     * Accessible in regexes via "<code>\pJ</code>" or "<code>\p{J}</code>" (J for Java).
+     */
     public static final Category Identifier=new Category(new int[]{2,3,0,4,5,1,6,9,7,8,12,10,15,11,13,25,14,17,19,18,21,22,42,48,23,30,31,37,40,16,20,26,27,28,33,35,38,32,39,43,46,50,52,53,54,55,57,58,64,69,73,85,88,24,29,34,41,44,45,47,49,51,56,59,62,63,65,66,67,68,72,74,75,77,79,82,83,89,93,100,101,102,105,107,114,115,116,122,128,132,134,138,165,249,268,282,321,332,362,365,457,470,619,631,727,1133,1164,6591,8453,11171,20988},"\")&.'\"*')/$\" /$E!!$\")% \"#%   5 9 \204$-,#)\" \"3v %!! \"(\"   \" 2 k { #!| ;!\"(<(\" Y \" % % \"'?$!/\"$+&R$p (!' 3!\"1O!o,K$\"!72@$+L> 1*0 x!' 3 (!%!4 & \"#!!)!%!!'\"$% #!2 % \"!  $$%!4 & % % %!\" #$%! #\")! \"),*  )   4 & % #!'    !\"=!!' \")&   (!%!4 & % #!)!%! ) $% #!' &-% $#  !#% \" %#%# #-$##  !!\"(\",*(\"(*   5 ,#(   !)%  &!!''& ! (   5 ' #!)   !)%)\" !!' %0*   I   #&,!3 $   1#8 ) \"!&#\"$$ \" (('!%0N$, '<% \" # 8 \" 5!# \" $!'!!B\"U%(2 \" \" \"$' C$2 1 C+\"OR(i!; \"&\"!6 \201 !!& \" !!< !!E !!& \" !!0 ^ !!c! +2#,1S!$#\206!= /&g#+)* &*>*2.*   %.l#\"# !'('3 !'(T)6&Q-9 -$--F!#*G$/(+D@$` A!+('0\"'. %Ph$'3).u.M''#7!))6! 1  D&} \177!$!;!$!( \" \" \" 9!J & \"#  &#!!$$*&  &d%>\"A%!$&+(*#:1*$\"#-3\"$\"!' \"##(\" \" \" ! +!!&#$\" N\210_j4\207V\211H H y()+\"!; \"&\"!M)\"=8+& & & & & & & & :7\"\205 ?0 #!#$S!%!  m !&6 n#!-:\\,B':( 0B'<0\200\213b\216#\212eZ!~#@4[$' tD)!q!J!)GI$\"#$!\")].Q-'(8#\" 7!C.A#P,+(9 L+.!'(5#f/ !,!#-$!$!$+& & 6 .(w %!'(\215.5$7\214\203!rF&.#&- * # \" % % sW\2022a!KX*#,1,#%/ ?\"(# z)\"*')/$\" /*T#$!$!$! #%#%/");
 
     /**
@@ -405,7 +442,14 @@ public class Category {
      * <br>
      * Accessible in regexes via "<code>\p{Js}</code>".
      */
-    public static final Category IdentifierStart=new Category(new int[]{2,0,3,4,1,5,6,8,7,12,17,25,15,22,10,11,9,16,21,42,29,40,13,18,30,46,14,19,23,26,31,37,20,24,27,32,33,35,36,43,49,52,55,65,88,28,41,51,53,56,59,63,67,68,85,34,38,39,45,47,48,50,54,61,64,66,69,74,79,81,82,83,89,93,94,98,102,105,107,114,116,130,132,134,138,165,191,268,277,332,362,365,457,470,513,619,1164,2680,6591,8453,11171,20988},"F!4+%! +5\"%!/!%!&- 8 |%/,#'! !q# $\"\" !(!   ! ; f t0u ?\"!(5(!K=%\"+!23F$ k !1$'$/ \"!*! 48L)!+C.$%!#<%!.!#!AA'.^@ *_P#!;!'01,%(\"$\"2 & !#\"#!*!:$  ,\"'$0%%$\"2 & $ $ $C\" !@ *'   2 & $ ##!;!1$1!'!)(\"$\"2 & $ ##!>$  1!7! %#  \"#$ ! $#$# #/<!N!)(   - ,#!B &$>!%(   - 0 ##!D! $1$7'   5\"!*!& 0 +%&*#< ' !\"&R[ $)(R$ ! # < ! 0 $.!\"# !-\"D!`( EM#p32!*%%\"#!#$' %)6!7? !&!\"3 y \"\"& ! \"\"5 \"\"C \"\"& ! \"\": Q \"\"aX,*V\"%#\177\"1 +&c#.') \",*,*,)  1OF!#$UL'#\"D !&b/8]4\"#)G%+J-.Ig!j97&Q4:$/GBE3 /E\"''3\" 3\" % $#!&vKx\"%\"?\"%\"( ! ! ! 8\"I & !#  &#\"\"%%)&  &T$@!4!:!*)#>T!%!\"0 !##(! ! ! \" .\"\"&#%!75\2019 9 r(\"#$6? !&!\"J'!*-.& & & & & & & &e!} =''#\"#%V(  h \"&3 i7>H,~\202K\205#\200UZ\"w#,/$29*8\"d5'\"l\"I\"'G)   \" --!'O,HS%#! $)B/-=M'94!*# 0/# 5A  (2-#!#H !#$\"#\"! !+ \".' 6%\"%\"%.& & 3 6(o8\2046-%\\\203{\"mY&6#&! 0 ) # ! $ $ nWz;S\"PN)J$+ =!(# s'!4+%! +)L#%\"%\"%\" #$#$+");
+    public static final Category Js = new Category(new int[]{2,0,3,4,1,5,6,8,7,12,17,25,15,22,10,11,9,16,21,42,29,40,13,18,30,46,14,19,23,26,31,37,20,24,27,32,33,35,36,43,49,52,55,65,88,28,41,51,53,56,59,63,67,68,85,34,38,39,45,47,48,50,54,61,64,66,69,74,79,81,82,83,89,93,94,98,102,105,107,114,116,130,132,134,138,165,191,268,277,332,362,365,457,470,513,619,1164,2680,6591,8453,11171,20988},"F!4+%! +5\"%!/!%!&- 8 |%/,#'! !q# $\"\" !(!   ! ; f t0u ?\"!(5(!K=%\"+!23F$ k !1$'$/ \"!*! 48L)!+C.$%!#<%!.!#!AA'.^@ *_P#!;!'01,%(\"$\"2 & !#\"#!*!:$  ,\"'$0%%$\"2 & $ $ $C\" !@ *'   2 & $ ##!;!1$1!'!)(\"$\"2 & $ ##!>$  1!7! %#  \"#$ ! $#$# #/<!N!)(   - ,#!B &$>!%(   - 0 ##!D! $1$7'   5\"!*!& 0 +%&*#< ' !\"&R[ $)(R$ ! # < ! 0 $.!\"# !-\"D!`( EM#p32!*%%\"#!#$' %)6!7? !&!\"3 y \"\"& ! \"\"5 \"\"C \"\"& ! \"\": Q \"\"aX,*V\"%#\177\"1 +&c#.') \",*,*,)  1OF!#$UL'#\"D !&b/8]4\"#)G%+J-.Ig!j97&Q4:$/GBE3 /E\"''3\" 3\" % $#!&vKx\"%\"?\"%\"( ! ! ! 8\"I & !#  &#\"\"%%)&  &T$@!4!:!*)#>T!%!\"0 !##(! ! ! \" .\"\"&#%!75\2019 9 r(\"#$6? !&!\"J'!*-.& & & & & & & &e!} =''#\"#%V(  h \"&3 i7>H,~\202K\205#\200UZ\"w#,/$29*8\"d5'\"l\"I\"'G)   \" --!'O,HS%#! $)B/-=M'94!*# 0/# 5A  (2-#!#H !#$\"#\"! !+ \".' 6%\"%\"%.& & 3 6(o8\2046-%\\\203{\"mY&6#&! 0 ) # ! $ $ nWz;S\"PN)J$+ =!(# s'!4+%! +)L#%\"%\"%\" #$#$+");
+
+    /**
+     * All valid characters that can be used as the first character in a Java identifier (more than you might think).
+     * <br>
+     * Accessible in regexes via "<code>\p{Js}</code>".
+     */
+    public static final Category IdentifierStart = new Category(new int[]{2,0,3,4,1,5,6,8,7,12,17,25,15,22,10,11,9,16,21,42,29,40,13,18,30,46,14,19,23,26,31,37,20,24,27,32,33,35,36,43,49,52,55,65,88,28,41,51,53,56,59,63,67,68,85,34,38,39,45,47,48,50,54,61,64,66,69,74,79,81,82,83,89,93,94,98,102,105,107,114,116,130,132,134,138,165,191,268,277,332,362,365,457,470,513,619,1164,2680,6591,8453,11171,20988},"F!4+%! +5\"%!/!%!&- 8 |%/,#'! !q# $\"\" !(!   ! ; f t0u ?\"!(5(!K=%\"+!23F$ k !1$'$/ \"!*! 48L)!+C.$%!#<%!.!#!AA'.^@ *_P#!;!'01,%(\"$\"2 & !#\"#!*!:$  ,\"'$0%%$\"2 & $ $ $C\" !@ *'   2 & $ ##!;!1$1!'!)(\"$\"2 & $ ##!>$  1!7! %#  \"#$ ! $#$# #/<!N!)(   - ,#!B &$>!%(   - 0 ##!D! $1$7'   5\"!*!& 0 +%&*#< ' !\"&R[ $)(R$ ! # < ! 0 $.!\"# !-\"D!`( EM#p32!*%%\"#!#$' %)6!7? !&!\"3 y \"\"& ! \"\"5 \"\"C \"\"& ! \"\": Q \"\"aX,*V\"%#\177\"1 +&c#.') \",*,*,)  1OF!#$UL'#\"D !&b/8]4\"#)G%+J-.Ig!j97&Q4:$/GBE3 /E\"''3\" 3\" % $#!&vKx\"%\"?\"%\"( ! ! ! 8\"I & !#  &#\"\"%%)&  &T$@!4!:!*)#>T!%!\"0 !##(! ! ! \" .\"\"&#%!75\2019 9 r(\"#$6? !&!\"J'!*-.& & & & & & & &e!} =''#\"#%V(  h \"&3 i7>H,~\202K\205#\200UZ\"w#,/$29*8\"d5'\"l\"I\"'G)   \" --!'O,HS%#! $)B/-=M'94!*# 0/# 5A  (2-#!#H !#$\"#\"! !+ \".' 6%\"%\"%.& & 3 6(o8\2046-%\\\203{\"mY&6#&! 0 ) # ! $ $ nWz;S\"PN)J$+ =!(# s'!4+%! +)L#%\"%\"%\" #$#$+");
 
     /**
      * Returns true if c is allowed as the start of a Java identifier, meaning a letter, a currency symbol, a
@@ -419,10 +463,19 @@ public class Category {
 
     /**
      * All valid characters that can be used as the second or later character in a Java identifier.
+     * This is identical to {@link #J}.
      * <br>
      * Accessible in regexes via "<code>\p{Jp}</code>".
      */
-    public static final Category IdentifierPart=new Category(new int[]{2,3,0,4,5,1,6,9,7,8,12,10,15,11,13,25,14,17,19,18,21,22,42,48,23,30,31,37,40,16,20,26,27,28,33,35,38,32,39,43,46,50,52,53,54,55,57,58,64,69,73,85,88,24,29,34,41,44,45,47,49,51,56,59,62,63,65,66,67,68,72,74,75,77,79,82,83,89,93,100,101,102,105,107,114,115,116,122,128,132,134,138,165,249,268,282,321,332,362,365,457,470,619,631,727,1133,1164,6591,8453,11171,20988},"\")&.'\"*')/$\" /$E!!$\")% \"#%   5 9 \204$-,#)\" \"3v %!! \"(\"   \" 2 k { #!| ;!\"(<(\" Y \" % % \"'?$!/\"$+&R$p (!' 3!\"1O!o,K$\"!72@$+L> 1*0 x!' 3 (!%!4 & \"#!!)!%!!'\"$% #!2 % \"!  $$%!4 & % % %!\" #$%! #\")! \"),*  )   4 & % #!'    !\"=!!' \")&   (!%!4 & % #!)!%! ) $% #!' &-% $#  !#% \" %#%# #-$##  !!\"(\",*(\"(*   5 ,#(   !)%  &!!''& ! (   5 ' #!)   !)%)\" !!' %0*   I   #&,!3 $   1#8 ) \"!&#\"$$ \" (('!%0N$, '<% \" # 8 \" 5!# \" $!'!!B\"U%(2 \" \" \"$' C$2 1 C+\"OR(i!; \"&\"!6 \201 !!& \" !!< !!E !!& \" !!0 ^ !!c! +2#,1S!$#\206!= /&g#+)* &*>*2.*   %.l#\"# !'('3 !'(T)6&Q-9 -$--F!#*G$/(+D@$` A!+('0\"'. %Ph$'3).u.M''#7!))6! 1  D&} \177!$!;!$!( \" \" \" 9!J & \"#  &#!!$$*&  &d%>\"A%!$&+(*#:1*$\"#-3\"$\"!' \"##(\" \" \" ! +!!&#$\" N\210_j4\207V\211H H y()+\"!; \"&\"!M)\"=8+& & & & & & & & :7\"\205 ?0 #!#$S!%!  m !&6 n#!-:\\,B':( 0B'<0\200\213b\216#\212eZ!~#@4[$' tD)!q!J!)GI$\"#$!\")].Q-'(8#\" 7!C.A#P,+(9 L+.!'(5#f/ !,!#-$!$!$+& & 6 .(w %!'(\215.5$7\214\203!rF&.#&- * # \" % % sW\2022a!KX*#,1,#%/ ?\"(# z)\"*')/$\" /*T#$!$!$! #%#%/");
+    public static final Category Jp = J;
+
+    /**
+     * All valid characters that can be used as the second or later character in a Java identifier.
+     * This is identical to {@link #Identifier}.
+     * <br>
+     * Accessible in regexes via "<code>\p{Jp}</code>".
+     */
+    public static final Category IdentifierPart = Identifier;
 
     /**
      * Returns true if c is allowed as a later part of a Java identifier, meaning a letter, a number, a currency symbol,
@@ -440,7 +493,15 @@ public class Category {
      * <br>
      * Accessible in regexes via "<code>\p{Zh}</code>" or "<code>\p{Gh}</code>" .
      */
-    public static final Category Horizontal = new Category(new int[]{0,9,10,23,37,48,128,2432,4001,5600},"! # & ) '\"$ % ( ");
+    public static final Category Gh = new Category(new int[]{0,9,10,23,37,48,128,2432,4001,5600},"! # & ) '\"$ % ( ");
+
+    /**
+     * Horizontal whitespace characters; not an actual Unicode category but probably more useful because it contains
+     * the horizontal tab character while Unicode's {@link #Z} category does not.
+     * <br>
+     * Accessible in regexes via "<code>\p{Zh}</code>" or "<code>\p{Gh}</code>" .
+     */
+    public static final Category Horizontal = Gh;
 
     /**
      * Vertical whitespace characters; not an actual Unicode category but probably more useful because it contains the
@@ -448,17 +509,36 @@ public class Category {
      * <br>
      * Accessible in regexes via "<code>\p{Zv}</code>" or "<code>\p{Gv}</code>" .
      */
-    public static final Category Vertical = new Category(new int[]{0,1,3,10,120,8099},"#\"$ %!");
-
+    public static final Category Gv = new Category(new int[]{0,1,3,10,120,8099},"#\"$ %!");
+    /**
+     * Vertical whitespace characters; not an actual Unicode category but probably more useful because it contains the
+     * newline and carriage return characters while Unicode's {@link #Z} category does not.
+     * <br>
+     * Accessible in regexes via "<code>\p{Zv}</code>" or "<code>\p{Gv}</code>" .
+     */
+    public static final Category Vertical = Gv;
     /**
      * Whitespace characters, both horizontal and vertical; not an actual Unicode category but acts like the combination
      * of {@link #Horizontal} (Zh in regexes) and {@link #Vertical} (Zv in regexes) in that it includes both the obscure
      * Unicode characters that are in the Unicode Z category but also the practical characters such as carriage return,
      * newline, and horizontal tab that are not classified as whitespace by Unicode but are by everyone else.
+     * This is likely different from the regex {@code \s} because it includes some control characters used as whitespace
+     * (such as the carriage return).
      * <br>
      * Accessible in regexes via "<code>\pG</code>" or "<code>\p{G}</code>" (G for Gap).
      */
-    public static final Category Space=new Category(new int[]{0,1,4,6,9,10,19,27,30,48,101,2432,4001,5600},"$\"& * ' - +%(!# ) , ");
+    public static final Category G = new Category(new int[]{0,1,4,6,9,10,19,27,30,48,101,2432,4001,5600},"$\"& * ' - +%(!# ) , ");
+    /**
+     * Whitespace characters, both horizontal and vertical; not an actual Unicode category but acts like the combination
+     * of {@link #Horizontal} (Zh in regexes) and {@link #Vertical} (Zv in regexes) in that it includes both the obscure
+     * Unicode characters that are in the Unicode Z category but also the practical characters such as carriage return,
+     * newline, and horizontal tab that are not classified as whitespace by Unicode but are by everyone else.
+     * This is likely different from the regex {@code \s} because it includes some control characters used as whitespace
+     * (such as the carriage return).
+     * <br>
+     * Accessible in regexes via "<code>\pG</code>" or "<code>\p{G}</code>" (G for Gap).
+     */
+    public static final Category Space = G;
 
     /**
      * Returns true if c is a whitespace character, including space, tab, newline, carriage return, and more Unicode space characters, or false otherwise.
@@ -469,16 +549,30 @@ public class Category {
         return Space.contains(c);
     }
 
-    private static final char[] openers =
-            new char[]{'(','[','{','༺','༼','᚛','‚','„','⁅','⁽','₍','⌈','⌊','〈','❨','❪','❬','❮','❰','❲','❴','⟅','⟦',
+    private static final char[]
+            openers =
+            new char[]{'(','<','[','{','༺','༼','᚛','‚','„','⁅','⁽','₍','⌈','⌊','〈','❨','❪','❬','❮','❰','❲','❴','⟅','⟦',
                     '⟨','⟪','⟬','⟮','⦃','⦅','⦇','⦉','⦋','⦍','⦏','⦑','⦓','⦕','⦗','⧘','⧚','⧼','⸢','⸤','⸦','⸨',
                     '⹂','⹕','⹗','⹙','⹛','〈','《','「','『','【','〔','〖','〘','〚','〝','﴿',
                     '︗','︵','︷','︹','︻','︽','︿','﹁','﹃','﹇','﹙','﹛','﹝','（','［','｛','｟','｢'},
-    closers =
-            new char[]{')',']','}','༻','༽','᚜','‛','‟','⁆','⁾','₎','⌉','⌋','〉','❩','❫','❭','❯','❱','❳','❵','⟆','⟧',
+            closers =
+            new char[]{')','>',']','}','༻','༽','᚜','‛','‟','⁆','⁾','₎','⌉','⌋','〉','❩','❫','❭','❯','❱','❳','❵','⟆','⟧',
                     '⟩','⟫','⟭','⟯','⦄','⦆','⦈','⦊','⦌','⦎','⦐','⦒','⦔','⦖','⦘','⧙','⧛','⧽','⸣','⸥','⸧','⸩',
                     '〟','⹖','⹘','⹚','⹜','〉','》','」','』','】','〕','〗','〙','〛','〞','﴾',
                     '︘','︶','︸','︺','︼','︾','﹀','﹂','﹄','﹈','﹚','﹜','﹞','）','］','｝','｠','｣'};
+
+    /**
+     * An immutable String showing all chars, in a specific order, that are considered "opening" brackets, braces,
+     * parentheses, quotation marks, and so on. This matches the exact size and order used by {@link #CLOSING_BRACKETS},
+     * and you can use the same index in the two Strings to get an opening and closing pair.
+     */
+    public static final String OPENING_BRACKETS = String.valueOf(openers);
+    /**
+     * An immutable String showing all chars, in a specific order, that are considered "closing" brackets, braces,
+     * parentheses, quotation marks, and so on. This matches the exact size and order used by {@link #OPENING_BRACKETS},
+     * and you can use the same index in the two Strings to get an opening and closing pair.
+     */
+    public static final String CLOSING_BRACKETS = String.valueOf(closers);
 
     private static final CharCharMap openBrackets = new CharCharMap(openers, closers),
             closingBrackets = new CharCharMap(closers, openers);
@@ -490,7 +584,7 @@ public class Category {
      * {@link #caseDown(char)} and {@link #caseUp(char)} for case mapping, and this method only when case folding is
      * preferred (such as for some case-insensitive comparisons). Case-insensitive comparisons are easier to do with
      * {@link #caseUp(char)} on both compared chars; that technique works for every alphabet except Georgian. This
-     * method will currently act exactly how {@link Character#toLowerCase(char)} acts on Java 23 on a PC.
+     * method will currently act exactly how {@link Character#toLowerCase(char)} acts on Java 24 on a PC.
      * @param c any char; this should only return a case-folded different char for upper-case letters
      * @return the single-char case-folded version of c, of it has one, otherwise c
      */
@@ -506,7 +600,7 @@ public class Category {
      * {@link #caseUp(char)}, but because of the complexities of... language, calling caseDown() and then caseUp() will
      * not always return the original character. This has to do with how some characters, like lower-case s, have
      * multiple upper-case conversions possible, and the same in the other direction. This method will
-     * act exactly how {@link Character#toLowerCase(char)} acts on Java 23 on a PC.
+     * act exactly how {@link Character#toLowerCase(char)} acts on Java 24 on a PC.
      * @param c any char; this should only return a case-changed different char for upper-case letters
      * @return the single-char lower-case version of c, of it has one, otherwise c
      */
@@ -520,7 +614,7 @@ public class Category {
      * one, otherwise it returns it verbatim. This has dubiously correct behavior for digraphs and ligature chars, but
      * they tend to be rare or even discouraged in practice. Case-insensitive comparisons are easier to do with
      * caseUp() on both compared chars; this technique works for every alphabet except Georgian. This method will
-     * act exactly how {@link Character#toUpperCase(char)} acts on Java 23 on a PC.
+     * act exactly how {@link Character#toUpperCase(char)} acts on Java 24 on a PC.
      * @param c any char; this should only return a case-changed different char for lower-case letters
      * @return the single-char upper-case version of c, if it has one, otherwise c
      */

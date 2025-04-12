@@ -40,7 +40,7 @@ var abbr = [
 "S","Sm","Sc","Sk","So"
 ];
 var cats = function() {
-var ct = "C";
+var ct = "Other";
 var aidx = 0;
 for (ct of categories)
 {
@@ -76,7 +76,7 @@ for (ct of categories)
         var bytes = deltas.map(d => dict.indexOf(d) + 0x20);
         strSrc = bytes.map(
             b => b === 0x22 ? '\\"' : b === 0x5c ? '\\\\' : b < 0x7f ?
-                String.fromCharCode(b) : "\\x" + b.toString(16)
+                String.fromCharCode(b) : "\\u" + b.toString(16).padStart(4, "0")
         ).join("");
         strSrc = '"' + strSrc + '"';
         str = new Function('return ' + strSrc)();
@@ -96,6 +96,8 @@ for (ct of categories)
 
     compress();
 
+    console.log("public static final Category " + abbr[aidx] + " = new Category(new int[]" + dictSrc + strSrc + ");\n");
+    console.log("public static final Category " + ct + " = " + abbr[aidx++] + ";\n");
 }
 }
 cats();
@@ -175,7 +177,7 @@ var word = function (cpsGroup){
         var bytes = deltas.map(d => dict.indexOf(d) + 0x20);
         strSrc = bytes.map(
             b => b === 0x22 ? '\\"' : b === 0x5c ? '\\\\' : b < 0x7f ?
-                String.fromCharCode(b) : "\\" + lo.padStart(b.toString(8), 3, '0')
+                String.fromCharCode(b) : "\\u" + b.toString(16).padStart(4, "0")
         ).join("");
         strSrc = '"' + strSrc + '"';
         str = new Function('return ' + strSrc)();
@@ -223,7 +225,7 @@ var cases = function()
 
     console.log('static final CharCharMap cases = new CharCharMap(new int[]'+keySrc+'new int[]'+valSrc+');\n');
 }
-cases();
+//cases();
 
 var brackets = function()
 {
@@ -235,4 +237,4 @@ var brackets = function()
     console.log(startStr);
     console.log(endStr);
 }
-brackets();
+//brackets();
