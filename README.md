@@ -80,7 +80,7 @@ version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
 here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.18%7Cjar);
-the 0.1.18 release is preferred for now, based on the 1.2 line of JRegex. You can
+the 0.1.19 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -88,13 +88,13 @@ If you use Gradle in the way libGDX organizes projects, adding this dependency t
 the core module:
 
 ```groovy
-api 'com.github.tommyettinger:regexodus:0.1.18'
+api 'com.github.tommyettinger:regexodus:0.1.19'
 ```
 
 And this dependency to the GWT module:
 
 ```groovy
-api 'com.github.tommyettinger:regexodus:0.1.18:sources'
+api 'com.github.tommyettinger:regexodus:0.1.19:sources'
 ```
 
 And this line to your GdxDefinition.gwt.xml file:
@@ -232,6 +232,15 @@ are considered either opening or closing depending on locale and context, you ca
 now check what the known brackets actually are with the public constant Strings
 `Category.OPENING_BRACKETS` and `Category.CLOSING_BRACKETS`. An index into one of
 those Strings matches its counterpart in the other String.
+
+0.1.19 is purely a fix for desktop usage, for once. The GWT-only `emu` folder in
+the last version "leaked" into the release JAR, which made commands like `jdeps`
+fail with a "split package" warning and/or error. This moves from being primarily
+a Maven project with a Gradle project as an afterthought, to a pure Gradle project
+because I am sick of how much extra work Maven needs to do anything, including to
+avoid leaking GWT details into non-GWT releases. As much as Gradle is terrible,
+it somehow manages to do a better job than Maven, which means Maven must be just
+extraordinarily awful...
 
 ## Credit
 
