@@ -1,28 +1,89 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         gradlePluginPortal()
     }
+    dependencies {
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.31.0'
+    }
 }
-ext {
-    appName = "regexodus"
+
+apply plugin: 'java-library'
+apply plugin: 'com.vanniktech.maven.publish'
+
+def projectName = 'regexodus'
+group 'com.github.tommyettinger'
+version "$VERSION_NAME"
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
+
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
 }
-apply plugin: 'java'
+
+mavenPlainJavadocJar.archiveBaseName.set(projectName)
 
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
-group = 'com.github.tommyettinger'
-version = '0.1.18'
+// Disable JDK 8's doclint
+// http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc).tap {
+            configureEach {
+                // The -quiet is because of some sort of weird JDK JavaCompiler bug:
+                // https://discuss.gradle.org/t/passing-arguments-to-compiler-and-javadoc/1661
+                options.addStringOption('Xdoclint:none,-missing', '-quiet')
+            }
+        }
+    }
+}
 
-description = """A modern fork of jregex meant to increase compatibility with Java variants like GWT."""
+compileJava {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.release.set(8)
+    }
+}
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+compileTestJava {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.release.set(8)
+    }
+}
+
+apply plugin: 'idea'
+idea.module.excludeDirs += [file("src/main/java/regexodus/emu/"), file("docs/"), file("etc/")]
+[compileJava, compileTestJava, javadoc]*.exclude("regexodus/emu")
+
+// JavaDocs will be published inside the docs/ folder, which you can easily put on GitHub Pages in your repo settings.
+javadoc.destinationDir = file('docs/apidocs')
+
+jar {
+    archiveBaseName.set(projectName)
+    manifest {
+        attributes 'Implementation-Title': projectName, 'Implementation-Version': archiveVersion
+    }
+}
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    maven { url 'https://s01.oss.sonatype.org' }
+    google()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
 }
+
+
+
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version:'4.13.2'
+    testImplementation "junit:junit:4.13.2"
 }
