@@ -1,5 +1,6 @@
 package regexodus;
 
+import regexodus.ds.CharBitSet;
 import regexodus.ds.CharCharMap;
 import regexodus.ds.IntBitSet;
 
@@ -14,7 +15,10 @@ import java.util.LinkedHashMap;
  * depends on) must be commended; that project is
  * <a href="https://github.com/mathiasbynens/node-unicode-data">node-unicode-data</a>.
  */
-public class Category {
+public class Category implements CharPredicate {
+    /**
+     * How many chars are contained in this Category.
+     */
     public final int length;
     private final int n;
     private final char[] cal;
@@ -40,6 +44,10 @@ public class Category {
         blocks = makeBlocks();
     }
 
+    /**
+     * Gets all chars in this Category as a char array.
+     * @return a new char array containing every char in this Category
+     */
     public char[] contents()
     {
         int k = 0;
@@ -82,9 +90,35 @@ public class Category {
         return bls;
     }
 
+    /**
+     * Returns {@code true} if the input is contained in this Category, otherwise returns {@code false}.
+     * <br>
+     * This method runs in linear time proportional to the compressed size of the Category.
+     * If it isn't fast enough, you can use {@link #decompress()} and run {@link CharBitSet#contains(char)} instead.
+     *
+     * @param checking the input argument
+     * @return {@code true} if the input is contained in this Category, otherwise {@code false}
+     */
     public boolean contains(char checking) {
         for (int i = 0; i < n; i += 2) {
             if (checking >= cal[i] && checking <= cal[i + 1])
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns {@code true} if the input is contained in this Category, otherwise returns {@code false}.
+     * <br>
+     * This method runs in linear time proportional to the compressed size of the Category.
+     * If it isn't fast enough, you can use {@link #decompress()} and run {@link CharBitSet#test(char)} instead.
+     *
+     * @param value the input argument
+     * @return {@code true} if the input is contained in this Category, otherwise {@code false}
+     */
+    public boolean test(char value) {
+        for (int i = 0; i < n; i += 2) {
+            if (value >= cal[i] && value <= cal[i + 1])
                 return true;
         }
         return false;
@@ -804,6 +838,12 @@ public class Category {
         return closingBrackets.getOrDefault(c, c);
     }
 
+    /**
+     * Returns a String that is the reverse of {@code s}, with any brackets also reversed via
+     * {@link #matchBracket(char)}.
+     * @param s a non-null CharSequence
+     * @return a String that is the reverse of {@code s} with any brackets also reversed
+     */
     public static String reverseWithBrackets(CharSequence s)
     {
         char[] c = new char[s.length()];
@@ -813,6 +853,12 @@ public class Category {
         return String.valueOf(c);
     }
 
+    /**
+     * Returns true if {@code left} and {@code right} are reverses of each other with the same length.
+     * @param left a CharSequence
+     * @param right another CharSequence
+     * @return true if left and right are reverses of each other
+     */
     public static boolean reverseEqual(CharSequence left, CharSequence right)
     {
         if(left == null) return right == null;
@@ -824,6 +870,13 @@ public class Category {
         return true;
     }
 
+    /**
+     * Returns true if {@code left} and {@code right} are reverses of each other with the same length, and any brackets
+     * also reversed via {@link #matchBracket(char)}.
+     * @param left a CharSequence
+     * @param right another CharSequence
+     * @return true if left and right are reverses of each other, with brackets also reversed
+     */
     public static boolean reverseBracketEqual(CharSequence left, CharSequence right)
     {
         if(left == null) return right == null;
@@ -833,6 +886,18 @@ public class Category {
             if(left.charAt(l) != matchBracket(right.charAt(r))) return false;
         }
         return true;
+    }
+
+    /**
+     * When a Category's compression slows down its repeated usage, you can get an uncompressed data structure using
+     * this method.
+     * <br>
+     * This allocates a new CharBitSet, which should be stored instead of generated more than once per Category.
+     *
+     * @return a new CharBitSet containing the same chars as this Category, uncompressed
+     */
+    public CharBitSet decompress() {
+        return new CharBitSet(contents());
     }
 
     public static final LinkedHashMap<String, Category> categories;
