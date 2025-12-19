@@ -747,7 +747,7 @@ public class Category {
      * {@link #caseDown(char)} and {@link #caseUp(char)} for case mapping, and this method only when case folding is
      * preferred (such as for some case-insensitive comparisons). Case-insensitive comparisons are easier to do with
      * {@link #caseUp(char)} on both compared chars; that technique works for every alphabet except Georgian. This
-     * method will currently act exactly how {@link Character#toLowerCase(char)} acts on Java 24 on a PC.
+     * method will currently act exactly how {@link Character#toLowerCase(char)} acts on Java 25 on a PC.
      * @param c any char; this should only return a case-folded different char for upper-case letters
      * @return the single-char case-folded version of c, of it has one, otherwise c
      */
@@ -763,7 +763,7 @@ public class Category {
      * {@link #caseUp(char)}, but because of the complexities of... language, calling caseDown() and then caseUp() will
      * not always return the original character. This has to do with how some characters, like lower-case s, have
      * multiple upper-case conversions possible, and the same in the other direction. This method will
-     * act exactly how {@link Character#toLowerCase(char)} acts on Java 24 on a PC.
+     * act exactly how {@link Character#toLowerCase(char)} acts on Java 25 on a PC.
      * @param c any char; this should only return a case-changed different char for upper-case letters
      * @return the single-char lower-case version of c, of it has one, otherwise c
      */
@@ -777,7 +777,7 @@ public class Category {
      * one, otherwise it returns it verbatim. This has dubiously correct behavior for digraphs and ligature chars, but
      * they tend to be rare or even discouraged in practice. Case-insensitive comparisons are easier to do with
      * caseUp() on both compared chars; this technique works for every alphabet except Georgian. This method will
-     * act exactly how {@link Character#toUpperCase(char)} acts on Java 24 on a PC.
+     * act exactly how {@link Character#toUpperCase(char)} acts on Java 25 on a PC.
      * @param c any char; this should only return a case-changed different char for lower-case letters
      * @return the single-char upper-case version of c, if it has one, otherwise c
      */
