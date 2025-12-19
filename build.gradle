@@ -2,11 +2,11 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.31.0'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.35.0'
     }
 }
 
@@ -14,8 +14,8 @@ apply plugin: 'java-library'
 apply plugin: 'com.vanniktech.maven.publish'
 
 def projectName = 'regexodus'
-group 'com.github.tommyettinger'
-version "$VERSION_NAME"
+group = 'com.github.tommyettinger'
+version = "$VERSION_NAME"
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
 import com.vanniktech.maven.publish.JavaLibrary
@@ -25,7 +25,7 @@ mavenPublishing {
     configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
 }
 
-mavenPlainJavadocJar.archiveBaseName.set(projectName)
+plainJavadocJar.archiveBaseName.set(projectName)
 
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
@@ -76,10 +76,7 @@ jar {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url 'https://s01.oss.sonatype.org' }
     google()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 
