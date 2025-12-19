@@ -3,9 +3,10 @@ package regexodus.ds;
 import java.util.Arrays;
 
 /**
- * An implementation of BitSet (that does not technically extend BitSet due to BitSet not existing under GWT) using 32-bit
- * sections instead of the normal 64-bit (again, for GWT reasons; 64-bit integer math is slower on GWT).
- * Created by Tommy Ettinger on 3/30/2016.
+ * An implementation of BitSet (that does not technically extend BitSet due to BitSet not existing under GWT) using
+ * 32-bit sections instead of the normal 64-bit (again, for GWT reasons; 64-bit integer math is slower on GWT).
+ * This is a special-purpose class meant only for implementing Unicode blocks; it only ever contains 256 bits that may
+ * be individually true or false.
  */
 public class IntBitSet {
     private int[] data;
@@ -14,7 +15,7 @@ public class IntBitSet {
     }
 
     /**
-     * Constructs a CharBitSet that includes all bits between start and end, inclusive.
+     * Constructs an IntBitSet that includes all bits between start and end, inclusive.
      * @param start inclusive
      * @param end inclusive
      */

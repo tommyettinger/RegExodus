@@ -10,27 +10,29 @@ import java.util.LinkedHashMap;
  * Unicode categories constructed from tightly compressed string and array literals instead of large resources.
  * Credit for the technique and much of the code goes to gagern,
  * <a href="https://gist.github.com/gagern/89db1179766a702c564d">from this Gist</a>.
- * Also, the heavy amount of work that went into the Unicode DB for Node.JS (which the pre-processing stage for this
+ * Also, the heavy amount of work that went into the Unicode DB for Node.js (which the pre-processing stage for this
  * depends on) must be commended; that project is
  * <a href="https://github.com/mathiasbynens/node-unicode-data">node-unicode-data</a>.
  */
 public class Category {
     public final int length;
-    private int n;
+    private final int n;
     private final char[] cal;
     final Block[] blocks;
     private Category()
     {
+        n = -1;
         length = 0;
         cal = new char[0];
-        blocks = new Block[0];
-    }
+        blocks = new Block[256];
+        for (int i = 0; i < 256; i++) blocks[i] = new Block();
+        }
     private Category(int[] directory, String data)
     {
-        n = data.length();
+        n = data.length() - 1;
         int j = 0, len = 0;
-        cal = new char[n];
-        for (int i = 0; i < n; ++i) {
+        cal = new char[n + 1];
+        for (int i = 0; i <= n; ++i) {
             cal[i] = (char) (j += directory[data.charAt(i) - 32]);
             if((i & 1) == 1) len += 1 + j - cal[i-1];
         }
@@ -42,18 +44,17 @@ public class Category {
     {
         int k = 0;
         char[] con = new char[length];
-        for (int i = 0; i < n - 1; i += 2)
+        for (int i = 0; i < n; i += 2)
             for (char e = cal[i]; e <= cal[i+1]; ++e)
                 con[k++] = e;
         return con;
     }
 
     private Block[] makeBlocks() {
-        int k = 0;
         Block[] bls = new Block[256];
         IntBitSet[] bss = new IntBitSet[256];
         int e, e2, eb, e2b;
-        for (int i = 0; i < n - 1; i += 2) {
+        for (int i = 0; i < n; i += 2) {
             e = cal[i];
             e2 = cal[i+1];
             eb = e >>> 8;
@@ -82,7 +83,7 @@ public class Category {
     }
 
     public boolean contains(char checking) {
-        for (int i = 0; i < n - 1; i += 2) {
+        for (int i = 0; i < n; i += 2) {
             if (checking >= cal[i] && checking <= cal[i + 1])
                 return true;
         }
@@ -92,7 +93,7 @@ public class Category {
     @Override
     public String toString() {
         return "Category{" +
-                cal +
+                String.valueOf(cal) +
                 '}';
     }
 
