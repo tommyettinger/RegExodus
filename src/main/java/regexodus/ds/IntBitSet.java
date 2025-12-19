@@ -1,5 +1,7 @@
 package regexodus.ds;
 
+import regexodus.Compatibility;
+
 import java.util.Arrays;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Arrays;
  * be individually true or false.
  */
 public class IntBitSet {
-    private int[] data;
+    private final int[] data;
     public IntBitSet() {
         data = new int[8];
     }
@@ -152,7 +154,7 @@ public class IntBitSet {
     {
         int low = 0;
         for (int i = current >>> 5; i < 8 && current < 256; i++) {
-            low = Integer.numberOfTrailingZeros(Integer.lowestOneBit(data[(current) >>> 5] >>> (current & 31)));
+            low = Compatibility.countTrailingZeros(data[(current) >>> 5] >>> (current & 31));
             if (low != 32)
                 return current + low;
             current = (current & 0xE0) + 32;
@@ -163,7 +165,7 @@ public class IntBitSet {
     {
         int low = 0;
         for (int i = current >>> 5; i < 8 && current < 256; i++) {
-            low = Integer.numberOfTrailingZeros(Integer.lowestOneBit(~(data[(current) >>> 5] >>> (current & 31))));
+            low = Compatibility.countTrailingZeros(~(data[(current) >>> 5] >>> (current & 31)));
             if (low != 32)
                 return current + low;
             current = (current & 0xE0) + 32;

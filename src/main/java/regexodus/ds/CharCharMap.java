@@ -16,6 +16,8 @@
 
 package regexodus.ds;
 
+import regexodus.Compatibility;
+
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -56,8 +58,8 @@ public class CharCharMap implements Serializable {
     protected int shift;
 
     /**
-     * A bitmask used to confine hashcodes to the size of the table. Must be all 1 bits in its low positions, ie a power of two
-     * minus 1.
+     * A bitmask used to confine hashcodes to the size of the table. Must be all 1-bits in its low positions, i.e.
+     * a power of two minus 1.
      */
     protected int mask;
 
@@ -75,7 +77,7 @@ public class CharCharMap implements Serializable {
         if (capacity < 0) {
             throw new IllegalArgumentException("capacity must be >= 0: " + capacity);
         }
-        int tableSize = 1 << -Integer.numberOfLeadingZeros(Math.max(2, (int)Math.ceil(capacity / loadFactor)) - 1);
+        int tableSize = 1 << -Compatibility.countLeadingZeros(Math.max(2, (int)Math.ceil(capacity / loadFactor)) - 1);
         if (tableSize > 1 << 30 || tableSize < 0) {
             throw new IllegalArgumentException("The required capacity is too large: " + capacity);
         }
@@ -111,7 +113,7 @@ public class CharCharMap implements Serializable {
         int tableSize = tableSize(initialCapacity, loadFactor);
         threshold = (int)(tableSize * loadFactor);
         mask = tableSize - 1;
-        shift = Long.numberOfLeadingZeros(mask);
+        shift = Compatibility.countLeadingZeros(mask);
 
         keyTable = new char[tableSize];
         valueTable = new char[tableSize];
@@ -471,7 +473,7 @@ public class CharCharMap implements Serializable {
         int oldCapacity = keyTable.length;
         threshold = (int)(newSize * loadFactor);
         mask = newSize - 1;
-        shift = Long.numberOfLeadingZeros(mask);
+        shift = Compatibility.countLeadingZeros(mask);
 
         char[] oldKeyTable = keyTable;
         char[] oldValueTable = valueTable;
