@@ -587,6 +587,16 @@ public class CharBitSet implements CharPredicate {
 	}
 
 	/**
+	 * Gets every char in this CharBitSet, as a {@code char[]}.
+	 * This simply delegates to {@link CharBitSetIterator#toArray()}.
+	 *
+	 * @return a {@code char[]} of every char in this set, in ascending order
+	 */
+	public char[] contents() {
+		return iterator().toArray();
+	}
+
+	/**
 	 * Given a StringBuilder, this appends part of the toString() representation of this CharBitSet, without allocating a String.
 	 * This does not include the opening {@code [} and closing {@code ]} chars, and only appends the int positions in this CharBitSet,
 	 * each pair separated by the given delimiter String. You can use this to choose a different delimiter from what toString() uses.
