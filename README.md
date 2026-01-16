@@ -79,9 +79,9 @@ if you want snapshots) and Maven Central is an easy alternative for
 version releases if you aren't able to add a third-party repository.
 [JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
 and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.20%7Cjar);
+here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.21%7Cjar);
 
-the 0.1.20 release is preferred for now, based on the 1.2 line of JRegex. You can
+the 0.1.21 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -89,13 +89,13 @@ If you use Gradle in the way libGDX organizes projects, adding this dependency t
 the core module:
 
 ```groovy
-api 'com.github.tommyettinger:regexodus:0.1.20'
+api 'com.github.tommyettinger:regexodus:0.1.21'
 ```
 
 And this dependency to the GWT module:
 
 ```groovy
-api 'com.github.tommyettinger:regexodus:0.1.20:sources'
+api 'com.github.tommyettinger:regexodus:0.1.21:sources'
 ```
 
 And this line to your GdxDefinition.gwt.xml file:
@@ -249,6 +249,9 @@ uncompressed version with the same data as the Category. There's the new
 CharPredicate functional interface, which both Category and CharBitSet implement.
 Finally, the data for cross-platform upper- and lower-case transforms on chars has
 been shrunk down significantly, by over 100KB in a JAR.
+
+0.1.21 is a bugfix release for a GWT-only bug in the casing data. Using 0.1.21
+is strongly recommended over 0.1.20 . 0.1.21 is otherwise identical to 0.1.20 .
 
 ## Credit
 
