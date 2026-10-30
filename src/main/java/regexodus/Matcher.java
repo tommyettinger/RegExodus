@@ -1212,8 +1212,9 @@ public class Matcher implements MatchResult, Serializable {
 
         main:
         while (wOffset <= end) {
+            int hardLimit = 0;
             matchHere:
-            for (; ; ) {
+            for (; hardLimit < 1000000; hardLimit++) {
                 int memreg, cntreg;
                 char c;
                 if(term != null) {
@@ -2108,6 +2109,9 @@ public class Matcher implements MatchResult, Serializable {
                     SearchEntry.popState(actual, memregs, counters);
                 }
             }
+
+            // kludge!
+            if(hardLimit >= 0x10000000) return false;
 
             if (defaultEntry.isState) SearchEntry.popState(defaultEntry, memregs, counters);
 
