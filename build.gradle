@@ -2,11 +2,10 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.35.0'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.36.0'
     }
 }
 
@@ -20,9 +19,10 @@ version = "$VERSION_NAME"
 
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
 
 mavenPublishing {
-    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), new SourcesJar.Sources()))
 }
 
 plainJavadocJar.archiveBaseName.set(projectName)
@@ -76,7 +76,6 @@ jar {
 repositories {
     mavenLocal()
     mavenCentral()
-    google()
 }
 
 

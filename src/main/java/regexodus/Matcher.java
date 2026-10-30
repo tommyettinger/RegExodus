@@ -100,11 +100,17 @@ public class Matcher implements MatchResult, Serializable {
      */
     public static final int ACCEPT_INCOMPLETE = 8;
 
+    /**
+     * The maximum number of times a loop in {@link #search(int)} is permitted to run before it is forced to stop and
+     * return false automatically. This defaults to one million. It cannot currently be changed without editing sources.
+     */
+    private static final int MAXIMUM_LOOP_LENGTH = 1000000;
+
     //see search(ANCHOR_START|...)
-    private static Term startAnchor = new Term(Term.START);
+    private static final Term startAnchor = new Term(Term.START);
 
     //see search(ANCHOR_LASTMATCH|...)
-    private static Term lastMatchAnchor = new Term(Term.LAST_MATCH_END);
+    private static final Term lastMatchAnchor = new Term(Term.LAST_MATCH_END);
 
     private Pattern re;
     private int[] counters;
@@ -1214,7 +1220,7 @@ public class Matcher implements MatchResult, Serializable {
         while (wOffset <= end) {
             int hardLimit = 0;
             matchHere:
-            for (; hardLimit < 1000000; hardLimit++) {
+            for (; hardLimit < MAXIMUM_LOOP_LENGTH; hardLimit++) {
                 int memreg, cntreg;
                 char c;
                 if(term != null) {

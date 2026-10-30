@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"regexodus"},{"l":"regexodus.between"},{"l":"regexodus.ds"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"regexodus"},{"l":"regexodus.between"},{"l":"regexodus.ds"}];updateSearchResults();

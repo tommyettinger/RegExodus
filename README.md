@@ -46,9 +46,13 @@ code is not in the distributed jar of source, but is in etc/generator.js , and t
 result is distributed in src/main/java/regexodus/Category.java (which also has case
 folding information, and uses code adapted from [libGDX](https://github.com/libgdx/libgdx)
 by way of [jdkgdxds](https://github.com/tommyettinger/jdkgdxds)). Now RegExodus acts like
-an updated version of JRegex that carries much of Unicode with it, in a jar no more than
-1/7 of a megabyte in size (currently). Though testing so far has been light, it seems to be
-fully compatible with GWT, in development or production mode.
+an updated version of JRegex that carries much of Unicode with it, in a jar just 150
+kilobytes in size (currently). Though testing so far has been light, it seems to be
+fully compatible with GWT, in development or production mode. This has been used by various
+libraries in the libGDX ecosystem for a while now, including Typing-Label and TextraTypist,
+without hitting many issues on GWT or other platforms. It isn't nearly as fast as more
+complex regular expression engines built-in to the JDK or as part of other libraries, but
+it's pure Java and works on GWT.
 
 The name RegExodus comes from both the idea of taking Java regular expressions and
 letting them free to roam various platforms, and because The Ten Commandments was on TV
@@ -75,13 +79,11 @@ flavor available here is mostly in the class JavaDocs for `Pattern`.
 
 Installation should be simple if you use a build tool like Maven, Gradle, or the like.
 For version or snapshot releases you can use JitPack (this repository is recommended
-if you want snapshots) and Maven Central is an easy alternative for
-version releases if you aren't able to add a third-party repository.
-[JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus),
-and [Maven Central instructions for more build tools are
-here](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cregexodus%7C0.1.21%7Cjar);
+if you want snapshots).
 
-the 0.1.21 release is preferred for now, based on the 1.2 line of JRegex. You can
+[JitPack instructions for common build tools are here](https://jitpack.io/#tommyettinger/RegExodus).
+
+the 0.1.22 release is preferred for now, based on the 1.2 line of JRegex. You can
 also download pre-built jars from the GitHub Releases page, or build from
 source; this has no dependencies other than JUnit for tests.
 
@@ -89,13 +91,13 @@ If you use Gradle in the way libGDX organizes projects, adding this dependency t
 the core module:
 
 ```groovy
-api 'com.github.tommyettinger:regexodus:0.1.21'
+api 'com.github.tommyettinger:regexodus:0.1.22'
 ```
 
 And this dependency to the GWT module:
 
 ```groovy
-api 'com.github.tommyettinger:regexodus:0.1.21:sources'
+api 'com.github.tommyettinger:regexodus:0.1.22:sources'
 ```
 
 And this line to your GdxDefinition.gwt.xml file:
@@ -252,6 +254,15 @@ been shrunk down significantly, by over 100KB in a JAR.
 
 0.1.21 is a bugfix release for a GWT-only bug in the casing data. Using 0.1.21
 is strongly recommended over 0.1.20 . 0.1.21 is otherwise identical to 0.1.20 .
+
+0.1.22 fixes the apparently-machine-discovered issue #8 . It probably wasn't
+especially likely to be a problem in practice, but if we can fix it, we might as
+well. The issue was related to repeated zero-length matches, which should just
+generally not occur in correctly-written regexes. Now there's a hard limit of
+one million times an internal loop can execute without forcing a halt, returning
+false automatically if it loops too many times without advancing the cursor.
+One million is probably too generous, but I don't want to break anything without
+needing to.
 
 ## Credit
 
